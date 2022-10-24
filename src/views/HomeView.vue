@@ -30,6 +30,7 @@
         // this.selectD = !this.selectD
         // console.log(this.setArr)
         this.$store.commit('setChange',this.setArr)
+        this.$router.push('time')
       },
       langJ(){
         this.lang = 0

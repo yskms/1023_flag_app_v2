@@ -472,12 +472,15 @@ const store = new Vuex.Store({
       
       { "capital": "Harare", "code": "zw", "continent": "Africa", "flag_1x1": "flags/1x1/zw.svg", "flag": "../flags/4x3/zw.svg", "iso": true, "name": "Zimbabwe", "nameJ": "ジンバブエ共和国", "nameH": "じんばぶえ共和国", "id": 233, "nameL": "zimbabwe", "nameR": "zinbabue共和国", "nameR2": "jinbabue共和国" },
       ],
-    setArr:[],
+    setArr:[],  //英語、モード、地域、難易度、追加で正解数
     test:5,
   },
   mutations:{
     setChange(state,arr){
       state.setArr = arr.concat()
+    },
+    setPush(state,n){
+      state.setArr.push(n)
     },
   },
   getters:{},

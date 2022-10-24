@@ -23,6 +23,11 @@ const routes = [
     name: 'time',
     component: () => import('../views/TimeAttack.vue')
   },
+  {
+    path: '/result',
+    name: 'result',
+    component: () => import('../views/ResultView.vue')
+  },
 ]
 
 const router = new VueRouter({
