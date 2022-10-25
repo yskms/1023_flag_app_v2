@@ -43,11 +43,11 @@ export default {
         });
       });
   },
-  beforeDestroy() {
+  beforeDestroy() { //onSnapshot使用時のテンプレです
     this.unsubscribe()
   },
   computed:{
-    setArr(){
+    setArr(){ //ゲームモードなどの設定
       return this.$store.state.setArr
     },
     lang(){
@@ -104,10 +104,11 @@ export default {
 
     <v-row justify="center">
     <v-dialog
-      persistent
+      
       v-model="dialog"
       max-width="600px"
     >
+    <!-- persistent -->
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           color="primary"
