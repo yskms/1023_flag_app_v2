@@ -1,5 +1,11 @@
 <script>
   // import HelloWorld from '../components/HelloWorld'
+  import firebaseApp from "../plugins/firebaseConfig"
+  import { getAuth, onAuthStateChanged,} from "firebase/auth"
+  import { getFirestore, doc, getDoc } from "firebase/firestore"
+
+  const auth = getAuth(firebaseApp)
+  const db = getFirestore(firebaseApp)
 
   export default {
     data(){
@@ -8,31 +14,68 @@
         // game:0,
         // land:0,
         // diff:0,
-        setArr:[0,0,0,0,],//stateに送りたい
-        selectG:true,
-        selectL:false,
-        selectD:false,
+        setArr:[0,0,0,0,],//ゲーム設定です。stateに送ります
+        selectG:true,   //game
+        selectL:false,  //land
+        selectD:false,  //diffculty
+        uid:'',
       }
     },
+    mounted(){
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const uid = user.uid;
+          console.log(uid)
+          this.uid = uid
+          this.$store.commit('authTrue',uid)  //ログインしてたらuidをstoreに登録
+
+          this.fetchData()
+          // const docRef = doc(db, "cities", "SF")
+          // const docSnap = await getDoc(docRef)
+
+          // if (docSnap.exists()) {
+          //   console.log("Document data:", docSnap.data())
+          // } else {
+          //   // doc.data() will be undefined in this case
+          //   console.log("No such document!")
+          // }
+
+
+        } else {
+          console.log('ログインしてないよ')
+        }
+      });
+    },
     methods:{
-      select_game(n){
+      async fetchData(){
+        const docRef = doc(db, "users", this.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      },
+      select_game(n){ //ゲームモード選択
         this.setArr[1] = n
         this.selectG = !this.selectG
         this.selectL = !this.selectL
       },
-      select_land(n){
+      select_land(n){ //land選択
         this.setArr[2] = n
         this.selectL = !this.selectL
         this.selectD = !this.selectD
       },
-      select_diff(n){
+      select_diff(n){ //difficulty選択、stateへ登録、ゲーム画面へ遷移
         this.setArr[3] = n
         // this.selectD = !this.selectD
         // console.log(this.setArr)
         this.$store.commit('setChange',this.setArr)
         this.$router.push('time')
       },
-      langJ(){
+      langJ(){  //言語選択0が日本語、1が英語
         this.lang = 0
         this.setArr[0] = 0
       },
@@ -44,6 +87,9 @@
     computed:{
     flagLists(){
       return this.$store.state.flagLists
+    },
+    isAuth(){
+      return this.$store.state.isAuth
     },
   },
   }

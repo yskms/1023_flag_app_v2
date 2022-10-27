@@ -1,14 +1,14 @@
+
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
-  import { getAuth, createUserWithEmailAndPassword,} from "firebase/auth"
-// signInWithEmailAndPassword, signOut 
-  import { getFirestore, collection, query, onSnapshot, orderBy,
-            } from 'firebase/firestore'
-// addDoc, Timestamp, serverTimestamp,
-  const auth = getAuth(firebaseApp);
-  const db = getFirestore(firebaseApp);
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,} from "firebase/auth"
 
-export default {
+  const auth = getAuth(firebaseApp);
+  
+  export default {
+    
+    name: 'AuthComp',
+
   data: () => ({
     email: 'ex@gmail.com',
     test:'testdata',
@@ -24,44 +24,13 @@ export default {
       },
     isConfig:false,//setArrの中身があるかないかを管理
     toggleForm:true,//true:レジスターorログイン:false
+    errorCodeNo:0,//authのエラーコードを入れる
+    isSuccess:false,//login成功したらtrue
 
     unsubscribe:null,
     byouga:[],
     dialog: false,
     }),
-  mounted(){  //ここリアルタイムじゃなくていいかも？？？
-    if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
-    this.isConfig = true
-    }else{
-
-      const q = query(collection(db, "datas"), orderBy("test"));
-      this.unsubscribe = onSnapshot(q, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-              console.log("added: ", change.doc.data());
-              this.byouga.push(change.doc.data())
-          }
-          if (change.type === "modified") {
-              console.log("Modified: ", change.doc.data());
-          }
-          if (change.type === "removed") {
-              console.log("Removed: ", change.doc.data());
-          }
-        });
-      });
-    }
-  },
-  beforeDestroy() { //onSnapshot使用時のテンプレです
-    this.unsubscribe()
-  },
-  computed:{
-    setArr(){ //ゲームモードなどの設定
-      return this.$store.state.setArr
-    },
-    lang(){
-      return this.setArr[0]
-    }
-  },
   methods:{
     backToHome(){
       this.$router.push('/')
@@ -72,61 +41,72 @@ export default {
             // Signed in
             const user = userCredential.user;
             console.log(user)
+            this.isSuccess = true  //loginを表示して、消して、homeへ
+            setTimeout(()=>{
+              this.isSuccess = false
+              this.$router.push('/')
+            },1000)
             // ...
           })
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage)
+            if(errorCode === 'auth/email-already-in-use'){
+              this.errorCodeNo = 10
+            }else if(errorCode === 'auth/wrong-password'){
+              this.errorCodeNo = 20
+            }else{this.errorCodeNo = 30}
             // ..
           });
           console.log('done')
+    },
+    login(){
+        signInWithEmailAndPassword(auth, this.email, this.password)
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            console.log(user)
+            this.isSuccess = true  //loginを表示して、消して、homeへ
+            setTimeout(()=>{
+              this.isSuccess = false
+              this.$router.push('/')
+          },1000)
+            // ...
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode)
+            console.log(errorMessage)
+            if(errorCode === 'auth/user-not-found'){
+              this.errorCodeNo = 1
+            }else if(errorCode === 'auth/wrong-password'){
+              this.errorCodeNo = 2
+            }else{this.errorCodeNo = 3}
+          });
+      },
+    logout(){
+        signOut(auth).then(() => {
+          console.log("logout now")
+          // Sign-out successful.
+        }).catch((error) => {
+          console.log(error)
+          // An error happened.
+        });
       },
     
   }
-}
+    
+  }
 </script>
 
 <template>
-  <div class="cont">
-    <div class="config_error" v-show="isConfig">
-    <p style="color:red">リセットされました</p>
-    <p style="color:red">Lost Your Result..</p>
-    <div class="my-2" @click="backToHome">
-              <v-btn
-                color="success"
-                dark
-              >
-                ホームに戻る
-              </v-btn>
-            </div>
+<div>
+  <div v-show="isSuccess">
+    ログイン成功
   </div>
-    <div class="main">
-      <div class="upwrap">
-        <p>新記録ーとか</p>
-        <div>{{setArr[4] + '問'}}</div>
-      </div><!-- upwrap -->
-      <div class="under">
-        <p>２位です！とか</p>
-          <div class="my-2" @click="select_game(0)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "ユーザー登録して記録を残そう！" : "Join and Record"}}
-              </v-btn>
-          </div>
-
-          <div class="my-2" @click="select_game(0)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "ログインして記録を残す" : "Login and Record"}}
-              </v-btn>
-          </div>
-
-    <v-row justify="center">
+  <v-row justify="center">
     <v-dialog
       
       v-model="dialog"
@@ -141,15 +121,17 @@ export default {
           v-on="on"
           persistent
         >
-          {{lang==0 ? "ユーザー登録して記録を残そう！" : "Join and Record"}}
+      ユーザー登録して記録を残そう！
         </v-btn>
       </template>
 
       <!-- register -->
       <v-card v-show="toggleForm">
+        <v-row justify="center">
         <v-card-title>
           <span class="text-h5">アカウント登録</span>
         </v-card-title>
+        </v-row>
 
         <v-card-text>
           <v-container>
@@ -163,6 +145,7 @@ export default {
                   <v-btn
                     color="success"
                     dark
+                    @click="logout"
                   >
                     Google
                   </v-btn>
@@ -178,6 +161,12 @@ export default {
               </v-col>
             </v-row>
           </v-container>
+
+          <div style="text-align:center; color:red">
+            <p v-show="errorCodeNo===10">このメールアドレスはすでに使われています</p>
+            <p v-show="errorCodeNo===20">パスワードが間違っています</p>
+            <p v-show="errorCodeNo===30">ログインエラー</p>
+          </div>
 
           <v-container>
             <v-row>
@@ -233,7 +222,7 @@ export default {
                   <v-btn
                     color="success"
                     dark
-                    @click="dialog = false ; register()"
+                    @click="register()"
                   >
                     REGISTER
                   </v-btn>
@@ -288,6 +277,12 @@ export default {
             </v-row>
           </v-container>
 
+          <div style="text-align:center; color:red">
+            <p v-show="errorCodeNo===1">存在しないユーザーです</p>
+            <p v-show="errorCodeNo===2">パスワードが間違っています</p>
+            <p v-show="errorCodeNo===3">ログインエラー</p>
+          </div>
+
           <v-container>
             <v-row>
               
@@ -323,7 +318,7 @@ export default {
                   <v-btn
                     color="success"
                     dark
-                    @click="dialog = false ; register()"
+                    @click="login()"
                   >
                     LOGIN
                   </v-btn>
@@ -345,54 +340,6 @@ export default {
       </v-card>
     </v-dialog>
   </v-row>
-
-<br><br><br>
-    <v-card
-    class="mx-auto"
-    max-width="300"
-    tile
-  >
-    <v-list disabled>
-      <v-subheader>LANKING</v-subheader>
-      <v-list-item-group
-        color="primary"
-      >
-        <v-list-item
-          v-for="b in byouga" :key="b.index"
-        >
-          <v-list-item-icon>
-            <v-icon v-text="b.test"></v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="b.game"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-card>
-
-
-      </div><!-- under -->
-    </div><!-- main -->
-  </div><!-- cont -->
+</div>  
 </template>
 
-<style scoped>
-.cont{
-  position: relative;
-}
-.config_error{
-  position: absolute;
-  top: 0;
-  left:0;
-  height: 100vh;
-  width: 100vw;
-  background-color: rgba(0, 128, 128, 0.5);
-  text-align: center;
-  /* vertical-align: middle; */
-  padding-top: 50%;
-  color: white;
-  /* font-size: 5rem; */
-  z-index: 2;
-}
-</style>
