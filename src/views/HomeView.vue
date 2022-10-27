@@ -1,13 +1,15 @@
 <script>
-  // import HelloWorld from '../components/HelloWorld'
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, onAuthStateChanged,} from "firebase/auth"
   import { getFirestore, doc, getDoc } from "firebase/firestore"
+  import AuthComp from '../components/AuthComp'
+
 
   const auth = getAuth(firebaseApp)
   const db = getFirestore(firebaseApp)
 
   export default {
+    components:{AuthComp},
     data(){
       return{
         lang:0,//即時切り替えは個別のdata必要っぽいので残す
@@ -47,7 +49,7 @@
       });
     },
     methods:{
-      async fetchData(){
+      async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 
@@ -83,6 +85,10 @@
         this.lang = 1
         this.setArr[0] = 1
       },
+      kesu(){
+        if(this.$route.path !== '/'){
+        console.log(this.$route.path)}
+      }
     },
     computed:{
     flagLists(){
@@ -133,6 +139,7 @@
                   x-small
                   color="warning"
                   dark
+                  @click="kesu"
                 >
                   消す
                 </v-btn>
@@ -155,12 +162,7 @@
               </v-btn>
             </div>
             <div class="my-2">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "ログイン" : "Login"}}
-              </v-btn>
+              <AuthComp v-show="this.uid==''"/>
             </div>
           </div>
         </div>

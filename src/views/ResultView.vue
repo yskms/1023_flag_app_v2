@@ -1,14 +1,16 @@
 <script>
+  import AuthComp from '../components/AuthComp'
   import firebaseApp from "../plugins/firebaseConfig"
-  import { getAuth, createUserWithEmailAndPassword,} from "firebase/auth"
-// signInWithEmailAndPassword, signOut 
-  import { getFirestore, collection, query, onSnapshot, orderBy,
+  // import { getAuth, } from "firebase/auth"
+// createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut 
+  import { getFirestore, doc, getDoc 
             } from 'firebase/firestore'
-// addDoc, Timestamp, serverTimestamp,
-  const auth = getAuth(firebaseApp);
+// addDoc, Timestamp, serverTimestamp,collection, query, onSnapshot, orderBy,
+  // const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
 
 export default {
+  components:{AuthComp},
   data: () => ({
     email: 'ex@gmail.com',
     test:'testdata',
@@ -29,61 +31,59 @@ export default {
     byouga:[],
     dialog: false,
     }),
-  mounted(){  //ここリアルタイムじゃなくていいかも？？？
+  mounted(){  
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
     this.isConfig = true
     }else{
-
-      const q = query(collection(db, "datas"), orderBy("test"));
-      this.unsubscribe = onSnapshot(q, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-              console.log("added: ", change.doc.data());
-              this.byouga.push(change.doc.data())
-          }
-          if (change.type === "modified") {
-              console.log("Modified: ", change.doc.data());
-          }
-          if (change.type === "removed") {
-              console.log("Removed: ", change.doc.data());
-          }
-        });
-      });
+      this.fetchData()
+      //ここリアルタイムじゃなくていいかも？？？
+      // const q = query(collection(db, "datas"), orderBy("test"));
+      // this.unsubscribe = onSnapshot(q, (snapshot) => {
+      //   snapshot.docChanges().forEach((change) => {
+      //     if (change.type === "added") {
+      //         console.log("added: ", change.doc.data());
+      //         this.byouga.push(change.doc.data())
+      //     }
+      //     if (change.type === "modified") {
+      //         console.log("Modified: ", change.doc.data());
+      //     }
+      //     if (change.type === "removed") {
+      //         console.log("Removed: ", change.doc.data());
+      //     }
+      //   });
+      // });
     }
   },
-  beforeDestroy() { //onSnapshot使用時のテンプレです
-    this.unsubscribe()
-  },
+  // beforeDestroy() { //onSnapshot使用時のテンプレです
+  //   this.unsubscribe()
+  // },
   computed:{
     setArr(){ //ゲームモードなどの設定
       return this.$store.state.setArr
     },
     lang(){
       return this.setArr[0]
-    }
+    },
+    uid(){
+      return this.$store.state.uid
+    },
   },
   methods:{
     backToHome(){
       this.$router.push('/')
     },
-    register(){
-        createUserWithEmailAndPassword(auth, this.email, this.password)
-          .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            console.log(user)
-            // ...
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage)
-            // ..
-          });
-          console.log('done')
-      },
-    
-  }
+    async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
+        const docRef = doc(db, "users", this.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+    },
+  },
 }
 </script>
 
@@ -100,7 +100,8 @@ export default {
                 ホームに戻る
               </v-btn>
             </div>
-  </div>
+    </div><!-- config_error -->
+    
     <div class="main">
       <div class="upwrap">
         <p>新記録ーとか</p>
@@ -108,243 +109,8 @@ export default {
       </div><!-- upwrap -->
       <div class="under">
         <p>２位です！とか</p>
-          <div class="my-2" @click="select_game(0)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "ユーザー登録して記録を残そう！" : "Join and Record"}}
-              </v-btn>
-          </div>
 
-          <div class="my-2" @click="select_game(0)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "ログインして記録を残す" : "Login and Record"}}
-              </v-btn>
-          </div>
-
-    <v-row justify="center">
-    <v-dialog
-      
-      v-model="dialog"
-      max-width="600px"
-    >
-    <!-- persistentってどういう機能なんやろか -->
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          dark
-          v-bind="attrs"
-          v-on="on"
-          persistent
-        >
-          {{lang==0 ? "ユーザー登録して記録を残そう！" : "Join and Record"}}
-        </v-btn>
-      </template>
-
-      <!-- register -->
-      <v-card v-show="toggleForm">
-        <v-card-title>
-          <span class="text-h5">アカウント登録</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                  >
-                    Google
-                  </v-btn>
-                </div>
-                <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                  >
-                    Apple
-                  </v-btn>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  label="ニックネーム*"
-                  required
-                  :rules="[rules.required]"
-                ></v-text-field>
-              </v-col>
-              
-              <v-col cols="12">
-                <v-text-field
-                  label="Email*"
-                  required
-                  v-model="email"
-                  :rules="[rules.required, rules.email]"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Password*"
-                  type="password"
-                  required
-                  v-model="password"
-                  :rules="[rules.required, rules.min]"
-                ></v-text-field>
-              </v-col>
-
-              <v-col
-                cols="12"
-                sm="6"
-              >
-                <v-select
-                  :items="['0-7','8-17','18-29','30-54','54+', '無回答']"
-                  label="Age*"
-                  required
-                  :rules="[rules.required]"
-                ></v-select>
-              </v-col>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                    @click="dialog = false ; register()"
-                  >
-                    REGISTER
-                  </v-btn>
-                </div>
-                <div class="my-2">
-                  <v-btn
-            color="blue darken-1"
-            text
-            @click="toggleForm=!toggleForm"
-          >
-            すでにアカウントをお持ちの方
-          </v-btn>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-
-        </v-card-text>
-      </v-card>
-
-      <!-- login -->
-      <v-card v-show="!toggleForm">
-        <v-card-title>
-          <span class="text-h5">ログイン</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                  >
-                    Google
-                  </v-btn>
-                </div>
-                <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                  >
-                    Apple
-                  </v-btn>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-
-          <v-container>
-            <v-row>
-              
-              <v-col cols="12">
-                <v-text-field
-                  label="Email*"
-                  required
-                  v-model="email"
-                  :rules="[rules.required, rules.email]"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Password*"
-                  type="password"
-                  required
-                  v-model="password"
-                  :rules="[rules.required, rules.min]"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                    @click="dialog = false ; register()"
-                  >
-                    LOGIN
-                  </v-btn>
-                </div>
-                <div class="my-2">
-                  <v-btn
-            color="blue darken-1"
-            text
-            @click="toggleForm = !toggleForm"
-          >
-            ユーザー登録はこちら
-          </v-btn>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </v-row>
+    <AuthComp v-show="this.uid==''"/>
 
 <br><br><br>
     <v-card

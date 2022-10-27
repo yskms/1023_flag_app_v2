@@ -23,7 +23,7 @@
           return pattern.test(value) || 'Invalid e-mail.'},  
       },
     isConfig:false,//setArrの中身があるかないかを管理
-    toggleForm:true,//true:レジスターorログイン:false
+    toggleForm:false,//true:レジスターorログイン:false
     errorCodeNo:0,//authのエラーコードを入れる
     isSuccess:false,//login成功したらtrue
 
@@ -44,7 +44,11 @@
             this.isSuccess = true  //loginを表示して、消して、homeへ
             setTimeout(()=>{
               this.isSuccess = false
-              this.$router.push('/')
+              if(this.$route.path == '/'){
+                this.dialog = false
+              }else{
+                this.$router.push('/')
+              }
             },1000)
             // ...
           })
@@ -70,7 +74,12 @@
             this.isSuccess = true  //loginを表示して、消して、homeへ
             setTimeout(()=>{
               this.isSuccess = false
-              this.$router.push('/')
+              if(this.$route.path == '/'){
+                this.dialog = false
+              }else{
+                this.$router.push('/')
+              }
+              // this.$router.push('/')
           },1000)
             // ...
           })
@@ -87,6 +96,7 @@
           });
       },
     logout(){
+        console.log('logout sasete')
         signOut(auth).then(() => {
           console.log("logout now")
           // Sign-out successful.
@@ -102,10 +112,20 @@
 </script>
 
 <template>
-<div>
-  <div v-show="isSuccess">
-    ログイン成功
-  </div>
+<div class="cont">
+  <div class="loginSuccess" v-show="isSuccess">
+    <p>ログイン成功</p>
+    <div class="my-2">
+                  <v-btn
+                    color="success"
+                    dark
+                    @click="logout"
+                  >
+                    ホームへ戻る
+                  </v-btn>
+                </div>
+  </div><!-- loginSuccess -->
+
   <v-row justify="center">
     <v-dialog
       
@@ -121,7 +141,7 @@
           v-on="on"
           persistent
         >
-      ユーザー登録して記録を残そう！
+      ログインして記録を残そう！
         </v-btn>
       </template>
 
@@ -145,7 +165,7 @@
                   <v-btn
                     color="success"
                     dark
-                    @click="logout"
+                    @click="logout()"
                   >
                     Google
                   </v-btn>
@@ -154,6 +174,7 @@
                   <v-btn
                     color="success"
                     dark
+                    @click="logout()"
                   >
                     Apple
                   </v-btn>
@@ -261,6 +282,7 @@
                   <v-btn
                     color="success"
                     dark
+                    @click="logout()"
                   >
                     Google
                   </v-btn>
@@ -343,3 +365,22 @@
 </div>  
 </template>
 
+<style scoped>
+.cont{
+  position: relative;
+}
+.loginSuccess{
+  position: absolute;
+  top: 0;
+  left:0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 128, 128, 0.5);
+  text-align: center;
+  /* vertical-align: middle; */
+  padding-top: 50%;
+  color: white;
+  /* font-size: 5rem; */
+  z-index: 2;
+}
+</style>
