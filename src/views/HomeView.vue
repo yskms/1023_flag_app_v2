@@ -1,6 +1,6 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
-  import { getAuth, onAuthStateChanged,} from "firebase/auth"
+  import { getAuth, onAuthStateChanged, signOut, } from "firebase/auth"
   import { getFirestore, doc, getDoc } from "firebase/firestore"
   import AuthComp from '../components/AuthComp'
 
@@ -20,10 +20,10 @@
         selectG:true,   //game
         selectL:false,  //land
         selectD:false,  //diffculty
-        uid:'',
+        uid:'uid',
       }
     },
-    mounted(){
+    created(){
       onAuthStateChanged(auth, (user) => {
         if (user) {
           const uid = user.uid;
@@ -45,6 +45,7 @@
 
         } else {
           console.log('ログインしてないよ')
+          this.uid = ''
         }
       });
     },
@@ -59,6 +60,16 @@
           // doc.data() will be undefined in this case
           console.log("No such document!");
         }
+      },
+      logout(){
+        console.log('logout sasete')
+        signOut(auth).then(() => {
+          console.log("logout now")
+          // Sign-out successful.
+        }).catch((error) => {
+          console.log(error)
+          // An error happened.
+        });
       },
       select_game(n){ //ゲームモード選択
         this.setArr[1] = n
@@ -161,8 +172,19 @@
                 {{lang==0 ? "ノーミスチャレンジ" : "No Miss Challenge"}}
               </v-btn>
             </div>
-            <div class="my-2">
-              <AuthComp v-show="this.uid==''"/>
+            <div class="my-2" v-if="this.uid=='uid'">
+              <div></div>
+            </div>
+            <div class="my-2" v-else-if="this.uid==''">
+              <AuthComp/>
+            </div>
+            <div class="my-2" v-else @click="logout()">
+              <v-btn
+                color="success"
+                dark
+              >
+                {{lang==0 ? "ログアウト" : "Logout"}}
+              </v-btn>
             </div>
           </div>
         </div>
