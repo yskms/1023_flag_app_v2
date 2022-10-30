@@ -14,11 +14,11 @@
         rankArr:[],
       }
     },
-    created(){
+    mounted(){
       onAuthStateChanged(auth, (user) => {
         if (user) { //ログインしてたら
           // const uid = user.uid
-          console.log(uid)
+          // console.log(uid)
           this.uid = user.uid  //this.uidにガチUIDを入れる
           // this.$store.commit('authTrue',uid)//uidをstoreに登録
 
