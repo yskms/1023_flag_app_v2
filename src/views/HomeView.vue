@@ -20,29 +20,18 @@
         selectG:true,   //game
         selectL:false,  //land
         selectD:false,  //diffculty
-        uid:'uid',
+        uid:'uid',  //ログインならガチUID,してないならブランクにする
       }
     },
     created(){
       onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const uid = user.uid;
+        if (user) { //ログインしてたら
+          const uid = user.uid
           console.log(uid)
-          this.uid = uid
-          this.$store.commit('authTrue',uid)  //ログインしてたらuidをstoreに登録
+          this.uid = uid  //this.uidにガチUIDを入れる
+          this.$store.commit('authTrue',uid)//uidをstoreに登録
 
-          this.fetchData()
-          // const docRef = doc(db, "cities", "SF")
-          // const docSnap = await getDoc(docRef)
-
-          // if (docSnap.exists()) {
-          //   console.log("Document data:", docSnap.data())
-          // } else {
-          //   // doc.data() will be undefined in this case
-          //   console.log("No such document!")
-          // }
-
-
+          this.fetchData()//usersのデータを取得
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
@@ -50,7 +39,7 @@
       });
     },
     methods:{
-      async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
+      async fetchData(){  //mountedで使う。ログインしてたらuidでusersデータ取得
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 
@@ -172,6 +161,7 @@
                 {{lang==0 ? "ノーミスチャレンジ" : "No Miss Challenge"}}
               </v-btn>
             </div>
+            <!--  -->
             <div class="my-2" v-if="this.uid=='uid'">
               <div></div>
             </div>
@@ -186,6 +176,7 @@
                 {{lang==0 ? "ログアウト" : "Logout"}}
               </v-btn>
             </div>
+            <!--  -->
           </div>
         </div>
 

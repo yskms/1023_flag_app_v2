@@ -3,8 +3,7 @@
   import firebaseApp from "../plugins/firebaseConfig"
   // import { getAuth, } from "firebase/auth"
 // createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut 
-  import { getFirestore, doc, getDoc 
-            } from 'firebase/firestore'
+  import { getFirestore, doc, getDoc } from "firebase/firestore"
 // addDoc, Timestamp, serverTimestamp,collection, query, onSnapshot, orderBy,
   // const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
@@ -26,6 +25,7 @@ export default {
       },
     isConfig:false,//setArrの中身があるかないかを管理
     toggleForm:true,//true:レジスターorログイン:false
+    // rankArr:[],
 
     unsubscribe:null,
     byouga:[],
@@ -35,28 +35,10 @@ export default {
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
     this.isConfig = true
     }else{
-      this.fetchData()
-      //ここリアルタイムじゃなくていいかも？？？
-      // const q = query(collection(db, "datas"), orderBy("test"));
-      // this.unsubscribe = onSnapshot(q, (snapshot) => {
-      //   snapshot.docChanges().forEach((change) => {
-      //     if (change.type === "added") {
-      //         console.log("added: ", change.doc.data());
-      //         this.byouga.push(change.doc.data())
-      //     }
-      //     if (change.type === "modified") {
-      //         console.log("Modified: ", change.doc.data());
-      //     }
-      //     if (change.type === "removed") {
-      //         console.log("Removed: ", change.doc.data());
-      //     }
-      //   });
-      // });
+      this.fetchData()//usersのデータを取得
+      // this.fetchRank()//datasのデータを取得
     }
   },
-  // beforeDestroy() { //onSnapshot使用時のテンプレです
-  //   this.unsubscribe()
-  // },
   computed:{
     setArr(){ //ゲームモードなどの設定
       return this.$store.state.setArr
@@ -69,9 +51,6 @@ export default {
     },
   },
   methods:{
-    backToHome(){
-      this.$router.push('/')
-    },
     async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
@@ -82,6 +61,9 @@ export default {
           // doc.data() will be undefined in this case
           console.log("No such document!");
         }
+    },
+    backToHome(){
+      this.$router.push('/')
     },
   },
 }
