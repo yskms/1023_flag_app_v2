@@ -10,24 +10,24 @@
     data(){
       return{
         uid:'uid',  //ログインならガチUID,してないならブランクにする
-        isConfig:false,//setArrの中身があるかないかを管理
+        // isConfig:false,//setArrの中身があるかないかを管理
         rankArr:[],
       }
     },
     created(){
       onAuthStateChanged(auth, (user) => {
         if (user) { //ログインしてたら
-          const uid = user.uid
+          // const uid = user.uid
           console.log(uid)
-          this.uid = uid  //this.uidにガチUIDを入れる
-          this.$store.commit('authTrue',uid)//uidをstoreに登録
+          this.uid = user.uid  //this.uidにガチUIDを入れる
+          // this.$store.commit('authTrue',uid)//uidをstoreに登録
 
           this.fetchData()//usersのデータを取得
           this.fetchRank()//datasのデータを取得
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
-          this.isConfig = true
+          // this.isConfig = true
 
         }
       });
@@ -35,7 +35,7 @@
     methods:{
       async fetchRank(){
         const datasRef = collection(db, "datas")
-        const que = query(datasRef, orderBy("diff"), limit(6))
+        const que = query(datasRef, orderBy("score","desc"), limit(6))
         // const q = await getDocs(que, s =>{
         //   s.forEach(element => {
         //     this.rankArr.push(element.docs.data())
@@ -79,9 +79,9 @@
     flagLists(){
       return this.$store.state.flagLists
     },
-    isAuth(){
-      return this.$store.state.isAuth
-    },
+    // isAuth(){
+    //   return this.$store.state.isAuth
+    // },
   },
   }
 </script>
@@ -89,9 +89,9 @@
 <template>
   <div class="cont">
 
-    <div class="config_error" v-show="isConfig">
-    <p style="color:red">リセットされました</p>
-    <p style="color:red">Lost Your Result..</p>
+    <div class="config_error" v-show="this.uid==''">
+    <p style="color:red">ログアウトされました</p>
+    <p style="color:red">Logouted now</p>
     <div class="my-2" @click="backToHome">
               <v-btn
                 color="success"

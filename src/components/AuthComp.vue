@@ -47,7 +47,8 @@
               if(this.$route.path == '/'){
                 this.dialog = false
               }else{
-                this.$router.push('/')
+                // this.$router.push('/')
+                this.dialog = false
               }
             },1000)
             // ...
@@ -77,7 +78,8 @@
               if(this.$route.path == '/'){
                 this.dialog = false
               }else{
-                this.$router.push('/')
+                // this.$router.push('/')
+                this.dialog = false
               }
               // this.$router.push('/')
           },1000)

@@ -25,13 +25,11 @@
     },
     created(){
       onAuthStateChanged(auth, (user) => {
-        if (user) { //ログインしてたら
-          const uid = user.uid
-          console.log(uid)
-          this.uid = uid  //this.uidにガチUIDを入れる
-          this.$store.commit('authTrue',uid)//uidをstoreに登録
+        if (user) {             //ログインしてたら
+          console.log(user.uid)
+          this.uid = user.uid  //this.uidにガチUIDを入れる
 
-          this.fetchData()//usersのデータを取得
+          this.fetchData()    //usersのデータを取得
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
@@ -51,9 +49,9 @@
         }
       },
       logout(){
-        console.log('logout sasete')
         signOut(auth).then(() => {
           console.log("logout now")
+          this.uid = ''
           // Sign-out successful.
         }).catch((error) => {
           console.log(error)
@@ -94,9 +92,9 @@
     flagLists(){
       return this.$store.state.flagLists
     },
-    isAuth(){
-      return this.$store.state.isAuth
-    },
+    // isAuth(){
+    //   return this.$store.state.isAuth
+    // },
   },
   }
 </script>
@@ -162,12 +160,15 @@
               </v-btn>
             </div>
             <!--  -->
+            <!-- 画面が描画された瞬間は、何も表示しない -->
             <div class="my-2" v-if="this.uid=='uid'">
               <div></div>
             </div>
+            <!-- ログインしていないなら、ログインボタンを表示 -->
             <div class="my-2" v-else-if="this.uid==''">
               <AuthComp/>
             </div>
+            <!-- ログインしているなら、ログアウトボタンを表示 -->
             <div class="my-2" v-else @click="logout()">
               <v-btn
                 color="success"

@@ -15,10 +15,10 @@ export default {
       isResult:false,
       point:0,
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
-      isConfig:false,
+      isConfig:false,//setArrの中身があるかないかを管理
     }
   },
-  mounted(){
+  mounted(){    //authの確認はこのページでは行わない
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
       this.isConfig = true
     }else{

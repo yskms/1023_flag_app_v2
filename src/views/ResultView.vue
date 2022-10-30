@@ -1,11 +1,11 @@
 <script>
   import AuthComp from '../components/AuthComp'
   import firebaseApp from "../plugins/firebaseConfig"
-  // import { getAuth, } from "firebase/auth"
+  import { getAuth, onAuthStateChanged} from "firebase/auth"
 // createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut 
-  import { getFirestore, doc, getDoc } from "firebase/firestore"
-// addDoc, Timestamp, serverTimestamp,collection, query, onSnapshot, orderBy,
-  // const auth = getAuth(firebaseApp);
+  import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs, } from "firebase/firestore"
+// addDoc, Timestamp, serverTimestamp, onSnapshot,
+  const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
 
 export default {
@@ -25,18 +25,37 @@ export default {
       },
     isConfig:false,//setArrの中身があるかないかを管理
     toggleForm:true,//true:レジスターorログイン:false
-    // rankArr:[],
-
-    unsubscribe:null,
-    byouga:[],
     dialog: false,
+    rankArr:[],//score降順で3つデータ取ったやつ、に今回の結果追加した配列
+    rankIn:'',//1,2,3位なら数字が入ります
+    uid:'uid',  //ログインならガチUID,してないならブランクにする
     }),
+
+    created(){
+      onAuthStateChanged(auth, (user) => {
+        if (user) { //ログインしてたら
+          // const uid = user.uid
+          // console.log(uid)
+          this.uid = user.uid  //this.uidにガチUIDを入れる
+          // this.$store.commit('authTrue',uid)//uidをstoreに登録
+
+          // this.fetchData()//usersのデータを取得
+          // this.fetchRank()//datasのデータを取得
+        } else {
+          console.log('ログインしてないよ')
+          this.uid = ''
+          // this.isConfig = true
+
+        }
+      });
+    },
   mounted(){  
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
     this.isConfig = true
     }else{
       this.fetchData()//usersのデータを取得
-      // this.fetchRank()//datasのデータを取得
+      this.fetchRank()//datasのデータを取得
+      // this.jyuni()
     }
   },
   computed:{
@@ -46,11 +65,45 @@ export default {
     lang(){
       return this.setArr[0]
     },
-    uid(){
-      return this.$store.state.uid
-    },
+    // uid(){
+    //   return this.$store.state.uid
+    // },
   },
   methods:{
+      async fetchRank(){
+        const datasRef = collection(db, "datas")
+        const que = query(datasRef, orderBy("score","desc"), limit(3))//score降順で3つデータ取る
+        const querySnapshot = await getDocs(que);
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          this.rankArr.push(doc.data())
+        });
+        console.log(que)
+        console.log(this.rankArr)//score降順で3つデータ取ったやつ
+
+        console.log(this.setArr[4])
+        console.log(this.rankArr[0])
+        console.log(this.rankArr[0].score)
+        // if(this.rankArr[0].score < this.setArr[4] || this.rankArr[0].score == this.setArr[4]){
+        //   console.log('0位')
+        //   this.rankArr.splice(0,0,{score:this.setArr[4]})
+        // }else if(this.rankArr[1].score < this.setArr[4] || this.rankArr[1].score == this.setArr[4]){
+        //   console.log('1位')
+        //   this.rankArr.splice(1,0,{score:this.setArr[4]})
+        // }else if(this.rankArr[2].score < this.setArr[4] || this.rankArr[2].score == this.setArr[4]){
+        //   console.log('2位')
+        //   this.rankArr.splice(2,0,{score:this.setArr[4]})
+        // }
+        for(let i=0;i<3;i++){
+          if(this.rankArr[i].score < this.setArr[4] || this.rankArr[i].score == this.setArr[4]){
+          console.log(i)
+          this.rankArr.splice(i,0,{score:this.setArr[4]})
+          this.rankIn=i+1
+          break
+        }}
+
+      },
     async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
@@ -64,6 +117,9 @@ export default {
     },
     backToHome(){
       this.$router.push('/')
+    },
+    goToRank(){
+      this.$router.push('rank')
     },
   },
 }
@@ -89,38 +145,73 @@ export default {
         <p>新記録ーとか</p>
         <div>{{setArr[4] + '問'}}</div>
       </div><!-- upwrap -->
-      <div class="under">
-        <p>２位です！とか</p>
 
-    <AuthComp v-show="this.uid==''"/>
+      <div class="rank_msg">
+        <div v-show="rankIn"><!-- ３位以内の場合 -->
+          <!-- 画面が描画された瞬間は、何も表示しない -->
+          <p v-if="this.uid=='uid'"></p>
+          <!-- ログインしていないなら、 -->
+          <p v-else-if="this.uid==''">{{rankIn}} 位です！ログインして記録を残そう！</p>
+          <!-- ログインしているなら、 -->
+          <p v-else>{{rankIn}} 位です！！</p>
+        </div>
+      </div><!-- rank_msg -->
 
-<br><br><br>
-    <v-card
-    class="mx-auto"
-    max-width="300"
-    tile
-  >
-    <v-list disabled>
-      <v-subheader>LANKING</v-subheader>
-      <v-list-item-group
-        color="primary"
-      >
-        <v-list-item
-          v-for="b in byouga" :key="b.index"
-        >
-          <v-list-item-icon>
-            <v-icon v-text="b.test"></v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="b.game"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-card>
+      <div class="rank_list">
+          <v-card
+          class="mx-auto"
+          max-width="300"
+          tile
+          >
+          <v-list disabled>
+            <v-subheader>LANKING</v-subheader>
+            <v-list-item-group
+              color="primary"
+            >
+              <v-list-item
+                v-for="(r,index) in rankArr" :key="index"
+              >
+                <v-list-item-icon>
+                  <v-icon v-text="r.test"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="r.score"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+
+            </v-list-item-group>
+          </v-list>
+          </v-card>
+      </div>
+
+      <div class="bottom">
+        <!-- 画面が描画された瞬間は、ランキングボタン -->
+          <div v-if="this.uid!==''">
+            <div class="my-2" @click="goToRank()">
+              <v-btn
+                color="success"
+                dark
+              >
+                {{lang==0 ? "ランキングを見る" : "Ranking"}}
+              </v-btn>
+            </div>
+          </div>
+          <!-- ログインしていないなら、ログインボタンにする -->
+          <div v-else>
+            <AuthComp/>
+          </div>
+          <!-- ホームに戻るボタンは固定 -->
+          <div class="my-2" @click="backToHome">
+              <v-btn
+                color="success"
+                dark
+              >
+                ホームに戻る
+              </v-btn>
+            </div>
+      </div>
 
 
-      </div><!-- under -->
     </div><!-- main -->
   </div><!-- cont -->
 </template>
