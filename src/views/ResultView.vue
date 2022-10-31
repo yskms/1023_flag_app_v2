@@ -32,6 +32,7 @@ export default {
     }),
 
     created(){
+      console.log('created')
       onAuthStateChanged(auth, (user) => {
         if (user) { //ログインしてたら
           // const uid = user.uid
@@ -49,7 +50,8 @@ export default {
         }
       });
     },
-  mounted(){  
+  mounted(){
+    console.log('mounted')
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
     this.isConfig = true
     }else{
@@ -116,9 +118,11 @@ export default {
         }
     },
     backToHome(){
+      
       this.$router.push('/')
     },
     goToRank(){
+
       this.$router.push('rank')
     },
   },

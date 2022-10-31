@@ -50,7 +50,7 @@
                 // this.$router.push('/')
                 this.dialog = false
               }
-            },1000)
+            },3000)
             // ...
           })
           .catch((error) => {
@@ -82,7 +82,7 @@
                 this.dialog = false
               }
               // this.$router.push('/')
-          },1000)
+          },3000)
             // ...
           })
           .catch((error) => {
