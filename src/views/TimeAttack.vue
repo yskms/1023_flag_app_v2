@@ -1,7 +1,12 @@
 <script>
-// import TimeBar from '../components/TimeBar.vue'
+import ResultComp from '../components/ResultComp.vue'
+import firebaseApp from "../plugins/firebaseConfig"
+import { getFirestore, addDoc, collection, Timestamp, } from "firebase/firestore"
+
+const db = getFirestore(firebaseApp)
+
 export default {
-  // components: { TimeBar },
+  components: { ResultComp },
   data(){
     return{
       quizAnserOb:{},
@@ -9,16 +14,19 @@ export default {
       copyArr:[],
       timebar:100,
       timerId:null,
-      getready:3,
-      isSeikai:false,
-      isSeikai2:false,
-      isResult:false,
-      point:0,
+      getready:3,//ゲーム開始前のカウントダウン用
+      isSeikai:false,//まるを表示する用
+      isSeikai2:false,//ばつを表示する用
+      point:0,//正解数
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
       isConfig:false,//setArrの中身があるかないかを管理
+      isResult:false,//ゲーム終了後、何問正解と表示するための管理用
+
+      isResultComp:false,//ゲーム終了後、ResultCompを表示するための管理用
     }
   },
   mounted(){    //authの確認はこのページでは行わない
+    console.log('mounted')
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
       this.isConfig = true
     }else{
@@ -32,20 +40,35 @@ export default {
       },3000)
     }
   },
+  watch:{
+    timebar:function(){
+      if(this.timebar < 0){
+        this.isResult = true  //ゲーム終了後、何問正解と表示する
+        this.$store.commit('setPush',this.point)
+        clearInterval(this.timerId)
+        
+        // setTimeout(()=>{
+        // this.isResultComp = true  //ゲーム終了後、ResultCompを表示する
+        // },2000)
+      }
+    }
+  },
   methods:{
-    gameStart(){
+    gameStart(){  //時間で画面遷移しているが、Timebarがゼロになったら、というのも必要
       this.timerId = setInterval(()=>{
         this.timebar = this.timebar - 1
         }, 100)
-      setTimeout(()=>{
-        clearInterval(this.timerId)
-        this.isResult = true
-        this.$store.commit('setPush',this.point)
-      },10000)
-      setTimeout(()=>{
-        console.log('リザルト画面へ')
-        this.$router.push('result')
-      },10100)
+      console.log(this.timerId)
+      // setTimeout(()=>{
+      //   clearInterval(timerId)
+      //   this.$store.commit('setPush',this.point)
+      //   this.isResult = true
+      // },10000)
+      // setTimeout(()=>{
+      //   console.log('リザルト画面へ')
+      //   // this.$router.push('result')
+      //   this.isResultComp = true
+      // },10100)
     },
 
     nextQuiz(){
@@ -80,7 +103,25 @@ export default {
       },
     backToHome(){
       this.$router.push('/')
-    }
+    },
+    showResultComp(){
+      this.isResultComp = true  //ゲーム終了後、ResultCompを表示する
+    },
+    async showResultComp2(){
+      // Add a new document with a generated id.
+        const docRef = await addDoc(collection(db, "datas"), {
+          // name: "Tokyo",
+          // country: "Japan",
+          lang:this.setArr[0],
+          game:this.setArr[1],
+          land:this.setArr[2],
+          diff:this.setArr[3],
+          point:this.setArr[4],
+          date: Timestamp.fromDate(new Date()),
+          uid:this.storeUid,
+        });
+        console.log("Document written with ID: ", docRef);
+    },
   },
   computed:{
     flagLists(){
@@ -91,6 +132,9 @@ export default {
     },
     lang(){
       return this.setArr[0]
+    },
+    storeUid(){
+      return this.$store.state.uid
     },
     // anserFlag(){
     //   return require("../../public/img" + this.quizAnserOb.name + ".svg")
@@ -112,6 +156,11 @@ export default {
               </v-btn>
             </div>
   </div>
+
+  <div class="result_comp" v-if="isResultComp">
+    <ResultComp/>
+  </div>
+
   <div class="getready" v-show="getready>0">
     {{getready}}
   </div>
@@ -123,7 +172,24 @@ export default {
   </div>
   <div class="isResult" v-show="isResult">
     {{point + "問正解"}}
+    <div class="my-2" @click="showResultComp()">
+              <v-btn
+                color="success"
+                dark
+              >
+                OK
+              </v-btn>
+            </div>
+    <div class="my-2" @click="showResultComp2()">
+              <v-btn
+                color="success"
+                dark
+              >
+                set
+              </v-btn>
+            </div>
   </div>
+
   <div class="main">
     <v-progress-linear
         color="teal"
@@ -178,7 +244,7 @@ export default {
   font-size: 5rem;
   z-index: 1;
 }
-.config_error{
+.result_comp{
   position: absolute;
   top: 0;
   left:0;
@@ -192,6 +258,20 @@ export default {
   /* font-size: 5rem; */
   z-index: 2;
 }
+.config_error{
+  position: absolute;
+  top: 0;
+  left:0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 128, 128, 0.5);
+  text-align: center;
+  /* vertical-align: middle; */
+  padding-top: 50%;
+  color: white;
+  /* font-size: 5rem; */
+  z-index: 3;
+}
 .isResult{
   position: absolute;
   top: 0;
@@ -203,7 +283,7 @@ export default {
   vertical-align: middle;
   padding: 50%;
   color: white;
-  font-size: 5rem;
+  font-size: 3rem;
   z-index: 1;
 }
 .vibe {

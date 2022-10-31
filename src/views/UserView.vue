@@ -22,11 +22,13 @@
         if (user) {             //ログインしてたら
           console.log(user.uid)
           this.uid = user.uid  //this.uidにガチUIDを入れる
+          this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
 
           this.fetchData()    //usersのデータを取得
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
+          this.$store.commit('authFalse')//storeのガチUIDを消す
           this.$router.push('/')
         }
       });
@@ -50,6 +52,7 @@
         signOut(auth).then(() => {
           console.log("logout now")
           this.uid = ''
+          this.$store.commit('authFalse')//storeのガチUIDを消す
           // Sign-out successful.
         }).catch((error) => {
           console.log(error)

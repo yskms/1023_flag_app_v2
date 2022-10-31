@@ -41,6 +41,7 @@
             // Signed in
             const user = userCredential.user;
             console.log(user)
+            this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
             this.isSuccess = true  //loginを表示して、消して、homeへ
             setTimeout(()=>{
               this.isSuccess = false
@@ -72,6 +73,7 @@
             // Signed in
             const user = userCredential.user;
             console.log(user)
+            this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
             this.isSuccess = true  //loginを表示して、消して、homeへ
             setTimeout(()=>{
               this.isSuccess = false
@@ -101,6 +103,7 @@
         console.log('logout sasete')
         signOut(auth).then(() => {
           console.log("logout now")
+          this.$store.commit('authFalse')//storeのガチUIDを消す
           // Sign-out successful.
         }).catch((error) => {
           console.log(error)
