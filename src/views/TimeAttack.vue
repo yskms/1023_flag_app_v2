@@ -17,7 +17,7 @@ export default {
       getready:3,//ゲーム開始前のカウントダウン用
       isSeikai:false,//まるを表示する用
       isSeikai2:false,//ばつを表示する用
-      point:0,//正解数
+      score:0,//正解数
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
       isConfig:false,//setArrの中身があるかないかを管理
       isResult:false,//ゲーム終了後、何問正解と表示するための管理用
@@ -44,7 +44,7 @@ export default {
     timebar:function(){
       if(this.timebar < 0){
         this.isResult = true  //ゲーム終了後、何問正解と表示する
-        this.$store.commit('setPush',this.point)
+        this.$store.commit('setPush',this.score)
         clearInterval(this.timerId)
         
         // setTimeout(()=>{
@@ -61,7 +61,7 @@ export default {
       console.log(this.timerId)
       // setTimeout(()=>{
       //   clearInterval(timerId)
-      //   this.$store.commit('setPush',this.point)
+      //   this.$store.commit('setPush',this.score)
       //   this.isResult = true
       // },10000)
       // setTimeout(()=>{
@@ -88,7 +88,7 @@ export default {
         if(id === this.quizAnserOb.id){
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
           setTimeout(()=>{
-            this.point++
+            this.score++
             this.isSeikai = false
             this.nextQuiz()
           },500)
@@ -116,7 +116,7 @@ export default {
           game:this.setArr[1],
           land:this.setArr[2],
           diff:this.setArr[3],
-          point:this.setArr[4],
+          score:this.setArr[4],
           date: Timestamp.fromDate(new Date()),
           uid:this.storeUid,
         });
@@ -171,7 +171,7 @@ export default {
     ばつ
   </div>
   <div class="isResult" v-show="isResult">
-    {{point + "問正解"}}
+    {{score + "問正解"}}
     <div class="my-2" @click="showResultComp()">
               <v-btn
                 color="success"
@@ -197,7 +197,7 @@ export default {
         :value="timebar"
         stream
       ></v-progress-linear>
-    <p>{{point + "問正解"}}</p>
+    <p>{{score + "問正解"}}</p>
     <div class="flag_wrap">
       <img :src="quizAnserOb.flag" alt="flag" class="flag">
       {{quizAnserOb.nameJ}}
