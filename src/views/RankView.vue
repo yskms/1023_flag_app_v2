@@ -36,6 +36,7 @@
     methods:{
       async fetchRank(){
         const datasRef = collection(db, "datas")
+        //デフォルトでは、クエリは、ドキュメント ID の昇順でクエリを満たすすべてのドキュメントを取得します。
         const que = query(datasRef, orderBy("score","desc"), limit(6))
         // const q = await getDocs(que, s =>{
         //   s.forEach(element => {

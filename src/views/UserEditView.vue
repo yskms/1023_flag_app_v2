@@ -1,7 +1,7 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, deleteUser, } from "firebase/auth"
-  import { getFirestore, doc, getDoc } from "firebase/firestore"
+  import { getFirestore, doc, getDoc, getDocs, collection, query, where, deleteDoc, } from "firebase/firestore"
 
 
   const auth = getAuth(firebaseApp)
@@ -19,7 +19,8 @@
         isDelEdit:false,//del画面
         email:'',
         password:'Password',
-        newPassword:'Password'
+        newPassword:'Password',
+        delDatasArr:[],//ランキング用のデータベースに残っている記録のIDをdelDatasArrにプッシュ
       }
     },
     mounted(){
@@ -101,7 +102,7 @@
             // Signed in
             const user = userCredential.user;
             console.log(user)
-            this.delFire()  //削除するメソッド
+            this.delFireAll()  //削除メソッド
           })
           .catch((error) => {
             const errorCode = error.code;
@@ -115,7 +116,34 @@
             }else{this.errorCodeNo = 3}
           });
       },
-      delFire(){  //delUserで使用。削除するメソッド
+      //削除メソッド------------------------------------------------
+      delFireAll(){
+        this.getFireStoreDatas()
+      },
+      async getFireStoreDatas(){  //ランキング用のデータベースに残っている記録のIDをdelDatasArrにプッシュ
+        const q = query(collection(db, "datas"), where("uid", "==", this.uid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data())
+          this.delDatasArr.push(doc.id)
+        })
+        console.log('all data')
+        this.delFireStoreDatas()  //firestoreからdatasのデータを削除
+      },
+      async delFireStoreDatas(){  //firestoreからdatasのデータを削除
+        for(let i=0;i<this.delDatasArr.length;i++){
+          await deleteDoc(doc(db, "datas", this.delDatasArr[i]));
+        }
+        console.log('datas delete done')
+        this.delFireStoreUsers()  //firestoreからusersのデータを削除
+      },
+      async delFireStoreUsers(){  //firestoreからusersのデータを削除
+        await deleteDoc(doc(db, "users", this.uid));
+        console.log('users delete done')
+        this.delFireAuth()  //auth登録を削除するメソッド
+      },
+      delFireAuth(){  //auth登録を削除するメソッド
         const user = auth.currentUser;
         deleteUser(user).then(() => {
           // User deleted.
@@ -124,7 +152,8 @@
           // An error ocurred
           console.log(error)
         });
-      }
+      },
+      //削除メソッド------------------------------------------------
     },
     computed:{
     flagLists(){
