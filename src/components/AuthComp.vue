@@ -2,15 +2,21 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,} from "firebase/auth"
+  import { getFirestore, doc, setDoc } from "firebase/firestore"
 
   const auth = getAuth(firebaseApp);
+  const db = getFirestore(firebaseApp)
   
   export default {
     
     name: 'AuthComp',
 
   data: () => ({
+    name:'ニックネーム',
     email: 'ex@gmail.com',
+    age:'',
+    iconNo:0,
+    iconURL:'',
     test:'testdata',
     show1: false,
     password: 'Password',
@@ -26,10 +32,8 @@
     toggleForm:false,//true:レジスターorログイン:false
     errorCodeNo:0,//authのエラーコードを入れる
     isSuccess:false,//login成功したらtrue
-
-    unsubscribe:null,
-    byouga:[],
-    dialog: false,
+    dialog: false,//ダイアログの表示、非表示
+    uid:'',
     }),
   methods:{
     backToHome(){
@@ -41,8 +45,10 @@
             // Signed in
             const user = userCredential.user;
             console.log(user)
+            this.uid = user.uid
             this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
-            this.isSuccess = true  //loginを表示して、消して、homeへ
+            this.isSuccess = true  //loginを表示して、消して、ダイアログ閉じる
+            this.setFireUsers()
             setTimeout(()=>{
               this.isSuccess = false
               if(this.$route.path == '/'){
@@ -66,6 +72,16 @@
             // ..
           });
           console.log('done')
+    },
+    async setFireUsers(){
+      await setDoc(doc(db, "users", this.uid), {
+        uid: this.uid,
+        name: this.name,
+        email: this.email,
+        age: this.age,
+        iconNo: this.iconNo,
+        iconURL: this.iconURL,
+      });
     },
     login(){
         signInWithEmailAndPassword(auth, this.email, this.password)
@@ -133,7 +149,7 @@
 
   <v-row justify="center">
     <v-dialog
-      
+      lazy-validation
       v-model="dialog"
       max-width="600px"
     >
@@ -198,6 +214,7 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
+                  v-model="name"
                   label="ニックネーム*"
                   required
                   :rules="[rules.required]"
@@ -230,6 +247,7 @@
                   :items="['0-7','8-17','18-29','30-54','54+', '無回答']"
                   label="Age*"
                   required
+                  v-model="age"
                   :rules="[rules.required]"
                 ></v-select>
               </v-col>
@@ -246,6 +264,7 @@
               >
                 <div class="my-2">
                   <v-btn
+                  :disabled="!dialog"
                     color="success"
                     dark
                     @click="register()"
