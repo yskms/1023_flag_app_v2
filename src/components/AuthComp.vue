@@ -2,7 +2,7 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,} from "firebase/auth"
-  import { getFirestore, doc, setDoc } from "firebase/firestore"
+  import { getFirestore, doc, setDoc, Timestamp } from "firebase/firestore"
 
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp)
@@ -73,7 +73,7 @@
           });
           console.log('done')
     },
-    async setFireUsers(){
+    async setFireUsers(){ //firestoreのusersにデータ登録する
       await setDoc(doc(db, "users", this.uid), {
         uid: this.uid,
         name: this.name,
@@ -81,6 +81,7 @@
         age: this.age,
         iconNo: this.iconNo,
         iconURL: this.iconURL,
+        date: Timestamp.fromDate(new Date()),
       });
     },
     login(){
