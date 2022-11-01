@@ -1,6 +1,6 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
-  import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, } from "firebase/auth"
+  import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, deleteUser, } from "firebase/auth"
   import { getFirestore, doc, getDoc } from "firebase/firestore"
 
 
@@ -94,6 +94,36 @@
           // An error ocurred
           console.log(error)
         });
+      },
+      delUser(){ //再度サインインさせてから、削除メソッドを走らせます
+        signInWithEmailAndPassword(auth, this.email, this.password)
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            console.log(user)
+            this.delFire()  //削除するメソッド
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode)
+            console.log(errorMessage)
+            if(errorCode === 'auth/user-not-found'){
+              this.errorCodeNo = 1
+            }else if(errorCode === 'auth/wrong-password'){
+              this.errorCodeNo = 2
+            }else{this.errorCodeNo = 3}
+          });
+      },
+      delFire(){  //delUserで使用。削除するメソッド
+        const user = auth.currentUser;
+        deleteUser(user).then(() => {
+          // User deleted.
+          console.log('del success')
+        }).catch((error) => {
+          // An error ocurred
+          console.log(error)
+        });
       }
     },
     computed:{
@@ -120,10 +150,12 @@
       <div class="user_info">
         <div class="nick">
           <p>全ての記録が削除されます！</p>
+          <p>パスワード</p>
+          <p><input type="text" v-model="password"></p>
         </div>
       </div>
       <div class="my-2">
-          <v-btn
+          <v-btn @click="delUser()"
             color="success"
             dark
           >
