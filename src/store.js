@@ -474,7 +474,12 @@ const store = new Vuex.Store({
       ],
     setArr:[],  //英語、モード、地域、難易度、追加で正解数
     uid:'', //各ページでauth確認を取ることになったので使用しない-->やっぱり使用します
-    test:5, //テスト用
+    name: '',
+    email: '',
+    age: null,
+    iconNo: null,
+    iconURL: '',
+    medal:[],
   },
   mutations:{
     setChange(state,arr){

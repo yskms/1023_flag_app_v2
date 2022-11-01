@@ -82,6 +82,8 @@
         iconNo: this.iconNo,
         iconURL: this.iconURL,
         date: Timestamp.fromDate(new Date()),
+        medal:[],
+        history:[],
       });
     },
     login(){
