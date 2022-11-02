@@ -133,6 +133,7 @@ export default {
         // this.currentUserScore.date = this.setArr[0]
         this.currentUserScore.uid = this.storeUid
         console.log(this.currentUserScore)
+        this.$store.commit('setCurrentUserScore',this.currentUserScore)
       },
     //   async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
     //     const docRef = doc(db, "users", this.uid);

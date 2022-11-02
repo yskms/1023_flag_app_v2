@@ -2,7 +2,7 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,} from "firebase/auth"
-  import { getFirestore, doc, setDoc, Timestamp } from "firebase/firestore"
+  import { getFirestore, doc, setDoc, Timestamp, addDoc, collection, } from "firebase/firestore"
 
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp)
@@ -34,6 +34,7 @@
     isSuccess:false,//login成功したらtrue
     dialog: false,//ダイアログの表示、非表示
     uid:'',
+    // currentUserObj:{},
     }),
   methods:{
     backToHome(){
@@ -51,8 +52,9 @@
             this.setFireUsers()
             setTimeout(()=>{
               this.isSuccess = false
-              if(this.$route.path == '/'){
-                this.dialog = false
+              if(this.$route.path == '/time'){
+                this.setFireRanks()
+                // this.dialog = false
               }else{
                 // this.$router.push('/')
                 this.dialog = false
@@ -85,6 +87,22 @@
         medal:[],
         history:[],
       });
+    },
+    async setFireRanks(){ //firestoreのdatasにデータ登録する
+      // Add a new document with a generated id.
+        const docRef = await addDoc(collection(db, "datas"), {
+          // name: "Tokyo",
+          // country: "Japan",
+          lang:this.currentUserScore.lang,
+          game:this.currentUserScore.game,
+          land:this.currentUserScore.land,
+          diff:this.currentUserScore.diff,
+          score:this.currentUserScore.score,
+          date: Timestamp.fromDate(new Date()),
+          uid:this.uid,
+        });
+        console.log("Document written with ID: ", docRef);
+        this.dialog = false
     },
     login(){
         signInWithEmailAndPassword(auth, this.email, this.password)
@@ -129,7 +147,14 @@
           // An error happened.
         });
       },
-    
+  },
+  computed:{
+    currentUserScore(){
+      return this.$store.state.currentUserScore
+    },
+    // storeUid(){
+    //   return this.$store.state.uid
+    // },
   }
     
   }

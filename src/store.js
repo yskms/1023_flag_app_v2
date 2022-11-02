@@ -480,6 +480,7 @@ const store = new Vuex.Store({
     iconNo: null,
     iconURL: '',
     medal:[],
+    currentUserScore:{},
   },
   mutations:{
     setChange(state,arr){
@@ -494,6 +495,12 @@ const store = new Vuex.Store({
     },
     authFalse(state){
       state.uid = ''
+    },
+    setCurrentUserScore(state,obj){
+      state.currentUserScore = obj
+    },
+    delCurrentUserScore(state){
+      state.currentUserScore = ''
     },
   },
   getters:{},
