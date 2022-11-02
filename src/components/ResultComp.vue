@@ -22,7 +22,22 @@ export default {
 
   created(){
       console.log('created')
-      this.rankArr = this.rankArr2.concat()//TimeAttackからもらった配列をコピー
+      // this.rankArr = this.rankArr2.concat()//TimeAttackからもらった配列をコピー
+
+      // onAuthStateChanged(auth, (user) => {
+      //   if (user) { //ログインしてたら
+      //     this.uid = user.uid  //this.uidにガチUIDを入れる
+      //     this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
+      //   } else {
+      //     console.log('ログインしてないよ')
+      //     this.uid = ''
+      //     this.$store.commit('authFalse')//storeのガチUIDを消す
+      //   }
+      // });
+  },
+  mounted(){
+    console.log('mounted')
+    this.rankArr = this.rankArr2.concat()//TimeAttackからもらった配列をコピー
 
       onAuthStateChanged(auth, (user) => {
         if (user) { //ログインしてたら
@@ -34,9 +49,7 @@ export default {
           this.$store.commit('authFalse')//storeのガチUIDを消す
         }
       });
-  },
-  mounted(){
-    console.log('mounted')
+
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
     this.isConfig = true
     }else{
@@ -79,7 +92,7 @@ export default {
   },
   methods:{
       // async fetchRank(){
-      //   const datasRef = collection(db, "datas")
+      //   const datasRef = collection(db, "ranks")
       //   const que = query(datasRef, orderBy("score","desc"), limit(3))//score降順で3つデータ取る
       //   const querySnapshot = await getDocs(que);
       //   querySnapshot.forEach((doc) => {

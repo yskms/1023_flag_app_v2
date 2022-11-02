@@ -90,7 +90,7 @@
     },
     async setFireRanks(){ //firestoreのdatasにデータ登録する
       // Add a new document with a generated id.
-        const docRef = await addDoc(collection(db, "datas"), {
+        const docRef = await addDoc(collection(db, "ranks"), {
           // name: "Tokyo",
           // country: "Japan",
           lang:this.currentUserScore.lang,

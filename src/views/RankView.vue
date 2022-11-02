@@ -24,7 +24,7 @@
           this.uid = user.uid  //this.uidにガチUIDを入れる
           this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
 
-          this.fetchData2()//usersのデータを取得
+          this.fetchUsersAll()//全てのusersデータ取得
           this.fetchRank()//datasのデータを取得
         } else {
           console.log('ログインしてないよ')
@@ -37,7 +37,7 @@
     },
     methods:{
       async fetchRank(){
-        const datasRef = collection(db, "datas")
+        const datasRef = collection(db, "ranks")
         //デフォルトでは、クエリは、ドキュメント ID の昇順でクエリを満たすすべてのドキュメントを取得します。
         const que = query(datasRef, orderBy("score","desc"), limit(6))
         // const q = await getDocs(que, s =>{
@@ -57,7 +57,7 @@
         this.combineData()
       },
       //使わなくなったこれ----------------------------------------
-      async fetchData(){  //mountedで使う。ログインしてたらuidで自分のusersデータ取得
+      async fetchUsers(){  //mountedで使う。ログインしてたらuidで自分のusersデータ取得
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 
@@ -69,8 +69,8 @@
         }
       },
       //----------------------------------------
-      
-      async fetchData2(){  //mountedで使う。ログインしてたら全てのusersデータ取得
+
+      async fetchUsersAll(){  //mountedで使う。ログインしてたら全てのusersデータ取得
         const querySnapshot = await getDocs(collection(db, "users"));
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots

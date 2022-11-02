@@ -35,20 +35,31 @@ export default {
   },
   created(){
       console.log('created')
-      onAuthStateChanged(auth, (user) => {
+      // onAuthStateChanged(auth, (user) => {
+      //   if (user) { //ログインしてたら
+      //     this.uid = user.uid  //this.uidにガチUIDを入れる
+      //     this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
+      //     this.fetchUsers() //自分のデータをusersからゲット
+      //   } else {
+      //     console.log('ログインしてないよ')
+      //     this.uid = ''
+      //     this.$store.commit('authFalse')//storeのガチUIDを消す
+      //   }
+      // });
+  },
+  mounted(){    //authの確認はこのページでは行わない->やっぱり行う！
+    console.log('mounted')
+    onAuthStateChanged(auth, (user) => {
         if (user) { //ログインしてたら
           this.uid = user.uid  //this.uidにガチUIDを入れる
           this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
-          this.fetchData() //自分のデータをusersからゲット
+          this.fetchUsers() //自分のデータをusersからゲット
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
           this.$store.commit('authFalse')//storeのガチUIDを消す
         }
       });
-  },
-  mounted(){    //authの確認はこのページでは行わない->やっぱり行う！
-    console.log('mounted')
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
       this.isConfig = true
     }else{
@@ -127,12 +138,16 @@ export default {
     backToHome(){
       this.$router.push('/')
     },
-    showResultComp(){
-      this.isResultComp = true  //ゲーム終了後、ResultCompを表示する
+    showResultComp(){//ゲーム終了後、ResultCompを表示する
+      if(this.uid==''){           //未ログインなら
+        this.isResultComp = true  //ResultCompを表示する
+      }else{
+        this.setFirestore() //ログイン時にはOKボタンでランキング登録させる
+      }
     },
     async setFirestore(){//ログイン時にはOKボタンでランキング登録させる
       // Add a new document with a generated id.
-        const docRef = await addDoc(collection(db, "datas"), {
+        const docRef = await addDoc(collection(db, "ranks"), {
           // name: "Tokyo",
           // country: "Japan",
           lang:this.setArr[0],
@@ -144,9 +159,10 @@ export default {
           uid:this.storeUid,
         });
         console.log("Document written with ID: ", docRef);
+        this.isResultComp = true 
     },
     async fetchRank(){  //score降順で3つデータ取る
-        const datasRef = collection(db, "datas")
+        const datasRef = collection(db, "ranks")
         //デフォルトでは、クエリは、ドキュメント ID の昇順でクエリを満たすすべてのドキュメントを取得します。
         const que = query(datasRef, orderBy("score","desc"), limit(3))
         // const q = await getDocs(que, s =>{
@@ -163,9 +179,9 @@ export default {
         });
         console.log(que)
         console.log(this.rankArr)
-        this.fetchData2()
+        this.fetchUsersAll()
     },
-    async fetchData(){  //mountedで使う。ログインしてたらuidで自分のusersデータ取得
+    async fetchUsers(){  //mountedで使う。ログインしてたらuidで自分のusersデータ取得
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 
@@ -177,7 +193,7 @@ export default {
           console.log("No such document!");
         }
     },
-    async fetchData2(){  //全てのusersデータ取得
+    async fetchUsersAll(){  //全てのusersデータ取得
         const querySnapshot = await getDocs(collection(db, "users"));
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -252,14 +268,6 @@ export default {
                 dark
               >
                 OK
-              </v-btn>
-            </div>
-    <div class="my-2" @click="setFirestore()">
-              <v-btn
-                color="success"
-                dark
-              >
-                set
               </v-btn>
             </div>
   </div>

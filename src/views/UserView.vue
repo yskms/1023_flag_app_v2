@@ -25,7 +25,7 @@
           this.uid = user.uid  //this.uidにガチUIDを入れる
           this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
 
-          this.fetchData()    //usersのデータを取得
+          this.fetchUsers()    //usersのデータを取得
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
@@ -35,7 +35,7 @@
       });
     },
     methods:{
-      async fetchData(){  //mountedで使う。ログインしてたらuidでusersデータ取得
+      async fetchUsers(){  //mountedで使う。ログインしてたらuidでusersデータ取得
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 

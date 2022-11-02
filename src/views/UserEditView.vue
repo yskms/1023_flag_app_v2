@@ -30,7 +30,7 @@
           this.uid = user.uid  //this.uidにガチUIDを入れる
           this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
 
-          this.fetchData()    //usersのデータを取得
+          this.fetchUsers()    //usersのデータを取得
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
@@ -40,7 +40,7 @@
       });
     },
     methods:{
-      async fetchData(){  //mountedで使う。ログインしてたらuidでusersデータ取得
+      async fetchUsers(){  //mountedで使う。ログインしてたらuidでusersデータ取得
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 
@@ -121,7 +121,7 @@
         this.getFireStoreDatas()
       },
       async getFireStoreDatas(){  //ランキング用のデータベースに残っている記録のIDをdelDatasArrにプッシュ
-        const q = query(collection(db, "datas"), where("uid", "==", this.uid));
+        const q = query(collection(db, "ranks"), where("uid", "==", this.uid));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
@@ -133,7 +133,7 @@
       },
       async delFireStoreDatas(){  //firestoreからdatasのデータを削除
         for(let i=0;i<this.delDatasArr.length;i++){
-          await deleteDoc(doc(db, "datas", this.delDatasArr[i]));
+          await deleteDoc(doc(db, "ranks", this.delDatasArr[i]));
         }
         console.log('datas delete done')
         this.delFireStoreUsers()  //firestoreからusersのデータを削除
