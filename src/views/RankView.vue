@@ -11,7 +11,9 @@
       return{
         uid:'uid',  //ログインならガチUID,してないならブランクにする
         // isConfig:false,//setArrの中身があるかないかを管理
-        rankArr:[],
+        rankArr:[],   //score降順で6個データ入れる
+        rankArrUid:[],//上記のuidのみのもの。combineDataメソッドで使用する
+        userArr:[],   //usersから全てのユーザーデータを入れる
       }
     },
     mounted(){
@@ -22,7 +24,7 @@
           this.uid = user.uid  //this.uidにガチUIDを入れる
           this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
 
-          this.fetchData()//usersのデータを取得
+          this.fetchData2()//usersのデータを取得
           this.fetchRank()//datasのデータを取得
         } else {
           console.log('ログインしてないよ')
@@ -48,11 +50,14 @@
           // doc.data() is never undefined for query doc snapshots
           console.log(doc.id, " => ", doc.data());
           this.rankArr.push(doc.data())
+          this.rankArrUid.push(doc.data().uid)
         });
         console.log(que)
         console.log(this.rankArr)
+        this.combineData()
       },
-      async fetchData(){  //mountedで使う。ログインしてたらuidでusersデータ取得
+      //使わなくなったこれ----------------------------------------
+      async fetchData(){  //mountedで使う。ログインしてたらuidで自分のusersデータ取得
         const docRef = doc(db, "users", this.uid);
         const docSnap = await getDoc(docRef);
 
@@ -62,6 +67,26 @@
           // doc.data() will be undefined in this case
           console.log("No such document!");
         }
+      },
+      //----------------------------------------
+      
+      async fetchData2(){  //mountedで使う。ログインしてたら全てのusersデータ取得
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          this.userArr.push(doc.data())
+          console.log(this.userArr)
+        });
+      },
+      combineData(){  //rankArrにユーザー情報を合体させる
+        for(let i =0;i<this.rankArrUid.length;i++){
+          console.log(this.rankArrUid[i])
+          const userObj = this.userArr.find((e) => e.uid == this.rankArrUid[i])
+          console.log(userObj)
+          Object.assign(this.rankArr[i], userObj)
+        }
+        console.log(this.rankArr)
       },
       logout(){
         signOut(auth).then(() => {
