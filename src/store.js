@@ -472,7 +472,8 @@ const store = new Vuex.Store({
       
       { "capital": "Harare", "code": "zw", "continent": "Africa", "flag_1x1": "flags/1x1/zw.svg", "flag": "../flags/4x3/zw.svg", "iso": true, "name": "Zimbabwe", "nameJ": "ジンバブエ共和国", "nameH": "じんばぶえ共和国", "id": 233, "nameL": "zimbabwe", "nameR": "zinbabue共和国", "nameR2": "jinbabue共和国" },
       ],
-    setArr:[],  //英語、モード、地域、難易度、追加で正解数
+    setArr:[],  //英語、モード、地域、難易度、追加で正解数-->正解数は別にします！！！
+    score:0,
     uid:'', //各ページでauth確認を取ることになったので使用しない-->やっぱり使用します
     name: '',
     email: '',
@@ -483,11 +484,14 @@ const store = new Vuex.Store({
     currentUserScore:{},
   },
   mutations:{
-    setChange(state,arr){
+    setSetArr(state,arr){//英語、モード、地域、難易度を登録します
       state.setArr = arr.concat()
     },
-    setPush(state,n){
-      state.setArr.push(n)
+    delSetArr(state){//英語、モード、地域、難易度をリセットします
+      state.setArr = []
+    },
+    setScore(state,n){
+      state.score = n
     },
     // 各ページでauth確認を取ることになったので使用しない-->やっぱり使用します
     authTrue(state,uid){

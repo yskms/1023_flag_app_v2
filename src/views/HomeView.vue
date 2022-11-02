@@ -81,7 +81,7 @@
         this.setArr[3] = n
         // this.selectD = !this.selectD
         // console.log(this.setArr)
-        this.$store.commit('setChange',this.setArr)
+        this.$store.commit('setSetArr',this.setArr)
         this.$router.push('time')
       },
       langJ(){  //言語選択0が日本語、1が英語

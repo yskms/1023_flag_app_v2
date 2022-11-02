@@ -10,7 +10,7 @@
 
 export default {
   components:{AuthComp},
-  props:['rankArr2', 'currentUserObj'],
+  props:['rankArr2', 'currentUserObj', 'score'],
   data: () => ({
     isConfig:false,//setArrの中身があるかないかを管理
     dialog: false,//多分なくていいし、別で使いたい
@@ -128,7 +128,7 @@ export default {
       // },
       refreshRank(){//rankArrに自分の成績を追加する
         for(let i=0;i<3;i++){
-          if(this.rankArr[i].score < this.setArr[4] || this.rankArr[i].score == this.setArr[4]){
+          if(this.rankArr[i].score < this.score || this.rankArr[i].score == this.score){
           console.log(i)
           this.rankArr.splice(i,0,this.currentUserScore)
           this.rankIn=i
@@ -142,7 +142,7 @@ export default {
         this.currentUserScore.game = this.setArr[1]
         this.currentUserScore.land = this.setArr[2]
         this.currentUserScore.diff = this.setArr[3]
-        this.currentUserScore.score = this.setArr[4]
+        this.currentUserScore.score = this.score
         // this.currentUserScore.date = this.setArr[0]
         this.currentUserScore.uid = this.storeUid
         console.log(this.currentUserScore)
@@ -160,11 +160,11 @@ export default {
     //     }
     // },
     backToHome(){
-      
+      this.$store.commit('delSetArr')
       this.$router.push('/')
     },
     goToRank(){
-
+      this.$store.commit('delSetArr')
       this.$router.push('rank')
     },
   },
@@ -189,7 +189,7 @@ export default {
     <div class="main">
       <div class="upwrap">
         <p>新記録ーとか</p>
-        <div>{{setArr[4] + '問'}}</div>
+        <div>{{score + '問'}}</div>
       </div><!-- upwrap -->
 
       <div class="rank_msg">

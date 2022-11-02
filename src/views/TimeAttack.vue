@@ -78,7 +78,7 @@ export default {
     timebar:function(){
       if(this.timebar < 0){
         this.isResult = true  //ゲーム終了後、何問正解と表示する
-        this.$store.commit('setPush',this.score)
+        this.$store.commit('setScore',this.score)
         clearInterval(this.timerId)
         
         // setTimeout(()=>{
@@ -154,7 +154,7 @@ export default {
           game:this.setArr[1],
           land:this.setArr[2],
           diff:this.setArr[3],
-          score:this.setArr[4],
+          score:this.score,
           date: Timestamp.fromDate(new Date()),
           uid:this.storeUid,
         });
@@ -248,7 +248,7 @@ export default {
   </div>
 
   <div class="result_comp" v-if="isResultComp">
-    <ResultComp :rankArr2="rankArr" :currentUserObj="currentUserObj" />
+    <ResultComp :rankArr2="rankArr" :currentUserObj="currentUserObj" :score="score"/>
   </div>
 
   <div class="getready" v-show="getready>0">
