@@ -1,8 +1,10 @@
 <script>
 import ResultComp from '../components/ResultComp.vue'
 import firebaseApp from "../plugins/firebaseConfig"
-import { getFirestore, addDoc, collection, Timestamp, } from "firebase/firestore"
+import { getAuth, onAuthStateChanged} from "firebase/auth"
+import { getFirestore, addDoc, collection, Timestamp, query, doc, getDoc, getDocs, limit, orderBy, } from "firebase/firestore"
 
+const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp)
 
 export default {
@@ -23,21 +25,42 @@ export default {
       isResult:false,//ゲーム終了後、何問正解と表示するための管理用
 
       isResultComp:false,//ゲーム終了後、ResultCompを表示するための管理用
+
+      rankArr:[],//score降順で3つデータ取ったやつ
+      rankArrUid:[],//上記のuidのみのもの。combineDataメソッドで使用する
+      userArr:[],//mountedで使う。ログインしてたら全てのusersデータ取得
+      currentUserObj:{},
+      uid:'uid',  //ログインならガチUID,してないならブランクにする
     }
   },
-  mounted(){    //authの確認はこのページでは行わない
+  created(){
+      console.log('created')
+      onAuthStateChanged(auth, (user) => {
+        if (user) { //ログインしてたら
+          this.uid = user.uid  //this.uidにガチUIDを入れる
+          this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
+        } else {
+          console.log('ログインしてないよ')
+          this.uid = ''
+          this.$store.commit('authFalse')//storeのガチUIDを消す
+        }
+      });
+  },
+  mounted(){    //authの確認はこのページでは行わない->やっぱり行う！
     console.log('mounted')
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
       this.isConfig = true
     }else{
-    const timerId2 = setInterval(()=>{  //カウントダウンして、ゲームスタート
-        this.getready--
-        }, 1000)
-      setTimeout(()=>{
-        clearInterval(timerId2)
-        this.gameStart()
-        this.nextQuiz()
-      },3000)
+      const timerId2 = setInterval(()=>{  //カウントダウンして、ゲームスタート
+          this.getready--
+          }, 1000)
+        setTimeout(()=>{
+          clearInterval(timerId2)
+          this.gameStart()
+          this.nextQuiz()
+        },3000)
+      this.fetchData() //自分のデータをusersからゲット
+      this.fetchRank() //score降順で3つデータ取る
     }
   },
   watch:{
@@ -107,7 +130,7 @@ export default {
     showResultComp(){
       this.isResultComp = true  //ゲーム終了後、ResultCompを表示する
     },
-    async showResultComp2(){
+    async setFirestore(){//ログイン時にはOKボタンでランキング登録させる
       // Add a new document with a generated id.
         const docRef = await addDoc(collection(db, "datas"), {
           // name: "Tokyo",
@@ -121,6 +144,57 @@ export default {
           uid:this.storeUid,
         });
         console.log("Document written with ID: ", docRef);
+    },
+    async fetchRank(){  //score降順で3つデータ取る
+        const datasRef = collection(db, "datas")
+        //デフォルトでは、クエリは、ドキュメント ID の昇順でクエリを満たすすべてのドキュメントを取得します。
+        const que = query(datasRef, orderBy("score","desc"), limit(3))
+        // const q = await getDocs(que, s =>{
+        //   s.forEach(element => {
+        //     this.rankArr.push(element.docs.data())
+        //   });
+        // });
+        const querySnapshot = await getDocs(que);
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          this.rankArr.push(doc.data())
+          this.rankArrUid.push(doc.data().uid)
+        });
+        console.log(que)
+        console.log(this.rankArr)
+        this.fetchData2()
+    },
+    async fetchData(){  //mountedで使う。ログインしてたらuidで自分のusersデータ取得
+        const docRef = doc(db, "users", this.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          this.currentUserObj = docSnap.data()
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+    },
+    async fetchData2(){  //全てのusersデータ取得
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          this.userArr.push(doc.data())
+          console.log(this.userArr)
+        });
+        this.combineData()
+    },
+    combineData(){  //rankArrにユーザー情報を合体させる
+      for(let i =0;i<this.rankArrUid.length;i++){
+        console.log(this.rankArrUid[i])
+        const userObj = this.userArr.find((e) => e.uid == this.rankArrUid[i])
+        console.log(userObj)
+        Object.assign(this.rankArr[i], userObj)
+      }
+      console.log(this.rankArr)
     },
   },
   computed:{
@@ -180,7 +254,7 @@ export default {
                 OK
               </v-btn>
             </div>
-    <div class="my-2" @click="showResultComp2()">
+    <div class="my-2" @click="setFirestore()">
               <v-btn
                 color="success"
                 dark
