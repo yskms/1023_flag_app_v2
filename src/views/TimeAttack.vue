@@ -105,6 +105,15 @@ export default {
       // },10100)
     },
 
+//[0 all, 1 asia, 2 europe, 3 africa, 4 north america, 5 south america, 6 oceania, ]
+    createArr(){
+      this.flagLists.forEach(e => {
+        if(e.continent == 'Europe'){
+          this.copyArr.push(e)
+        }
+      })
+    },
+
     nextQuiz(){
       this.quizArr = []
       this.copyArr = this.flagLists.concat()
