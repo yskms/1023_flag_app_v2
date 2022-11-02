@@ -3,23 +3,27 @@
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, onAuthStateChanged} from "firebase/auth"
 // createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut 
-  import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs, } from "firebase/firestore"
+  // import { getFirestore,  } from "firebase/firestore"
 // addDoc, Timestamp, serverTimestamp, onSnapshot,
   const auth = getAuth(firebaseApp);
-  const db = getFirestore(firebaseApp);
+  // const db = getFirestore(firebaseApp);
 
 export default {
   components:{AuthComp},
+  props:['rankArr2', 'currentUserObj'],
   data: () => ({
     isConfig:false,//setArrの中身があるかないかを管理
     dialog: false,//多分なくていいし、別で使いたい
     rankArr:[],//score降順で3つデータ取ったやつ、に今回の結果追加した配列
-    rankIn:'',//1,2,3位なら数字が入ります
+    rankIn:-1,//1,2,3位なら数字が入ります
     uid:'uid',  //ログインならガチUID,してないならブランクにする
+    currentUserScore:{},
   }),
 
   created(){
       console.log('created')
+      this.rankArr = this.rankArr2.concat()//TimeAttackからもらった配列をコピー
+
       onAuthStateChanged(auth, (user) => {
         if (user) { //ログインしてたら
           this.uid = user.uid  //this.uidにガチUIDを入れる
@@ -36,8 +40,10 @@ export default {
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
     this.isConfig = true
     }else{
-      this.fetchData()//usersのデータを取得
-      this.fetchRank()//datasのデータを取得
+      // this.fetchData()//usersのデータを取得
+      // this.fetchRank()//datasのデータを取得
+      this.setCurrentUserScore()//自分の成績とユーザー情報をくっつける
+      this.refreshRank()//rankArrに自分の成績を追加する
     }
   },
   computed:{
@@ -50,6 +56,9 @@ export default {
     storeUid(){
       return this.$store.state.uid
     },
+    rankInPlus(){
+      return this.rankIn+1
+    }
   },
   watch:{
     storeUid:function(){
@@ -69,51 +78,73 @@ export default {
     }
   },
   methods:{
-      async fetchRank(){
-        const datasRef = collection(db, "datas")
-        const que = query(datasRef, orderBy("score","desc"), limit(3))//score降順で3つデータ取る
-        const querySnapshot = await getDocs(que);
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
-          this.rankArr.push(doc.data())
-        });
-        console.log(que)
-        console.log(this.rankArr)//score降順で3つデータ取ったやつ
+      // async fetchRank(){
+      //   const datasRef = collection(db, "datas")
+      //   const que = query(datasRef, orderBy("score","desc"), limit(3))//score降順で3つデータ取る
+      //   const querySnapshot = await getDocs(que);
+      //   querySnapshot.forEach((doc) => {
+      //     // doc.data() is never undefined for query doc snapshots
+      //     console.log(doc.id, " => ", doc.data());
+      //     this.rankArr.push(doc.data())
+      //   });
+      //   console.log(que)
+      //   console.log(this.rankArr)//score降順で3つデータ取ったやつ
 
-        console.log(this.setArr[4])
-        console.log(this.rankArr[0])
-        console.log(this.rankArr[0].score)
-        // if(this.rankArr[0].score < this.setArr[4] || this.rankArr[0].score == this.setArr[4]){
-        //   console.log('0位')
-        //   this.rankArr.splice(0,0,{score:this.setArr[4]})
-        // }else if(this.rankArr[1].score < this.setArr[4] || this.rankArr[1].score == this.setArr[4]){
-        //   console.log('1位')
-        //   this.rankArr.splice(1,0,{score:this.setArr[4]})
-        // }else if(this.rankArr[2].score < this.setArr[4] || this.rankArr[2].score == this.setArr[4]){
-        //   console.log('2位')
-        //   this.rankArr.splice(2,0,{score:this.setArr[4]})
-        // }
+      //   console.log(this.setArr[4])
+      //   console.log(this.rankArr[0])
+      //   console.log(this.rankArr[0].score)
+      //   // if(this.rankArr[0].score < this.setArr[4] || this.rankArr[0].score == this.setArr[4]){
+      //   //   console.log('0位')
+      //   //   this.rankArr.splice(0,0,{score:this.setArr[4]})
+      //   // }else if(this.rankArr[1].score < this.setArr[4] || this.rankArr[1].score == this.setArr[4]){
+      //   //   console.log('1位')
+      //   //   this.rankArr.splice(1,0,{score:this.setArr[4]})
+      //   // }else if(this.rankArr[2].score < this.setArr[4] || this.rankArr[2].score == this.setArr[4]){
+      //   //   console.log('2位')
+      //   //   this.rankArr.splice(2,0,{score:this.setArr[4]})
+      //   // }
+        
+      //   // for(let i=0;i<3;i++){
+      //   //   if(this.rankArr[i].score < this.setArr[4] || this.rankArr[i].score == this.setArr[4]){
+      //   //   console.log(i)
+      //   //   this.rankArr.splice(i,0,{score:this.setArr[4]})
+      //   //   this.rankIn=i+1
+      //   //   break
+      //   // }}
+
+      // },
+      refreshRank(){//rankArrに自分の成績を追加する
         for(let i=0;i<3;i++){
           if(this.rankArr[i].score < this.setArr[4] || this.rankArr[i].score == this.setArr[4]){
           console.log(i)
-          this.rankArr.splice(i,0,{score:this.setArr[4]})
-          this.rankIn=i+1
+          this.rankArr.splice(i,0,this.currentUserScore)
+          this.rankIn=i
           break
         }}
-
+        console.log(this.rankArr)
       },
-    async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
-        const docRef = doc(db, "users", this.uid);
-        const docSnap = await getDoc(docRef);
+      setCurrentUserScore(){//自分の成績とユーザー情報をくっつける
+        this.currentUserScore = this.currentUserObj
+        this.currentUserScore.lang = this.setArr[0]
+        this.currentUserScore.game = this.setArr[1]
+        this.currentUserScore.land = this.setArr[2]
+        this.currentUserScore.diff = this.setArr[3]
+        this.currentUserScore.score = this.setArr[4]
+        // this.currentUserScore.date = this.setArr[0]
+        this.currentUserScore.uid = this.storeUid
+        console.log(this.currentUserScore)
+      },
+    //   async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
+    //     const docRef = doc(db, "users", this.uid);
+    //     const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-          console.log("Document data:", docSnap.data());
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-    },
+    //     if (docSnap.exists()) {
+    //       console.log("Document data:", docSnap.data());
+    //     } else {
+    //       // doc.data() will be undefined in this case
+    //       console.log("No such document!");
+    //     }
+    // },
     backToHome(){
       
       this.$router.push('/')
@@ -148,13 +179,13 @@ export default {
       </div><!-- upwrap -->
 
       <div class="rank_msg">
-        <div v-show="rankIn"><!-- ３位以内の場合 -->
+        <div v-show="rankIn > -1"><!-- ３位以内の場合 -->
           <!-- 画面が描画された瞬間は、何も表示しない -->
           <p v-if="this.uid=='uid'"></p>
           <!-- ログインしていないなら、 -->
-          <p v-else-if="this.uid==''">{{rankIn}} 位です！ログインして記録を残そう！</p>
+          <p v-else-if="this.uid==''">{{rankInPlus}} 位です！ログインして記録を残そう！</p>
           <!-- ログインしているなら、 -->
-          <p v-else>{{rankIn}} 位です！！</p>
+          <p v-else>{{rankInPlus}} 位です！！</p>
         </div>
       </div><!-- rank_msg -->
 
@@ -170,7 +201,7 @@ export default {
               color="primary"
             >
               <v-list-item
-                v-for="(r,index) in rankArr" :key="index"
+                v-for="(r,index) in rankArr" :key="index" :class="{red:(index==rankIn)}"
               >
                 <v-list-item-icon>
                   <v-icon v-text="r.test"></v-icon>

@@ -39,6 +39,7 @@ export default {
         if (user) { //ログインしてたら
           this.uid = user.uid  //this.uidにガチUIDを入れる
           this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
+          this.fetchData() //自分のデータをusersからゲット
         } else {
           console.log('ログインしてないよ')
           this.uid = ''
@@ -59,7 +60,6 @@ export default {
           this.gameStart()
           this.nextQuiz()
         },3000)
-      this.fetchData() //自分のデータをusersからゲット
       this.fetchRank() //score降順で3つデータ取る
     }
   },
@@ -232,7 +232,7 @@ export default {
   </div>
 
   <div class="result_comp" v-if="isResultComp">
-    <ResultComp/>
+    <ResultComp :rankArr2="rankArr" :currentUserObj="currentUserObj" />
   </div>
 
   <div class="getready" v-show="getready>0">
