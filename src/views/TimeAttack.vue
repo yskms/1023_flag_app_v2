@@ -31,6 +31,9 @@ export default {
       userArr:[],//mountedで使う。ログインしてたら全てのusersデータ取得
       currentUserObj:{},
       uid:'uid',  //ログインならガチUID,してないならブランクにする
+
+      continentArr:['All','Asia','Europe','Africa','North America','South America','Oceania',],
+      limitedFlagListArr:[],//地域で絞ったflagLists
     }
   },
   created(){
@@ -63,6 +66,7 @@ export default {
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
       this.isConfig = true
     }else{
+      this.arrCreate()
       const timerId2 = setInterval(()=>{  //カウントダウンして、ゲームスタート
           this.getready--
           }, 1000)
@@ -106,17 +110,26 @@ export default {
     },
 
 //[0 all, 1 asia, 2 europe, 3 africa, 4 north america, 5 south america, 6 oceania, ]
-    createArr(){
-      this.flagLists.forEach(e => {
-        if(e.continent == 'Europe'){
-          this.copyArr.push(e)
+    arrCreate(){  //地域で絞ったflagListsを作るメソッド
+      if(this.setArr[2]==0){
+        this.limitedFlagListArr = this.flagLists.concat()
+      }else{
+        for(let i = 1;i<this.continentArr.length;i++){
+          if(this.setArr[2] == i){
+            this.flagLists.forEach(e => {
+              if(e.continent == this.continentArr[i]){
+                this.limitedFlagListArr.push(e)
+              }
+            })
+          }
         }
-      })
+      }
+      console.log(this.copyArr)
     },
 
     nextQuiz(){
       this.quizArr = []
-      this.copyArr = this.flagLists.concat()
+      this.copyArr = this.limitedFlagListArr.concat()
       //copyArrからquizArrに４つオブジェクトを抜き取ってる。
       for(let i=0, len=this.copyArr.length ; i<4; i++,len--){
         const rand = Math.floor(Math.random()*len)

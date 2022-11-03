@@ -23,6 +23,9 @@
         uid:'uid',  //ログインならガチUID,してないならブランクにする
         userName:'',
         isUserName:false,
+
+              continentArr:['All','Asia','Europe','Africa','North America','South America','Oceania',],
+
       }
     },
     mounted(){
@@ -226,7 +229,20 @@
                 </v-btn>
               </div>
           
+          <!-- [0 all, 1 asia, 2 europe, 3 africa, 4 north america, 5 south america, 6 oceania, ] -->
           <div class="select_wrap">
+            <div class="select_vfor" v-for="(c,index) in continentArr" :key="index">
+              <div class="my-2" @click="select_land(index)">
+              <v-btn
+                color="success"
+                dark
+              >
+                <!-- {{lang==0 ? "全ての地域" : "All Continent"}} -->
+                {{c}}
+              </v-btn>
+            </div>
+            </div>
+
           <div class="my-2" @click="select_land(0)">
               <v-btn
                 color="success"
@@ -243,7 +259,7 @@
                 {{lang==0 ? "アジア" : "Asia"}}
               </v-btn>
             </div>
-            <div class="my-2">
+            <div class="my-2" @click="select_land(2)">
               <v-btn
                 color="success"
                 dark
