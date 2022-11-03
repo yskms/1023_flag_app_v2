@@ -24,7 +24,8 @@
         userName:'',
         isUserName:false,
 
-              continentArr:['All','Asia','Europe','Africa','North America','South America','Oceania',],
+        continentArr:[
+          ['全世界','All'],['アジア','Asia'],['ヨーロッパ','Europe'],['アフリカ','Africa'],['北アメリカ','North America'],['南アメリカ','South America'],['オセアニア','Oceania'],],
 
       }
     },
@@ -238,7 +239,7 @@
                 dark
               >
                 <!-- {{lang==0 ? "全ての地域" : "All Continent"}} -->
-                {{c}}
+                {{lang==0 ? c[0] : c[1] }}
               </v-btn>
             </div>
             </div>

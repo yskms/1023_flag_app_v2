@@ -129,7 +129,7 @@ export default {
 
     nextQuiz(){
       this.quizArr = []
-      this.copyArr = this.limitedFlagListArr.concat()
+      this.copyArr = this.limitedFlagListArr.concat()//毎回copyArr新品にする
       //copyArrからquizArrに４つオブジェクトを抜き取ってる。
       for(let i=0, len=this.copyArr.length ; i<4; i++,len--){
         const rand = Math.floor(Math.random()*len)
