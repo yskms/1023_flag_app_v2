@@ -34,6 +34,13 @@ export default {
 
       continentArr:['All','Asia','Europe','Africa','North America','South America','Oceania',],
       limitedFlagListArr:[],//地域で絞ったflagLists
+
+      selectArr:[],//選択肢の配列。いらんかも？
+      falseSelectArr:[],//正解の地域以外の地域の配列
+      selectFlagListNoArr:[],//[正解、間違い、間違い]の地域Noの入った配列
+      continentNoArr:[0,1,2,3,4,5,6,],//selectFlagListNoArr作成用
+      diffNoArr:[0,1,2,3,],
+      diffListArr:[],
     }
   },
   created(){
@@ -66,14 +73,14 @@ export default {
     if(this.lang === undefined){  //setArrが未設定ならホームへ戻らせます
       this.isConfig = true
     }else{
-      this.arrCreate()
+      this.correctArrCreate()
       const timerId2 = setInterval(()=>{  //カウントダウンして、ゲームスタート
           this.getready--
           }, 1000)
         setTimeout(()=>{
           clearInterval(timerId2)
           this.gameStart()
-          this.nextQuiz()
+          this.nextQuiz2()
         },3000)
       this.fetchRank() //score降順で3つデータ取る
     }
@@ -110,21 +117,105 @@ export default {
     },
 
 //[0 all, 1 asia, 2 europe, 3 africa, 4 north america, 5 south america, 6 oceania, ]
-    arrCreate(){  //地域で絞ったflagListsを作るメソッド
+    correctArrCreate(){  //地域で絞ったflagListsを作るメソッド
       if(this.setArr[2]==0){
         this.limitedFlagListArr = this.flagLists.concat()
       }else{
-        for(let i = 1;i<this.continentArr.length;i++){
+        for(let i = 1; i<this.continentArr.length; i++){
           if(this.setArr[2] == i){
             this.flagLists.forEach(e => {
               if(e.continent == this.continentArr[i]){
                 this.limitedFlagListArr.push(e)
               }
-            })
+            })//ここまで
+
+            //ここからは不正解用に別地域のリストを作成
+            this.selectFlagListNoArr.push(this.continentNoArr.splice(i,1)[0])//正解を抜いてプッシュ
+            for(let j=0,len=5; j<2; j++,len--){
+              const rand = Math.floor(Math.random()*len) +1 //1-5の乱数
+              this.selectFlagListNoArr.push(this.continentNoArr.splice(rand,1)[0])//さらに2つ抜いてプッシュ
+            }
+            console.log(this.selectFlagListNoArr)//[正解、間違い、間違い]の配列が完成
+            console.log(this.continentNoArr)//抜き取られた後のいらない配列
           }
         }
       }
       console.log(this.copyArr)
+      this.selectArrCreate()
+    },
+    selectArrCreate(){
+      console.log(this.setArr)
+      //[0 激ムズ, 1 難しい, 2 普通, 3 やさしい, ]
+      if(this.setArr[3] == 0){
+        console.log('0:何もしない。')
+      }else if(this.setArr[3] == 1){
+        for(let i=1;i<3;i++){
+          this.flagLists.forEach(e => {
+            if(e.continent == this.continentArr[ this.selectFlagListNoArr[i] ]){
+              this.falseSelectArr.push(e)
+            }
+          })
+        }
+        console.log(`1難しい:`)
+        console.log(this.falseSelectArr)
+      }else if(this.setArr[3] == 2){
+        this.flagLists.forEach(e => {
+          if(e.continent == this.continentArr[ this.selectFlagListNoArr[1] ]){
+            this.falseSelectArr.push(e)
+          }
+        })
+        console.log(`2普通:`)
+        console.log(this.falseSelectArr)
+      }else if(this.setArr[3] == 3){
+        console.log('4:何もしない。')
+      }
+    },
+
+    nextQuiz2(){
+      this.quizArr = []//ここに２問〜４問を入れる
+      this.copyArr = this.limitedFlagListArr.concat()//毎回copyArr新品にする
+
+      //copyArrからquizArrに1つオブジェクトを抜き取って入れる、かつ正解としてquizAnserObに代入
+        const rand = Math.floor(Math.random()*this.copyArr.length)
+        this.quizArr.push(this.copyArr.splice(rand,1)[0])
+        this.quizAnserOb = this.quizArr[0]
+      //１つ抜き取られたcopyArrとfalseSelectArrを合体させたい
+        Object.assign(this.copyArr, this.falseSelectArr)
+        console.log(this.copyArr)
+      
+
+        if(this.setArr[3] == 1){//難しい：なら
+          for(let i=0, len=this.copyArr.length ; i<3; i++,len--){//合体後のcopyArrから3つ抜き取る
+            const rand = Math.floor(Math.random()*len)
+            this.quizArr.push(this.copyArr.splice(rand,1)[0])
+          }
+        }else if(this.setArr[3] == 2){//普通：なら
+          for(let i=0, len=this.copyArr.length ; i<2; i++,len--){//合体後のcopyArrから2つ抜き取る
+            const rand = Math.floor(Math.random()*len)
+            this.quizArr.push(this.copyArr.splice(rand,1)[0])
+          }
+        }else if(this.setArr[3] == 3){//やさしい：なら
+          for(let i=0, len=this.copyArr.length ; i<1; i++,len--){//合体後のcopyArrから1つ抜き取る
+            const rand = Math.floor(Math.random()*len)
+            this.quizArr.push(this.copyArr.splice(rand,1)[0])
+          }
+        }else if(this.setArr[3] == 0){//げき難しい：なら
+          for(let i=0, len=this.copyArr.length ; i<7; i++,len--){//合体後のcopyArrから7つ抜き取る
+            const rand = Math.floor(Math.random()*len)
+            this.quizArr.push(this.copyArr.splice(rand,1)[0])
+          }
+        }
+        this.quizArrRandom()
+    },
+
+    quizArrRandom(){
+        for(let j=(this.quizArr.length -1); 0<j; j--){
+          const r = Math.floor(Math.random()*(j+1))
+          const tmp = this.quizArr[j]
+          this.quizArr[j] = this.quizArr[r]
+          this.quizArr[r] = tmp
+        }
+        console.log(this.quizArr)
     },
 
     nextQuiz(){
@@ -146,7 +237,7 @@ export default {
           setTimeout(()=>{
             this.score++
             this.isSeikai = false
-            this.nextQuiz()
+            this.nextQuiz2()
           },500)
         }else{
           this.isSeikai2 = true  //ばつを表示して、消す

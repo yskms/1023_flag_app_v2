@@ -26,7 +26,8 @@
 
         continentArr:[
           ['全世界','All'],['アジア','Asia'],['ヨーロッパ','Europe'],['アフリカ','Africa'],['北アメリカ','North America'],['南アメリカ','South America'],['オセアニア','Oceania'],],
-
+        diffArr:[
+          ['激ムズ','Very Hard'],['難しい','Hard'],['標準','Normal'],['やさしい','Easy'],],
       }
     },
     mounted(){
@@ -282,31 +283,22 @@
                 </v-btn>
               </div>
           
+
+      <!-- [0 激ムズ, 1 難しい, 2 普通, 3 やさしい, ] -->
           <div class="select_wrap">
-          <div class="my-2" @click="select_diff(0)">
+            <div class="select_vfor" v-for="(d,index) in diffArr" :key="index">
+              <div class="my-2" @click="select_diff(index)">
               <v-btn
                 color="success"
                 dark
               >
-                {{lang==0 ? "難しい" : "Hard"}}
+                <!-- {{lang==0 ? "全ての地域" : "All Continent"}} -->
+                {{lang==0 ? d[0] : d[1] }}
               </v-btn>
             </div>
-            <div class="my-2" @click="select_diff(1)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "標準" : "Normal"}}
-              </v-btn>
             </div>
-            <div class="my-2">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "やさしい" : "Easy"}}
-              </v-btn>
-            </div>
+
+          
           </div>
         </div>
 
