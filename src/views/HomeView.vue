@@ -27,7 +27,7 @@
         continentArr:[
           ['全世界','All'],['アジア','Asia'],['ヨーロッパ','Europe'],['アフリカ','Africa'],['北アメリカ','North America'],['南アメリカ','South America'],['オセアニア','Oceania'],],
         diffArr:[
-          ['激ムズ','Very Hard'],['難しい','Hard'],['標準','Normal'],['やさしい','Easy'],],
+          ['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard'],],
       }
     },
     mounted(){

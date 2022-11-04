@@ -39,8 +39,8 @@ export default {
       falseSelectArr:[],//正解の地域以外の地域の配列
       selectFlagListNoArr:[],//[正解、間違い、間違い]の地域Noの入った配列
       continentNoArr:[0,1,2,3,4,5,6,],//selectFlagListNoArr作成用
-      diffNoArr:[0,1,2,3,],
-      diffListArr:[],
+      incorrectAnserOption:[1,2,3,7,],//難しさと連動した、不正解選択肢の数
+      //['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard']
     }
   },
   created(){
@@ -135,8 +135,8 @@ export default {
               const rand = Math.floor(Math.random()*len) +1 //1-5の乱数
               this.selectFlagListNoArr.push(this.continentNoArr.splice(rand,1)[0])//さらに2つ抜いてプッシュ
             }
-            console.log(this.selectFlagListNoArr)//[正解、間違い、間違い]の配列が完成
-            console.log(this.continentNoArr)//抜き取られた後のいらない配列
+            console.log(this.selectFlagListNoArr)//[正解、間違い、間違い]の地域番号配列が完成
+            console.log(this.continentNoArr)//抜き取られた後のいらない地域番号配列
           }
         }
       }
@@ -144,11 +144,12 @@ export default {
       this.selectArrCreate()
     },
     selectArrCreate(){
-      console.log(this.setArr)
-      //[0 激ムズ, 1 難しい, 2 普通, 3 やさしい, ]
-      if(this.setArr[3] == 0){
+      //['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard']
+      if(this.setArr[3] == 0 || this.setArr[3] == 3){//やさしい、激ムズなら
         console.log('0:何もしない。')
-      }else if(this.setArr[3] == 1){
+
+      }else if(this.setArr[3] == 2){
+        //難しいなら、selectFlagListNoArrの[正解、間違い、間違い]から間違いを2つを使って、falseSelectArrに国オブジェクトを追加
         for(let i=1;i<3;i++){
           this.flagLists.forEach(e => {
             if(e.continent == this.continentArr[ this.selectFlagListNoArr[i] ]){
@@ -156,18 +157,13 @@ export default {
             }
           })
         }
-        console.log(`1難しい:`)
-        console.log(this.falseSelectArr)
-      }else if(this.setArr[3] == 2){
+      }else if(this.setArr[3] == 1){
+        //標準なら、selectFlagListNoArrの[正解、間違い、間違い]から間違いを1つを使って、falseSelectArrに国オブジェクトを追加
         this.flagLists.forEach(e => {
           if(e.continent == this.continentArr[ this.selectFlagListNoArr[1] ]){
             this.falseSelectArr.push(e)
           }
         })
-        console.log(`2普通:`)
-        console.log(this.falseSelectArr)
-      }else if(this.setArr[3] == 3){
-        console.log('4:何もしない。')
       }
     },
 
@@ -175,40 +171,51 @@ export default {
       this.quizArr = []//ここに２問〜４問を入れる
       this.copyArr = this.limitedFlagListArr.concat()//毎回copyArr新品にする
 
-      //copyArrからquizArrに1つオブジェクトを抜き取って入れる、かつ正解としてquizAnserObに代入
+      //copyArrからquizArrに1つオブジェクトを抜き取って入れる、かつ正解としてquizAnserObに代入しておく
         const rand = Math.floor(Math.random()*this.copyArr.length)
         this.quizArr.push(this.copyArr.splice(rand,1)[0])
         this.quizAnserOb = this.quizArr[0]
-      //１つ抜き取られたcopyArrとfalseSelectArrを合体させたい
+      //１つ抜き取られたcopyArrと、falseSelectArrを合体させる
         Object.assign(this.copyArr, this.falseSelectArr)
         console.log(this.copyArr)
       
-
-        if(this.setArr[3] == 1){//難しい：なら
-          for(let i=0, len=this.copyArr.length ; i<3; i++,len--){//合体後のcopyArrから3つ抜き取る
-            const rand = Math.floor(Math.random()*len)
-            this.quizArr.push(this.copyArr.splice(rand,1)[0])
-          }
-        }else if(this.setArr[3] == 2){//普通：なら
-          for(let i=0, len=this.copyArr.length ; i<2; i++,len--){//合体後のcopyArrから2つ抜き取る
-            const rand = Math.floor(Math.random()*len)
-            this.quizArr.push(this.copyArr.splice(rand,1)[0])
-          }
-        }else if(this.setArr[3] == 3){//やさしい：なら
-          for(let i=0, len=this.copyArr.length ; i<1; i++,len--){//合体後のcopyArrから1つ抜き取る
-            const rand = Math.floor(Math.random()*len)
-            this.quizArr.push(this.copyArr.splice(rand,1)[0])
-          }
-        }else if(this.setArr[3] == 0){//げき難しい：なら
-          for(let i=0, len=this.copyArr.length ; i<7; i++,len--){//合体後のcopyArrから7つ抜き取る
-            const rand = Math.floor(Math.random()*len)
-            this.quizArr.push(this.copyArr.splice(rand,1)[0])
+//['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard']
+//incorrectAnserOption:[1,2,3,7,]難しさと連動した、不正解選択肢の数
+        for(let i=0;i<this.incorrectAnserOption.length;i++){
+          if(this.setArr[3]==i){
+            for(let j=0, len=this.copyArr.length; j<this.incorrectAnserOption[i]; j++,len--){
+              const rand = Math.floor(Math.random()*len)
+              this.quizArr.push(this.copyArr.splice(rand,1)[0])
+            }
           }
         }
-        this.quizArrRandom()
+    //配列作ってfor文にした
+        // if(this.setArr[3] == 1){//難しい：なら
+        //   for(let i=0, len=this.copyArr.length ; i<3; i++,len--){//合体後のcopyArrから3つ抜き取る
+        //     const rand = Math.floor(Math.random()*len)
+        //     this.quizArr.push(this.copyArr.splice(rand,1)[0])
+        //   }
+        // }else if(this.setArr[3] == 2){//普通：なら
+        //   for(let i=0, len=this.copyArr.length ; i<2; i++,len--){//合体後のcopyArrから2つ抜き取る
+        //     const rand = Math.floor(Math.random()*len)
+        //     this.quizArr.push(this.copyArr.splice(rand,1)[0])
+        //   }
+        // }else if(this.setArr[3] == 3){//やさしい：なら
+        //   for(let i=0, len=this.copyArr.length ; i<1; i++,len--){//合体後のcopyArrから1つ抜き取る
+        //     const rand = Math.floor(Math.random()*len)
+        //     this.quizArr.push(this.copyArr.splice(rand,1)[0])
+        //   }
+        // }else if(this.setArr[3] == 0){//げき難しい：なら
+        //   for(let i=0, len=this.copyArr.length ; i<7; i++,len--){//合体後のcopyArrから7つ抜き取る
+        //     const rand = Math.floor(Math.random()*len)
+        //     this.quizArr.push(this.copyArr.splice(rand,1)[0])
+        //   }
+        // }
+
+        this.quizArrRandom()  //2~8問入っているquizArrをシャッフルするメソッド
     },
 
-    quizArrRandom(){
+    quizArrRandom(){  //2~8問入っているquizArrをシャッフルするメソッド
         for(let j=(this.quizArr.length -1); 0<j; j--){
           const r = Math.floor(Math.random()*(j+1))
           const tmp = this.quizArr[j]
@@ -218,19 +225,6 @@ export default {
         console.log(this.quizArr)
     },
 
-    nextQuiz(){
-      this.quizArr = []
-      this.copyArr = this.limitedFlagListArr.concat()//毎回copyArr新品にする
-      //copyArrからquizArrに４つオブジェクトを抜き取ってる。
-      for(let i=0, len=this.copyArr.length ; i<4; i++,len--){
-        const rand = Math.floor(Math.random()*len)
-        this.quizArr.push(this.copyArr.splice(rand,1)[0])
-      }
-      // 0-3の乱数rを使って、１つを正解としてquizAnserObに代入
-      const r = Math.floor(Math.random()*4)
-      this.quizAnserOb = this.quizArr[r]
-      
-    },
     rockAnser(id){
         if(id === this.quizAnserOb.id){
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
