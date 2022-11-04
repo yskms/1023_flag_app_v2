@@ -25,7 +25,9 @@
         isUserName:false,
 
         continentArr:[
-          ['全世界','All'],['アジア','Asia'],['ヨーロッパ','Europe'],['アフリカ','Africa'],['北アメリカ','North America'],['南アメリカ','South America'],['オセアニア','Oceania'],],
+          ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],],
+        continentArrAll:[
+          ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],],
         diffArr:[
           ['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard'],],
       }
@@ -51,11 +53,16 @@
 
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
-          if(docSnap.data().name==undefined){
+          if(docSnap.data().name==undefined){//ユーザー名なかったら登録させる
             this.isUserName = true
           }else{
           this.userName = docSnap.data().name
           }
+      //解放済みの地域数を取得して、continentArrに追加してます
+          for(let i=0;i<docSnap.data().openContinent; i++){
+            this.continentArr.push(this.continentArrAll.splice(3,1)[0])
+          }
+
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
@@ -142,9 +149,10 @@
             </div>
             <!--  -->
         </div>
-        <h1>国旗博士</h1>
-        <a href="#">なんか画像</a>
-        {{lang}}
+        <div class="logo_wrap">
+          <h1>国旗博士</h1>
+          <img src="../assets/blackboard.png" alt="title">
+        </div>
       </div>
 
       
@@ -245,30 +253,6 @@
             </div>
             </div>
 
-          <div class="my-2" @click="select_land(0)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "全ての地域" : "All Continent"}}
-              </v-btn>
-            </div>
-            <div class="my-2" @click="select_land(1)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "アジア" : "Asia"}}
-              </v-btn>
-            </div>
-            <div class="my-2" @click="select_land(2)">
-              <v-btn
-                color="success"
-                dark
-              >
-                {{lang==0 ? "ヨーロッパ" : "Europe"}}
-              </v-btn>
-            </div>
           </div>
         </div>
 
@@ -307,3 +291,31 @@
   </div>
 </template>
 
+<style scoped>
+/* .cont{
+  height: 100vh;
+  background-color: aquamarine;
+}
+.main{
+  width: 500px;
+  background-color: aliceblue;
+}
+.title{
+  height: 50%;
+  width: 100%;
+}
+.logo_wrap{
+  width: 100%;
+  position: relative;
+}
+.logo_wrap h1{
+  position: absolute;
+  top:50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.logo_wrap img{
+  width: 100%;
+} */
+</style>

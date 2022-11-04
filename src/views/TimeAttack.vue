@@ -2,7 +2,7 @@
 import ResultComp from '../components/ResultComp.vue'
 import firebaseApp from "../plugins/firebaseConfig"
 import { getAuth, onAuthStateChanged} from "firebase/auth"
-import { getFirestore, addDoc, collection, Timestamp, query, doc, getDoc, getDocs, limit, orderBy, } from "firebase/firestore"
+import { getFirestore, addDoc, collection, Timestamp, query, doc, getDoc, getDocs, limit, orderBy, setDoc} from "firebase/firestore"
 
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp)
@@ -266,7 +266,22 @@ export default {
           uid:this.storeUid,
         });
         console.log("Document written with ID: ", docRef);
-        this.isResultComp = true 
+        this.updateFireUsers()
+    },
+    async updateFireUsers(){//プレイカウントを増やしてる。他にもここで登録しますかね。authCompの方と。
+      let openContinentNow = 0
+      if(this.currentUserObj.playCount + 1 == 5){
+        console.log('アフリカが追加されたよ!のアニメーション(とokボタン?)')
+        openContinentNow = this.currentUserObj.openContinent +1
+      }
+      await setDoc(doc(db, "users", this.uid), 
+      {playCount: this.currentUserObj.playCount + 1,
+        openContinent: openContinentNow},
+      {merge: true}
+      );
+      console.log('update playCount')
+      this.isResultComp = true 
+      
     },
     async fetchRank(){  //score降順で3つデータ取る
         const datasRef = collection(db, "ranks")

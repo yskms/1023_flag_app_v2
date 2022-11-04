@@ -86,6 +86,7 @@
         date: Timestamp.fromDate(new Date()),
         medal:[],
         history:[],
+        openContinent:0,//地域解放数
       });
     },
     async setFireRanks(){ //firestoreのdatasにデータ登録する
