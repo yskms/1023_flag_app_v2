@@ -2,14 +2,15 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,} from "firebase/auth"
-  import { getFirestore, doc, setDoc, Timestamp, addDoc, collection, } from "firebase/firestore"
+  import { getFirestore, doc, setDoc, Timestamp, addDoc, collection, getDoc, } from "firebase/firestore"
 
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp)
   
   export default {
     
-    name: 'AuthComp',
+  name: 'AuthComp',
+  props:['score'],
 
   data: () => ({
     name:'ニックネーム',
@@ -34,7 +35,9 @@
     isSuccess:false,//login成功したらtrue
     dialog: false,//ダイアログの表示、非表示
     uid:'',
-    // currentUserObj:{},
+    currentUserObj:{},
+    continentArr:['Asia','Europe','South America','Africa','North America','Oceania','All',],
+
     }),
   methods:{
     backToHome(){
@@ -48,16 +51,16 @@
             console.log(user)
             this.uid = user.uid
             this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
-            this.isSuccess = true  //loginを表示して、消して、ダイアログ閉じる
-            this.setFireUsers()
-            setTimeout(()=>{
+            this.isSuccess = true  //loginを表示して、
+            this.setFireUsers()   //firestoreにユーザー登録、
+            setTimeout(()=>{      //3秒後に表示を消して
               this.isSuccess = false
-              if(this.$route.path == '/time'){
+              if(this.$route.path == '/time'){  //TimeAttack画面の時はfirestoreにランキング登録、ダイアログ閉じる
                 this.setFireRanks()
                 // this.dialog = false
               }else{
                 // this.$router.push('/')
-                this.dialog = false
+                this.dialog = false     //home画面の時はダイアログを閉じるだけ
               }
             },3000)
             // ...
@@ -107,6 +110,21 @@
         console.log("Document written with ID: ", docRef);
         this.dialog = false
     },
+
+
+    async fetchUsers(){  //loginで使う。ログインしてたらuidで自分のusersデータ取得
+        const docRef = doc(db, "users", this.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          this.currentUserObj = docSnap.data()
+          this.updateFireUsers()
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+    },
     async updateFireUsers(){//firestoreをアップデートするメソッド。authコンポにも要設定
       //特定のプレイカウントで、地域を解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
@@ -139,22 +157,28 @@
       { merge: true }
       );
       console.log('update playCount')
-      this.isResultComp = true 
+      this.setFireRanks()
     },
+
+
     login(){
         signInWithEmailAndPassword(auth, this.email, this.password)
           .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
             console.log(user)
+            this.uid = user.uid
             this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
             this.isSuccess = true  //loginを表示して、消して、homeへ
             setTimeout(()=>{
               this.isSuccess = false
               if(this.$route.path == '/time'){
-                this.setFireRanks()
+                console.log('fetchUsersやるよ!')
+                this.fetchUsers()
+                // this.setFireRanks()
                 // this.dialog = false
               }else{
+                console.log('fetchUsersやるよ!')
                 // this.$router.push('/')
                 this.dialog = false
               }
@@ -189,6 +213,9 @@
   computed:{
     currentUserScore(){
       return this.$store.state.currentUserScore
+    },
+    setArr(){
+      return this.$store.state.setArr
     },
     // storeUid(){
     //   return this.$store.state.uid

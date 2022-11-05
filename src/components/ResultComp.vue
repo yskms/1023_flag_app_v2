@@ -244,7 +244,7 @@ export default {
           </div>
           <!-- ログインしていないなら、ログインボタンにする -->
           <div v-else>
-            <AuthComp/>
+            <AuthComp :score="score"/>
           </div>
           <!-- ホームに戻るボタンは固定 -->
           <div class="my-2" @click="backToHome">
