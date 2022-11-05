@@ -18,7 +18,7 @@ export default {
       timerId:null,
       getready:3,//ゲーム開始前のカウントダウン用
       isSeikai:false,//まるを表示する用
-      isSeikai2:false,//ばつを表示する用
+      isFuseikai:false,//ばつを表示する用
       score:0,//正解数
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
       isConfig:false,//setArrの中身があるかないかを管理
@@ -42,21 +42,12 @@ export default {
       continentNoArr:[0,1,2,3,4,5,6,],//selectFlagListNoArr作成用
       incorrectAnserOption:[1,2,3,7,],//難しさと連動した、不正解選択肢の数
       //['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard']
+      isNoMiss:true,//1発正解の管理用
+      noMissIdArr:[],//1発正解したidを追加していく
     }
   },
   created(){
-      console.log('created')
-      // onAuthStateChanged(auth, (user) => {
-      //   if (user) { //ログインしてたら
-      //     this.uid = user.uid  //this.uidにガチUIDを入れる
-      //     this.$store.commit('authTrue',user.uid)//storeにもガチUIDを入れる
-      //     this.fetchUsers() //自分のデータをusersからゲット
-      //   } else {
-      //     console.log('ログインしてないよ')
-      //     this.uid = ''
-      //     this.$store.commit('authFalse')//storeのガチUIDを消す
-      //   }
-      // });
+      console.log('created')//ここにメソッド入れてたら他のルーティング画面でも実行してしまう
   },
   mounted(){    //authの確認はこのページでは行わない->やっぱり行う！
     console.log('mounted')
@@ -228,16 +219,19 @@ export default {
     rockAnser(id){
         if(id === this.quizAnserOb.id){
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
+          this.score++
+          if(isNoMiss){this.noMissIdArr.push(id)}
           setTimeout(()=>{
-            this.score++
             this.isSeikai = false
+            this.isNoMiss = true
             this.nextQuiz2()
           },500)
         }else{
-          this.isSeikai2 = true  //ばつを表示して、消す
+          this.isFuseikai = true  //ばつを表示して、消す
           this.isVibe[id] = true
+          this.isNoMiss = false
           setTimeout(()=>{
-            this.isSeikai2 = false
+            this.isFuseikai = false
             this.isVibe[id] = false
           },500)
         }
@@ -398,7 +392,7 @@ export default {
   <div class="isSeikai" v-show="isSeikai">
     まる
   </div>
-  <div class="isSeikai" v-show="isSeikai2">
+  <div class="isSeikai" v-show="isFuseikai">
     ばつ
   </div>
   <div class="isResult" v-show="isResult">
