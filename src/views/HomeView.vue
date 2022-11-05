@@ -238,8 +238,7 @@
                   戻る
                 </v-btn>
               </div>
-          
-          <!-- [0 all, 1 asia, 2 europe, 3 africa, 4 north america, 5 south america, 6 oceania, ] -->
+          <!-- ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],], -->
           <div class="select_wrap">
             <div class="select_vfor" v-for="(c,index) in continentArr" :key="index">
               <div class="my-2" @click="select_land(index)">

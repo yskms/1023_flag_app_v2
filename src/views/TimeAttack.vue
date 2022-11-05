@@ -32,10 +32,11 @@ export default {
       currentUserObj:{},
       uid:'uid',  //ログインならガチUID,してないならブランクにする
 
-      continentArr:['All','Asia','Europe','Africa','North America','South America','Oceania',],
+      //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      continentArr:['Asia','Europe','South America','Africa','North America','Oceania','All',],
       limitedFlagListArr:[],//地域で絞ったflagLists
 
-      selectArr:[],//選択肢の配列。いらんかも？
+      // selectArr:[],//選択肢の配列。いらんかも？
       falseSelectArr:[],//正解の地域以外の地域の配列
       selectFlagListNoArr:[],//[正解、間違い、間違い]の地域Noの入った配列
       continentNoArr:[0,1,2,3,4,5,6,],//selectFlagListNoArr作成用
@@ -115,8 +116,7 @@ export default {
       //   this.isResultComp = true
       // },10100)
     },
-
-//[0 all, 1 asia, 2 europe, 3 africa, 4 north america, 5 south america, 6 oceania, ]
+    //['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],],
     correctArrCreate(){  //地域で絞ったflagListsを作るメソッド
       if(this.setArr[2]==0){
         this.limitedFlagListArr = this.flagLists.concat()
@@ -268,20 +268,39 @@ export default {
         console.log("Document written with ID: ", docRef);
         this.updateFireUsers()
     },
-    async updateFireUsers(){//プレイカウントを増やしてる。他にもここで登録しますかね。authCompの方と。
-      let openContinentNow = 0
-      if(this.currentUserObj.playCount + 1 == 5){
-        console.log('アフリカが追加されたよ!のアニメーション(とokボタン?)')
-        openContinentNow = this.currentUserObj.openContinent +1
+    async updateFireUsers(){//firestoreをアップデートするメソッド。authコンポにも要設定
+      //特定のプレイカウントで、地域を解放
+      //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      let openContinentNow = this.currentUserObj.openContinent
+      const requireCountArr =[0,0,0,5,10,15,30]//解放に必要なプレイ回数
+      for(let k=3;k<7;k++){
+        if(this.currentUserObj.playCount + 1 == requireCountArr[k]){
+          console.log(`${this.continentArr[k]}が追加されました!`)
+          openContinentNow = this.currentUserObj.openContinent +1
+        }
       }
+      //特定スコア以上で、難しさを解放
+      //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      let openDiffNow = this.currentUserObj.openDiff  //[1,1,1,1,1,1,1]がデフォ
+      for(let j=1;j<3;j++){
+        if(this.score>9 && this.setArr[3]==j){//score10以上、1:普通,2:ムズイなら
+          for(let i=0;i<8;i++){
+            if(this.setArr[2] == i){  //プレイした地域のopenDiffNowを加算
+              openDiffNow[i] = j+1
+              console.log('むずいモード追加！')
+            }
+          }
+        }
+      }
+      //firestoreをアップデートするとこ
       await setDoc(doc(db, "users", this.uid), 
-      {playCount: this.currentUserObj.playCount + 1,
-        openContinent: openContinentNow},
-      {merge: true}
+      { playCount: this.currentUserObj.playCount + 1,
+        openContinent: openContinentNow,
+        openDiff: openDiffNow, },
+      { merge: true }
       );
       console.log('update playCount')
       this.isResultComp = true 
-      
     },
     async fetchRank(){  //score降順で3つデータ取る
         const datasRef = collection(db, "ranks")

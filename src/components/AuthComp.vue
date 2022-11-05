@@ -86,7 +86,9 @@
         date: Timestamp.fromDate(new Date()),
         medal:[],
         history:[],
+        playCount:1,
         openContinent:0,//地域解放数
+        openDiff:[1,1,1,1,1,1,1],//難しさ解放はレジスター以降からでOKとします
       });
     },
     async setFireRanks(){ //firestoreのdatasにデータ登録する
@@ -105,6 +107,40 @@
         console.log("Document written with ID: ", docRef);
         this.dialog = false
     },
+    async updateFireUsers(){//firestoreをアップデートするメソッド。authコンポにも要設定
+      //特定のプレイカウントで、地域を解放
+      //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      let openContinentNow = this.currentUserObj.openContinent
+      const requireCountArr =[0,0,0,5,10,15,30]//解放に必要なプレイ回数
+      for(let k=3;k<7;k++){
+        if(this.currentUserObj.playCount + 1 == requireCountArr[k]){
+          console.log(`${this.continentArr[k]}が追加されました!`)
+          openContinentNow = this.currentUserObj.openContinent +1
+        }
+      }
+      //特定スコア以上で、難しさを解放
+      //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      let openDiffNow = this.currentUserObj.openDiff  //[1,1,1,1,1,1,1]がデフォ
+      for(let j=1;j<3;j++){
+        if(this.score>9 && this.setArr[3]==j){//score10以上、1:普通,2:ムズイなら
+          for(let i=0;i<8;i++){
+            if(this.setArr[2] == i){  //プレイした地域のopenDiffNowを加算
+              openDiffNow[i] = j+1
+              console.log('むずいモード追加！')
+            }
+          }
+        }
+      }
+      //firestoreをアップデートするとこ
+      await setDoc(doc(db, "users", this.uid), 
+      { playCount: this.currentUserObj.playCount + 1,
+        openContinent: openContinentNow,
+        openDiff: openDiffNow, },
+      { merge: true }
+      );
+      console.log('update playCount')
+      this.isResultComp = true 
+    },
     login(){
         signInWithEmailAndPassword(auth, this.email, this.password)
           .then((userCredential) => {
@@ -115,8 +151,9 @@
             this.isSuccess = true  //loginを表示して、消して、homeへ
             setTimeout(()=>{
               this.isSuccess = false
-              if(this.$route.path == '/'){
-                this.dialog = false
+              if(this.$route.path == '/time'){
+                this.setFireRanks()
+                // this.dialog = false
               }else{
                 // this.$router.push('/')
                 this.dialog = false
@@ -136,7 +173,7 @@
               this.errorCodeNo = 2
             }else{this.errorCodeNo = 3}
           });
-      },
+    },
     logout(){
         console.log('logout sasete')
         signOut(auth).then(() => {
@@ -147,7 +184,7 @@
           console.log(error)
           // An error happened.
         });
-      },
+    },
   },
   computed:{
     currentUserScore(){
