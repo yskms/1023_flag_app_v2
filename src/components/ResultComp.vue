@@ -10,7 +10,7 @@
 
 export default {
   components:{AuthComp},
-  props:['rankArr2', 'currentUserObj', 'score'],
+  props:['rankArr2', 'currentUserObj', 'score', 'noMissIdArr'],
   data: () => ({
     isConfig:false,//setArrの中身があるかないかを管理
     dialog: false,//多分なくていいし、別で使いたい
@@ -244,7 +244,7 @@ export default {
           </div>
           <!-- ログインしていないなら、ログインボタンにする -->
           <div v-else>
-            <AuthComp :score="score"/>
+            <AuthComp :score="score" :noMissIdArr="noMissIdArr" />
           </div>
           <!-- ホームに戻るボタンは固定 -->
           <div class="my-2" @click="backToHome">

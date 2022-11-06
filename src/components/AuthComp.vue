@@ -10,7 +10,7 @@
   export default {
     
   name: 'AuthComp',
-  props:['score'],
+  props:['score', 'noMissIdArr', ],
 
   data: () => ({
     name:'ニックネーム',
@@ -149,11 +149,28 @@
           }
         }
       }
+
+      //noMissIdArr:[],//1発正解したidを追加していく
+      //1発正解をカウント
+      let noMissCountObjNow = {}
+      Object.assign(noMissCountObjNow,this.currentUserObj.noMissCountObj)// { 国ID : 正解数 }
+      for(let i=0;i<this.noMissIdArr.length;i++){
+        if(noMissCountObjNow[this.noMissIdArr[i]]){
+          console.log('aru')
+          noMissCountObjNow[this.noMissIdArr[i]] = noMissCountObjNow[this.noMissIdArr[i]]+1
+        }else{
+          noMissCountObjNow[this.noMissIdArr[i]] = 1
+        }
+      }
+      console.log(noMissCountObjNow)
+
+
       //firestoreをアップデートするとこ
       await setDoc(doc(db, "users", this.uid), 
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
-        openDiffArr: openDiffArrNow, },
+        openDiffArr: openDiffArrNow,
+        noMissCountObj: noMissCountObjNow, },
       { merge: true }
       );
       console.log('update playCount')

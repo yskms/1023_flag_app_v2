@@ -401,7 +401,7 @@ export default {
   </div>
 
   <div class="result_comp" v-if="isResultComp">
-    <ResultComp :rankArr2="rankArr" :currentUserObj="currentUserObj" :score="score"/>
+    <ResultComp :rankArr2="rankArr" :currentUserObj="currentUserObj" :score="score" :noMissIdArr="noMissIdArr"/>
   </div>
 
   <div class="getready" v-show="getready>0">
