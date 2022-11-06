@@ -91,7 +91,7 @@
         history:[],
         playCount:1,
         openContinent:0,//地域解放数
-        openDiff:[1,1,1,1,1,1,1],//難しさ解放はレジスター以降からでOKとします
+        openDiffArr:[1,1,1,1,1,1,1],//難しさ解放はレジスター以降からでOKとします
       });
     },
     async setFireRanks(){ //firestoreのdatasにデータ登録する
@@ -138,12 +138,12 @@
       }
       //特定スコア以上で、難しさを解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
-      let openDiffNow = this.currentUserObj.openDiff  //[1,1,1,1,1,1,1]がデフォ
+      let openDiffArrNow = this.currentUserObj.openDiffArr  //[1,1,1,1,1,1,1]がデフォ
       for(let j=1;j<3;j++){
         if(this.score>9 && this.setArr[3]==j){//score10以上、1:普通,2:ムズイなら
           for(let i=0;i<8;i++){
-            if(this.setArr[2] == i){  //プレイした地域のopenDiffNowを加算
-              openDiffNow[i] = j+1
+            if(this.setArr[2] == i){  //プレイした地域のopenDiffArrNowを加算
+              openDiffArrNow[i] = j+1
               console.log('むずいモード追加！')
             }
           }
@@ -153,7 +153,7 @@
       await setDoc(doc(db, "users", this.uid), 
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
-        openDiff: openDiffNow, },
+        openDiffArr: openDiffArrNow, },
       { merge: true }
       );
       console.log('update playCount')

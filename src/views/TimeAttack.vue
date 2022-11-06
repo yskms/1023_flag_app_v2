@@ -220,7 +220,7 @@ export default {
         if(id === this.quizAnserOb.id){
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
           this.score++
-          if(isNoMiss){this.noMissIdArr.push(id)}
+          if(this.isNoMiss){this.noMissIdArr.push(id)}
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
@@ -275,22 +275,40 @@ export default {
       }
       //特定スコア以上で、難しさを解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
-      let openDiffNow = this.currentUserObj.openDiff  //[1,1,1,1,1,1,1]がデフォ
+      let openDiffArrNow = this.currentUserObj.openDiffArr  //[1,1,1,1,1,1,1]がデフォ
       for(let j=1;j<3;j++){
         if(this.score>9 && this.setArr[3]==j){//score10以上、1:普通,2:ムズイなら
           for(let i=0;i<8;i++){
-            if(this.setArr[2] == i){  //プレイした地域のopenDiffNowを加算
-              openDiffNow[i] = j+1
+            if(this.setArr[2] == i){  //プレイした地域のopenDiffArrNowを加算
+              openDiffArrNow[i] = j+1
               console.log('むずいモード追加！')
             }
           }
         }
       }
+
+
+      //noMissIdArr:[],//1発正解したidを追加していく
+      //1発正解をカウント
+      let noMissCountObjNow = {}
+      Object.assign(noMissCountObjNow,this.currentUserObj.noMissCountObj)// { 国ID : 正解数 }
+      for(let i=0;i<this.noMissIdArr.length;i++){
+        if(noMissCountObjNow[this.noMissIdArr[i]]){
+          console.log('aru')
+          noMissCountObjNow[this.noMissIdArr[i]] = noMissCountObjNow[this.noMissIdArr[i]]+1
+        }else{
+          noMissCountObjNow[this.noMissIdArr[i]] = 1
+        }
+      }
+      console.log(noMissCountObjNow)
+
+
       //firestoreをアップデートするとこ
       await setDoc(doc(db, "users", this.uid), 
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
-        openDiff: openDiffNow, },
+        openDiffArr: openDiffArrNow,
+        noMissCountObj: noMissCountObjNow, },
       { merge: true }
       );
       console.log('update playCount')
