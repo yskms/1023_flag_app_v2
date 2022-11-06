@@ -134,15 +134,15 @@
         <div class="head">
           <!--  -->
             <!-- 画面が描画された瞬間は、何も表示しない -->
-            <div class="my-2" v-if="this.uid=='uid'">
+            <div class="haguruma" v-if="this.uid=='uid'">
               <div></div>
             </div>
             <!-- ログインしていないなら、何も表示しない -->
-            <div class="my-2" v-else-if="this.uid==''">
+            <div class="haguruma" v-else-if="this.uid==''">
               <div></div>
             </div>
             <!-- ログインしているなら、歯車userボタンを表示 -->
-            <div class="my-2" v-else>
+            <div class="haguruma" v-else>
               <svg @click="goToUser()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
                 <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
               </svg>
@@ -150,36 +150,51 @@
             <!--  -->
         </div>
         <div class="logo_wrap">
-          <h1>国旗博士</h1>
-          <img src="../assets/blackboard.png" alt="title">
+          <div class="kokuban_wrap">
+              <h1 class="dr">国旗ハカセ</h1>
+              <!-- <img class="kokuban" src="../assets/blackboard.png" alt="title"> -->
+          </div>
+          <img class="hakase" src="../assets/hakase_top.png" alt="hakase">
+          <div class="kokki_wrap">
+            <img class="kokki" :src="flagLists[3].flag" alt="flag">
+            <img class="kokki" :src="flagLists[4].flag" alt="flag">
+            <img class="kokki" :src="flagLists[5].flag" alt="flag">
+            <img class="kokki" :src="flagLists[6].flag" alt="flag">
+            <img class="kokki" :src="flagLists[7].flag" alt="flag">
+          </div>
         </div>
       </div>
 
       
       <div class="select_wrap">
-          <div class="lang">
-            <div class="my-2" @click="langJ">
-                <v-btn
-                  x-small
+          <div class="lang_wrap">
+            <div class="lang" @click="langJ">
+                <!-- <v-btn
+                  
                   color="warning"
                   dark
-                >
+                > -->
+                <button>
                   日本語
-                </v-btn>
+                </button>
+                <!-- </v-btn> -->
               </div>
-            <div class="my-2" @click="langE">
-                <v-btn
-                  x-small
+            <div class="lang" @click="langE">
+                <!-- <v-btn
+                  
                   color="warning"
                   dark
-                >
+                > -->
+                <button>
                   English
-                </v-btn>
+                </button>
+                <!-- </v-btn> -->
               </div>
           </div>
 
         <div class="select_game" v-show="selectG">
-          <div class="my-2" >
+          <div class="select_btn_wrap">
+            <div class="select_back" >
                 <v-btn
                   x-small
                   color="warning"
@@ -189,34 +204,37 @@
                   消す
                 </v-btn>
               </div>
-          <div class="select_wrap">
-          <div class="my-2" @click="select_game(0)">
-              <v-btn
+            <div class="select_btn" @click="select_game(0)">
+              <!-- <v-btn
                 color="success"
                 dark
-              >
+              > -->
+              <button>
                 {{lang==0 ? "タイムアタック" : "Time Challenge"}}
-              </v-btn>
+              </button>
+              <!-- </v-btn> -->
             </div>
-            <div class="my-2" @click="select_game(1)">
-              <v-btn
+            <div class="select_btn" @click="select_game(1)">
+              <!-- <v-btn
                 color="success"
                 dark
-              >
+              > -->
+              <button>
                 {{lang==0 ? "ノーミスチャレンジ" : "No Miss Challenge"}}
-              </v-btn>
+              </button>
+              <!-- </v-btn> -->
             </div>
             <!--  -->
             <!-- 画面が描画された瞬間は、何も表示しない -->
-            <div class="my-2" v-if="this.uid=='uid'">
+            <div class="select_btn_auth" v-if="this.uid=='uid'">
               <div></div>
             </div>
             <!-- ログインしていないなら、ログインボタンを表示 -->
-            <div class="my-2" v-else-if="this.uid==''">
+            <div class="select_btn_auth" v-else-if="this.uid==''">
               <AuthComp/>
             </div>
             <!-- ログインしているなら、ログアウトボタンを表示 -->
-            <div class="my-2" v-else @click="logout()">
+            <div class="select_btn_auth" v-else @click="logout()">
               <v-btn
                 color="success"
                 dark
@@ -291,30 +309,140 @@
 </template>
 
 <style scoped>
-/* .cont{
+.cont{
   height: 100vh;
   background-color: aquamarine;
 }
 .main{
-  width: 500px;
-  background-color: aliceblue;
+  height: 100%;
+  /* width: 820px; */
+  max-width: 410px;
+  background-color: #F5ECCD;
+  position: relative;
+  margin: 0 auto;
+}
+.user_error{
+  position: absolute;
+  top: 45%;
+}
+.haguruma{
+  margin: 0;
 }
 .title{
   height: 50%;
   width: 100%;
+  display: flex;
+  align-items: flex-end;
 }
 .logo_wrap{
+  /* margin: auto 0 0 0; */
+  height: 80%;
   width: 100%;
   position: relative;
 }
-.logo_wrap h1{
-  position: absolute;
-  top:50%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.kokuban_wrap{
+  background-image: url("../assets/blackboard.png");
+  background-size: contain;
+  background-position: center center;
+  height: 80%;
+  display: flex;
 }
-.logo_wrap img{
+.dr{
+  margin: auto ;
+  /* height: 200px; */
+  /* height: 100px; */
+  text-align: center;
+  color: white;
+  /* font-size: 150px; */
+  font-size: 75px;
+}
+.kokuban{
   width: 100%;
-} */
+}
+.hakase{
+  /* height: 380px; */
+  height: 190px;
+  position: absolute;
+  top: 50%;
+  left: 27%;
+}
+.kokki{
+  /* height: 120px; */
+  height: 60px;
+}
+
+
+.select_wrap{
+  height: 50%;
+}
+.lang_wrap{
+  display: flex;
+  justify-content: space-around;
+  height: 20%;
+}
+.lang{
+  /* height: 55px; */
+  height: 30px;
+  margin: auto 0;
+  /* font-size: 40px; */
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 20px;
+  background-color: #ff8600;
+  color: white;
+  width: 30%;
+  text-align: center;
+}
+.lang button{
+  /* margin: auto 0; */
+}
+.select_game{
+  height: 80%;
+}
+.select_btn_wrap{
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 70%;
+  margin: 0 auto;
+}
+.select_back{
+  position: absolute;
+  top: 45%;
+  left: -15%;
+}
+.select_btn{
+  /* margin: 15px 0;
+  font-size: 40px;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 20px 30px;
+  background-color: green;
+  color: white;
+  width: 100%;
+  text-align: center; */
+  margin: 7px 0;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 100%;
+  text-align: center;
+}
+.select_btn_auth{
+  margin: 7px 0;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 100%;
+  text-align: center;
+}
 </style>

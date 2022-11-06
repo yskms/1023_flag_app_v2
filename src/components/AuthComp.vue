@@ -243,7 +243,7 @@
 </script>
 
 <template>
-<div class="cont">
+<div class="container">
   <div class="loginSuccess" v-show="isSuccess">
     <p>ログイン成功</p>
     <div class="my-2">
