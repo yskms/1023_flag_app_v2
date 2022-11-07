@@ -128,6 +128,7 @@
     async updateFireUsers(){//firestoreをアップデートするメソッド。authコンポにも要設定
       //特定のプレイカウントで、地域を解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      //openContinentは数値一つ（0-4?）
       let openContinentNow = this.currentUserObj.openContinent
       const requireCountArr =[0,0,0,5,10,15,30]//解放に必要なプレイ回数
       for(let k=3;k<7;k++){
@@ -138,13 +139,13 @@
       }
       //特定スコア以上で、難しさを解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
-      let openDiffArrNow = this.currentUserObj.openDiffArr  //[1,1,1,1,1,1,1]がデフォ
+      let openDiffArrNow = this.currentUserObj.openDiffArr.concat()  //[1,1,1,1,1,1,1]がデフォ
       for(let j=1;j<3;j++){
         if(this.score>9 && this.setArr[3]==j){//score10以上、1:普通,2:ムズイなら
           for(let i=0;i<8;i++){
             if(this.setArr[2] == i){  //プレイした地域のopenDiffArrNowを加算
               openDiffArrNow[i] = j+1
-              console.log('むずいモード追加！')
+              console.log('むずいモード追加とか！')
             }
           }
         }
