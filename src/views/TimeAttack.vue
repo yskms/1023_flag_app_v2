@@ -82,6 +82,7 @@ export default {
         },3000)
       this.fetchRank() //score降順で3つデータ取る
       this.isReverseQuiz = true
+      this.nextQuiz2()
     }
   },
   watch:{
@@ -270,7 +271,7 @@ export default {
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
-            this.isReverseQuiz ? this.nextQuiz2() : this.nextQuiz1()
+            this.isReverseQuiz ? this.nextQuiz1() : this.nextQuiz2()
             this.isReverseQuiz = !this.isReverseQuiz
           },500)
         }else{
@@ -291,7 +292,7 @@ export default {
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
-            this.isReverseQuiz ? this.nextQuiz2() : this.nextQuiz1()
+            this.isReverseQuiz ? this.nextQuiz1() : this.nextQuiz2()
             this.isReverseQuiz = !this.isReverseQuiz
           },500)
         }else{
