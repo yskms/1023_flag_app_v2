@@ -224,10 +224,10 @@ export default {
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
           this.score++
           if(this.isNoMiss){this.noMissIdArr.push(id)}
+            this.isFlagHide = true
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
-            this.isFlagHide = true
             this.nextQuiz2()
           },500)
         }else{
@@ -539,5 +539,6 @@ export default {
 }
 .flag_hide{
   opacity: -1;
+  transition: 1s;
 }
 </style>
