@@ -78,7 +78,6 @@ export default {
         setTimeout(()=>{
           clearInterval(timerId2)
           this.gameStart()
-          // this.nextQuiz1()
         },3000)
       this.fetchRank() //score降順で3つデータ取る
       this.isReverseQuiz = true
@@ -88,7 +87,7 @@ export default {
   watch:{
     timebar:function(){
       if(this.timebar < 0){
-        this.isResult = true  //ゲーム終了後、何問正解と表示する
+        // this.isResult = true  //ゲーム終了後、何問正解と表示する
         this.$store.commit('setScore',this.score)
         clearInterval(this.timerId)
         
@@ -476,14 +475,20 @@ export default {
   </div>
 
   <div class="getready" v-show="getready>0">
-    {{getready}}
+    <p>{{getready}}</p>
   </div>
   <div class="isSeikai" v-show="isSeikai">
-    まる
+    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    </svg>
   </div>
   <div class="isSeikai" v-show="isFuseikai">
-    ばつ
+    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
+      <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
+    </svg>
   </div>
+
   <div class="isResult" v-show="isResult">
     {{score + "問正解"}}
     <div class="my-2" @click="showResultComp()">
@@ -497,6 +502,7 @@ export default {
   </div>
 
   <div class="main">
+    <div class="timebar_wrap">
     <v-progress-linear
         color="teal"
         buffer-value="0"
@@ -504,52 +510,51 @@ export default {
         stream
       ></v-progress-linear>
     <p>{{score + "問正解"}}</p>
+      </div>
 
     <div class="flag_wrap" v-show="isReverseQuiz">
       <!--  rel="preload" -->
       <img :src="quizAnserOb.flag" alt="flag" :class="{flag_hide:isFlagHide}">
-      {{quizAnserOb.nameJ}}
+      <!-- {{quizAnserOb.nameJ}} -->
     </div>
     <div class="flag_wrap" v-show="!isReverseQuiz">
       <!--  rel="preload" -->
       <img :src="quizAnserOb2.flag" alt="flag" :class="{flag_hide:isFlagHide}">
-      {{quizAnserOb2.nameJ}}
+      <!-- {{quizAnserOb2.nameJ}} -->
     </div>
   <div class="choice_wrap" v-show="isReverseQuiz">
-    <ul class="choice">
-      <li v-for="(q,index) in quizArr" :key="index" class="choice_list">
+    <!-- <ul class="choice"> -->
+      <div v-for="(q,index) in quizArr" :key="index" class="choice_vfor">
         
-        <div class="my-2" @click="rockAnser(q.id)">
+        <div class="select_btn" @click="rockAnser(q.id)">
               <!-- ボタンにvibeクラスを付与。 -->
-              <v-btn
-                :class="{ vibe: isVibe[q.id] }"
+              <!-- <v-btn
+               
                 color="success"
                 dark
-              >
+              > -->
+              <button :class="{ vibe: isVibe[q.id] }">
                 {{q.nameJ}}
-              </v-btn>
+              </button>
         </div>
 
-      </li>
-    </ul>
+      </div>
+    <!-- </ul> -->
   </div>
   <div class="choice_wrap" v-show="!isReverseQuiz">
-    <ul class="choice">
-      <li v-for="(q,index) in quizArr2" :key="index" class="choice_list">
+    <!-- <ul class="choice"> -->
+      <div v-for="(q,index) in quizArr2" :key="index" class="choice_vfor">
         
-        <div class="my-2" @click="rockAnser(q.id)">
+        <div class="select_btn" @click="rockAnser(q.id)">
               <!-- ボタンにvibeクラスを付与。 -->
-              <v-btn
-                :class="{ vibe: isVibe[q.id] }"
-                color="success"
-                dark
-              >
+              
+              <button :class="{ vibe: isVibe[q.id] }">
                 {{q.nameJ}}
-              </v-btn>
+              </button>
         </div>
 
-      </li>
-    </ul>
+      </div>
+    <!-- </ul> -->
   </div>
     <!-- <FooterComp/> -->
   </div><!-- main -->
@@ -560,20 +565,78 @@ export default {
 <style scoped>
 .cont{
   position: relative;
+  /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
+  width: 100%;
+  height: 100%;
+  background-color: aquamarine;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.main{
+  height: 80%;
+  width: 100%;
+  /* width: 820px; */
+  /* max-width: 410px; */
+  background-color: #F5ECCD;
+  /* position: relative; */
+  /* margin: 20% auto 20% auto; */
+  /* margin: auto 0; */
+}
+.timebar_wrap{
+  height: 10%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-direction: column;
+}
+.timebar_wrap p{
+  margin: 5px;
+}
+.user_error{
+  position: absolute;
+  top: 45%;
 }
 .getready{
   position: absolute;
-  top: 0;
-  left:0;
+  /* top: 0; */
+  /* left:0; */
   height: 100vh;
   width: 100vw;
-  background-color: rgba(128, 128, 128, 0.5);
-  text-align: center;
-  vertical-align: middle;
-  padding: 50%;
+  background-color: rgba(128, 128, 128, 1);
+  /* text-align: center; */
+  /* vertical-align: middle; */
+  /* padding: 50%; */
+  z-index: 1;
+  /* display: flex; */
+  /* position: relative; */
+}
+.getready p{
+  /* justify-content: center; */
+  /* text-align: center; */
+  display: table;
+  /* width: 100vw; */
   color: white;
   font-size: 5rem;
-  z-index: 1;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+.isSeikai{
+  /* justify-content: center; */
+  /* text-align: center; */
+  display: table;
+  font-size: 5rem;
+  /* width: 100vw; */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 .result_comp{
   position: absolute;
@@ -631,5 +694,17 @@ export default {
 .flag_hide{
   opacity: -1;
   transition: 1s;
+}
+.select_btn{
+  margin: 7px auto;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 80%;
+  text-align: center;
+  white-space: nowrap;
 }
 </style>
