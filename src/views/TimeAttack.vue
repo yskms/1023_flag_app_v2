@@ -12,8 +12,11 @@ export default {
   data(){
     return{
       quizAnserOb:{},
+      quizAnserOb2:{},
       quizArr:[],
       copyArr:[],
+      quizArr2:[],
+      copyArr2:[],
       timebar:100,
       timerId:null,
       getready:3,//ゲーム開始前のカウントダウン用
@@ -46,6 +49,7 @@ export default {
       noMissIdArr:[],//1発正解したidを追加していく
 
       isFlagHide:false,
+      isReverseQuiz:false,
     }
   },
   created(){
@@ -74,9 +78,10 @@ export default {
         setTimeout(()=>{
           clearInterval(timerId2)
           this.gameStart()
-          this.nextQuiz2()
+          // this.nextQuiz1()
         },3000)
       this.fetchRank() //score降順で3つデータ取る
+      this.isReverseQuiz = true
     }
   },
   watch:{
@@ -158,9 +163,10 @@ export default {
           }
         })
       }
+      this.nextQuiz1()
     },
 
-    nextQuiz2(){
+    nextQuiz1(){
       this.quizArr = []//ここに２問〜４問を入れる
       this.copyArr = this.limitedFlagListArr.concat()//毎回copyArr新品にする
 
@@ -207,6 +213,41 @@ export default {
 
         this.quizArrRandom()  //2~8問入っているquizArrをシャッフルするメソッド
     },
+    nextQuiz2(){
+      this.quizArr2 = []//ここに２問〜４問を入れる
+      this.copyArr2 = this.limitedFlagListArr.concat()//毎回copyArr新品にする
+
+      //copyArrからquizArrに1つオブジェクトを抜き取って入れる、かつ正解としてquizAnserObに代入しておく
+        const rand = Math.floor(Math.random()*this.copyArr2.length)
+        this.quizArr2.push(this.copyArr2.splice(rand,1)[0])
+        this.quizAnserOb2 = this.quizArr2[0]
+      //１つ抜き取られたcopyArrと、falseSelectArrを合体させる
+        Object.assign(this.copyArr2, this.falseSelectArr)
+        console.log(this.copyArr2)
+      
+//['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard']
+//incorrectAnserOption:[1,2,3,7,]難しさと連動した、不正解選択肢の数
+        for(let i=0;i<this.incorrectAnserOption.length;i++){
+          if(this.setArr[3]==i){
+            for(let j=0, len=this.copyArr2.length; j<this.incorrectAnserOption[i]; j++,len--){
+              const rand = Math.floor(Math.random()*len)
+              this.quizArr2.push(this.copyArr2.splice(rand,1)[0])
+            }
+          }
+        }
+
+        this.quizArrRandom2()  //2~8問入っているquizArrをシャッフルするメソッド
+    },
+    quizArrRandom2(){  //2~8問入っているquizArrをシャッフルするメソッド
+        for(let j=(this.quizArr2.length -1); 0<j; j--){
+          const r = Math.floor(Math.random()*(j+1))
+          const tmp = this.quizArr2[j]
+          this.quizArr2[j] = this.quizArr2[r]
+          this.quizArr2[r] = tmp
+        }
+        console.log(this.quizArr2)
+        this.isFlagHide = false
+    },
 
     quizArrRandom(){  //2~8問入っているquizArrをシャッフルするメソッド
         for(let j=(this.quizArr.length -1); 0<j; j--){
@@ -220,6 +261,7 @@ export default {
     },
 
     rockAnser(id){
+      if(this.isReverseQuiz){
         if(id === this.quizAnserOb.id){
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
           this.score++
@@ -228,7 +270,8 @@ export default {
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
-            this.nextQuiz2()
+            this.isReverseQuiz ? this.nextQuiz2() : this.nextQuiz1()
+            this.isReverseQuiz = !this.isReverseQuiz
           },500)
         }else{
           this.isFuseikai = true  //ばつを表示して、消す
@@ -239,6 +282,28 @@ export default {
             this.isVibe[id] = false
           },500)
         }
+      }else{
+        if(id === this.quizAnserOb2.id){
+          this.isSeikai = true  //まるを表示して、消して、次のクイズへ
+          this.score++
+          if(this.isNoMiss){this.noMissIdArr.push(id)}
+            this.isFlagHide = true
+          setTimeout(()=>{
+            this.isSeikai = false
+            this.isNoMiss = true
+            this.isReverseQuiz ? this.nextQuiz2() : this.nextQuiz1()
+            this.isReverseQuiz = !this.isReverseQuiz
+          },500)
+        }else{
+          this.isFuseikai = true  //ばつを表示して、消す
+          this.isVibe[id] = true
+          this.isNoMiss = false
+          setTimeout(()=>{
+            this.isFuseikai = false
+            this.isVibe[id] = false
+          },500)
+        }
+      }
       },
     backToHome(){
       this.$router.push('/')
@@ -438,13 +503,38 @@ export default {
         stream
       ></v-progress-linear>
     <p>{{score + "問正解"}}</p>
-    <div class="flag_wrap">
-      <img :src="quizAnserOb.flag" alt="flag" :class="{flag_hide:isFlagHide}" rel="preload">
+
+    <div class="flag_wrap" v-show="isReverseQuiz">
+      <!--  rel="preload" -->
+      <img :src="quizAnserOb.flag" alt="flag" :class="{flag_hide:isFlagHide}">
       {{quizAnserOb.nameJ}}
     </div>
-  <div class="choice_wrap">
+    <div class="flag_wrap" v-show="!isReverseQuiz">
+      <!--  rel="preload" -->
+      <img :src="quizAnserOb2.flag" alt="flag" :class="{flag_hide:isFlagHide}">
+      {{quizAnserOb2.nameJ}}
+    </div>
+  <div class="choice_wrap" v-show="isReverseQuiz">
     <ul class="choice">
       <li v-for="(q,index) in quizArr" :key="index" class="choice_list">
+        
+        <div class="my-2" @click="rockAnser(q.id)">
+              <!-- ボタンにvibeクラスを付与。 -->
+              <v-btn
+                :class="{ vibe: isVibe[q.id] }"
+                color="success"
+                dark
+              >
+                {{q.nameJ}}
+              </v-btn>
+        </div>
+
+      </li>
+    </ul>
+  </div>
+  <div class="choice_wrap" v-show="!isReverseQuiz">
+    <ul class="choice">
+      <li v-for="(q,index) in quizArr2" :key="index" class="choice_list">
         
         <div class="my-2" @click="rockAnser(q.id)">
               <!-- ボタンにvibeクラスを付与。 -->
