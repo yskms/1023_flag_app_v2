@@ -9,6 +9,10 @@
         openDiffArr:[1,2,1,1,1,1,1,],
         diffArr:[[],[],[],[],[],[],[]],
         diffArrAll:[['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard'],],
+
+        shortText : "お寿司食べたい🍣",
+        longText : "私が好きなお寿司のネタとして、サーモン、本マグロ、はまちが挙げられます。いずれにしても脂がのっていてとても気に入っています。そういえばお寿司屋さんといえば弊社から歩いても行けるところに、私がよく行くお店があるのですが、1000円以下から食べられる「回らないお寿司」でとてもおいしいです。私一人でも、同僚とのランチでも行きます。",
+        textElem : document.getElementById("soto"),
       }
     },
     methods:{
@@ -62,7 +66,46 @@
           }
         }
         console.log(this.diffArr)
-      }
+      },
+
+  selectShort() {
+    this.textElem.innerText = this.shortText;
+    this.resize();
+  },
+ 
+  selectLong() {
+    const textElem = document.getElementsByClassName("soto")
+    textElem.innerText = this.longText;
+    this.resize();
+  },
+ 
+  resize() {
+    const textElem = document.getElementsByClassName("soto")
+    /* 文字数が少なくなったときのため、フォントサイズを戻せるようにします。
+    他にstyleの属性があればfont-sizeに関するところを除いてstyleに上書きしましょう。
+    今回はないのでstyle属性ごと削除します。*/
+    // this.textElem.removeAttribute('style');
+    console.log(textElem)
+    console.log(textElem.getBoundingClientRect().height , textElem.scrollHeight);
+    for (
+      let size = 30;
+      textElem.getBoundingClientRect().height < textElem.scrollHeight && size > 10;
+      size -= 1
+      /* 文字がはみ出すサイズが存在していたので、1ずつ減らすのを3ずつ減らすという少し速いペースでフォントサイズを小さくしてみました。
+      こちらには正解不正解はなく、場合によって調整して遊んでみてください。*/
+    ) {
+      textElem.style.fontSize = size + "px";
+      // textElem.setAttribute("style", `font-size: ${size}px`); // こちらも可能
+    }
+  },
+ 
+  //ブラウザを開いたとき
+  // selectShort();
+ 
+  //ウインドウサイズを変えたとき
+  // window.addEventListener('resize', () => {
+  //   resize();
+  // }),
 
 
     }
@@ -74,5 +117,29 @@
   a
   <AuthComp/>
   <button @click="test2()">aaa</button>
+  <body>
+    bb
+    <div class="button" @click="selectShort()">短文</div>
+    <div class="button" @click="selectLong()">長文</div>
+    <div class="soto">{{longText}}</div>
+    <div class="soto">{{longText}}</div>
+  </body>
 </div>
 </template>
+
+<style scoped>
+.button {
+    width: 100px;
+    margin: 8px;
+    padding: 8px;
+    font-size: 24px;
+    background-color: #ff8900;
+  }
+.soto {
+    width: 90%;
+    height: 216px;
+    font-size: 30px;
+    border: 3px solid #ff8900;
+    padding:8px;
+}
+</style>
