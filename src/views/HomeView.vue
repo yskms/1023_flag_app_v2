@@ -28,8 +28,11 @@
           ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],],
         continentArrAll:[
           ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],],
-        diffArr:[
+        diffArr:[[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']]],
+        diffArrAll:[
           ['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard'],],
+        // currentUserObj:{},
+        // openDiffArr:[1,1,1,1,1,1,1,],
       }
     },
     mounted(){
@@ -53,6 +56,7 @@
 
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
+          // Object.assign(this.currentUserObj,docSnap.data())
           if(docSnap.data().name==undefined){//ユーザー名なかったら登録させる
             this.isUserName = true
           }else{
@@ -62,6 +66,16 @@
           for(let i=0;i<docSnap.data().openContinent; i++){
             this.continentArr.push(this.continentArrAll.splice(3,1)[0])
           }
+
+      //openDiffArr:[3,2,1,1,1,1,1,]
+          console.log(docSnap.data().openDiffArr)
+          for(let j=0;j<7;j++){
+            for(let k=2;k<=docSnap.data().openDiffArr[j];k++){
+              this.diffArr[j].push(this.diffArrAll[k])
+            }
+          }
+          console.log(this.diffArr)
+
 
         } else {
           // doc.data() will be undefined in this case
@@ -73,6 +87,10 @@
           console.log("logout now")
           this.uid = ''
           this.$store.commit('authFalse')//storeのガチUIDを消す
+          this.continentArr=[
+          ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],]
+          this.diffArr=[[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']],[['やさしい','Easy'],['標準','Normal']]]
+        
           // Sign-out successful.
         }).catch((error) => {
           console.log(error)
@@ -153,8 +171,8 @@
           <div class="kokuban_wrap">
               <h1 class="dr">国旗ハカセ</h1>
               <!-- <img class="kokuban" src="../assets/blackboard.png" alt="title"> -->
+              <img class="hakase" src="../assets/hakase_top.png" alt="hakase">
           </div>
-          <img class="hakase" src="../assets/hakase_top.png" alt="hakase">
           <div class="kokki_wrap">
             <img class="kokki" :src="flagLists[3].flag" alt="flag">
             <img class="kokki" :src="flagLists[4].flag" alt="flag">
@@ -193,17 +211,14 @@
           </div>
 
         <div class="select_game" v-show="selectG">
-          <div class="select_btn_wrap">
             <div class="select_back" >
-                <v-btn
-                  x-small
-                  color="warning"
-                  dark
-                  @click="kesu"
-                >
-                  消す
-                </v-btn>
+                <button>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                  </svg>
+                </button>
               </div>
+          <div class="select_btn_wrap">
             <div class="select_btn" @click="select_game(0)">
               <!-- <v-btn
                 color="success"
@@ -247,60 +262,64 @@
         </div>
 
         <div class="select_game" v-show="selectL">
-          <div class="my-2" @click="select_game(0)" >
-                <v-btn
-                  x-small
-                  color="warning"
-                  dark
-                >
-                  戻る
-                </v-btn>
+          <div class="select_btn_wrap" >
+                <div class="select_back" >
+                <button @click="select_game(0)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                  </svg>
+                </button>
               </div>
           <!-- ['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],], -->
-          <div class="select_wrap">
+          <!-- <div class="select_wrap"> -->
             <div class="select_vfor" v-for="(c,index) in continentArr" :key="index">
-              <div class="my-2" @click="select_land(index)">
-              <v-btn
-                color="success"
-                dark
-              >
+              <div class="select_btn" @click="select_land(index)">
+              <button>
                 <!-- {{lang==0 ? "全ての地域" : "All Continent"}} -->
                 {{lang==0 ? c[0] : c[1] }}
-              </v-btn>
+              </button>
             </div>
+            </div>
+            <div class="select_btn" v-show="continentArr.length<4">
+              <button>
+                ?
+              </button>
             </div>
 
+          <!-- </div> -->
           </div>
         </div>
 
         <div class="select_game" v-show="selectD">
-          <div class="my-2" @click="select_land(0)" >
-                <v-btn
-                  x-small
-                  color="warning"
-                  dark
-                >
-                  戻る
-                </v-btn>
+          <div class="select_btn_wrap" >
+                <div class="select_back" >
+                <button @click="select_land(0)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                  </svg>
+                </button>
               </div>
-          
-
-      <!-- [0 激ムズ, 1 難しい, 2 普通, 3 やさしい, ] -->
-          <div class="select_wrap">
-            <div class="select_vfor" v-for="(d,index) in diffArr" :key="index">
-              <div class="my-2" @click="select_diff(index)">
-              <v-btn
-                color="success"
-                dark
-              >
+            
+            <!-- [0 激ムズ, 1 難しい, 2 普通, 3 やさしい, ] -->
+            <div class="select_vfor" v-for="(d,index) in diffArr[setArr[2]]" :key="index">
+              <div class="select_btn" @click="select_diff(index)">
+              <button>
                 <!-- {{lang==0 ? "全ての地域" : "All Continent"}} -->
                 {{lang==0 ? d[0] : d[1] }}
-              </v-btn>
+              </button>
             </div>
+            </div>
+            <div class="select_btn" v-show="diffArr[setArr[2]].length<4">
+              <button>
+                ?
+              </button>
             </div>
 
-          
+          <!-- </div> -->
           </div>
+
+
+
         </div>
 
       </div>
@@ -310,16 +329,24 @@
 
 <style scoped>
 .cont{
-  height: 100vh;
+  /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
+  width: 100%;
+  /* height: 80vh; */
+  height: 100%;
   background-color: aquamarine;
+  /* margin: auto 0; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .main{
-  height: 100%;
+  height: 80%;
   /* width: 820px; */
-  max-width: 410px;
+  /* max-width: 410px; */
   background-color: #F5ECCD;
   position: relative;
-  margin: 0 auto;
+  /* margin: 20% auto 20% auto; */
+  /* margin: auto 0; */
 }
 .user_error{
   position: absolute;
@@ -346,29 +373,29 @@
   background-position: center center;
   height: 80%;
   display: flex;
+  position: relative;
 }
 .dr{
   margin: auto ;
-  /* height: 200px; */
-  /* height: 100px; */
   text-align: center;
   color: white;
   /* font-size: 150px; */
-  font-size: 75px;
-}
-.kokuban{
-  width: 100%;
+  /* font-size: 60px; */
+  font-size: 300%;
+  white-space: nowrap;
 }
 .hakase{
   /* height: 380px; */
   height: 190px;
   position: absolute;
-  top: 50%;
-  left: 27%;
+  top: 60%;
+  left: 50%;
+  right: 50%;
 }
 .kokki{
   /* height: 120px; */
-  height: 60px;
+  /* height: 60px; */
+  width: 20%;
 }
 
 
@@ -379,6 +406,7 @@
   display: flex;
   justify-content: space-around;
   height: 20%;
+  margin-top: 20px;
 }
 .lang{
   /* height: 55px; */
@@ -397,41 +425,40 @@
   /* margin: auto 0; */
 }
 .select_game{
-  height: 80%;
+  height: 75%;
+  position: relative;
 }
 .select_btn_wrap{
   display: flex;
-  position: relative;
+  /* position: relative; */
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
-  height: 100%;
-  width: 70%;
+  /* height: 100%; */
+  height: 220px;
+  width: 80%;
   margin: 0 auto;
+  scroll-snap-type: y mandatory;
+  /* border: 1px solid; */
+  overflow: auto;
 }
 .select_back{
   position: absolute;
-  top: 45%;
-  left: -15%;
+  top: 28%;
+  left: 8%;
+}
+.select_vfor{
+  width: 100%;
 }
 .select_btn{
-  /* margin: 15px 0;
-  font-size: 40px;
-  font-weight: bold;
-  border-radius: 20px;
-  padding: 20px 30px;
-  background-color: green;
-  color: white;
-  width: 100%;
-  text-align: center; */
-  margin: 7px 0;
+  margin: 7px auto;
   font-size: 20px;
   font-weight: bold;
   border-radius: 10px;
   padding: 10px 15px;
   background-color: green;
   color: white;
-  width: 100%;
+  width: 80%;
   text-align: center;
 }
 .select_btn_auth{
@@ -442,7 +469,7 @@
   padding: 10px 15px;
   background-color: green;
   color: white;
-  width: 100%;
+  width: 80%;
   text-align: center;
 }
 </style>

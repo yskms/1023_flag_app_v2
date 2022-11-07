@@ -6,6 +6,9 @@
     data(){
       return{
         quizArr:[1,2,3,],
+        openDiffArr:[1,2,1,1,1,1,1,],
+        diffArr:[[],[],[],[],[],[],[]],
+        diffArrAll:[['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard'],],
       }
     },
     methods:{
@@ -39,6 +42,29 @@
         }
         console.log(noMissCountObjNow)
       },
+
+
+      //openDiffArr:[1,2,1,1,1,1,1,]
+      // diffArrAll:['やさしい','標準','難しい','激ムズ']
+      // diffArr:[]
+
+      test2(){
+        // this.diffArr[0].push(this.diffArrAll[0])
+        // this.diffArr[0].push(this.diffArrAll[1])
+
+        // this.diffArr[1].push(this.diffArrAll[0])
+        // this.diffArr[1].push(this.diffArrAll[1])
+        // this.diffArr[1].push(this.diffArrAll[2])
+        
+        for(let j=0;j<7;j++){
+          for(let k=0;k<=this.openDiffArr[j];k++){
+            this.diffArr[j].push(this.diffArrAll[k])
+          }
+        }
+        console.log(this.diffArr)
+      }
+
+
     }
   }
 </script>
@@ -47,6 +73,6 @@
 <div>
   a
   <AuthComp/>
-  <button @click="test()">aaa</button>
+  <button @click="test2()">aaa</button>
 </div>
 </template>
