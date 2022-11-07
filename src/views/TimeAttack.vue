@@ -44,6 +44,8 @@ export default {
       //['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard']
       isNoMiss:true,//1発正解の管理用
       noMissIdArr:[],//1発正解したidを追加していく
+
+      isFlagHide:false,
     }
   },
   created(){
@@ -214,6 +216,7 @@ export default {
           this.quizArr[r] = tmp
         }
         console.log(this.quizArr)
+        this.isFlagHide = false
     },
 
     rockAnser(id){
@@ -224,6 +227,7 @@ export default {
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
+            this.isFlagHide = true
             this.nextQuiz2()
           },500)
         }else{
@@ -435,7 +439,7 @@ export default {
       ></v-progress-linear>
     <p>{{score + "問正解"}}</p>
     <div class="flag_wrap">
-      <img :src="quizAnserOb.flag" alt="flag" class="flag" rel="preload">
+      <img :src="quizAnserOb.flag" alt="flag" :class="{flag_hide:isFlagHide}" rel="preload">
       {{quizAnserOb.nameJ}}
     </div>
   <div class="choice_wrap">
@@ -532,5 +536,8 @@ export default {
     50% {transform: translate(0px, 2px) rotateZ(0deg)}
     75% {transform: translate(2px, 0px) rotateZ(-1deg)}
     100% {transform: translate(0px, 0px) rotateZ(0deg)}
+}
+.flag_hide{
+  opacity: -1;
 }
 </style>
