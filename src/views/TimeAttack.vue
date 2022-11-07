@@ -435,7 +435,7 @@ export default {
       ></v-progress-linear>
     <p>{{score + "問正解"}}</p>
     <div class="flag_wrap">
-      <img :src="quizAnserOb.flag" alt="flag" class="flag">
+      <img :src="quizAnserOb.flag" alt="flag" class="flag" rel="preload">
       {{quizAnserOb.nameJ}}
     </div>
   <div class="choice_wrap">
