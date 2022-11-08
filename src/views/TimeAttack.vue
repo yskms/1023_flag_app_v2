@@ -26,6 +26,7 @@ export default {
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
       isConfig:false,//setArrの中身があるかないかを管理
       isResult:false,//ゲーム終了後、何問正解と表示するための管理用
+      isResultBefore:false,//isResultの前処理。"終了"を表示
 
       isResultComp:false,//ゲーム終了後、ResultCompを表示するための管理用
 
@@ -48,7 +49,7 @@ export default {
       isNoMiss:true,//1発正解の管理用
       noMissIdArr:[],//1発正解したidを追加していく
 
-      isFlagHide:false,
+      // isFlagHide:false,
       isReverseQuiz:false,//trueでquizArr、falseで2を表示します。
       //               また、trueの時にはquizArr2を作成します。nextQuiz2()
     }
@@ -88,9 +89,13 @@ export default {
   watch:{
     timebar:function(){
       if(this.timebar < 0){
-        // this.isResult = true  //ゲーム終了後、何問正解と表示する
+        this.isResultBefore = true  //ゲーム終了後、終了と表示する
         this.$store.commit('setScore',this.score)
         clearInterval(this.timerId)
+        setTimeout(()=>{
+          this.isResult = true  //3秒後、何問正解と表示する
+          this.isResultBefore = false
+        },3000)
       }
     }
   },
@@ -234,7 +239,7 @@ export default {
           this.quizArr2[r] = tmp
         }
         console.log(this.quizArr2)
-        this.isFlagHide = false
+        // this.isFlagHide = false
     },
 
     quizArrRandom(){  //2~8問入っているquizArrをシャッフルするメソッド
@@ -245,7 +250,7 @@ export default {
           this.quizArr[r] = tmp
         }
         console.log(this.quizArr)
-        this.isFlagHide = false
+        // this.isFlagHide = false
     },
 
     rockAnser(id){
@@ -254,7 +259,7 @@ export default {
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
           this.score++
           if(this.isNoMiss){this.noMissIdArr.push(id)}
-            this.isFlagHide = true
+            // this.isFlagHide = true
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
@@ -277,7 +282,7 @@ export default {
           this.isSeikai = true  //まるを表示して、消して、次のクイズへ
           this.score++
           if(this.isNoMiss){this.noMissIdArr.push(id)}
-            this.isFlagHide = true
+            // this.isFlagHide = true
           setTimeout(()=>{
             this.isSeikai = false
             this.isNoMiss = true
@@ -509,8 +514,14 @@ export default {
     </svg>
   </div>
 
+  <div class="isResultBefore" v-show="isResultBefore">
+    <div class="my-2">
+              終了
+            </div>
+  </div>
+
   <div class="isResult" v-show="isResult">
-    {{score + "問正解"}}
+    <a>{{score + "問正解"}}</a>
     <div class="my-2" @click="showResultComp()">
               <v-btn
                 color="success"
@@ -697,17 +708,32 @@ export default {
 }
 .isResult{
   position: absolute;
-  top: 0;
-  left:0;
   height: 100vh;
   width: 100vw;
   background-color: grey;
-  text-align: center;
-  vertical-align: middle;
-  padding: 50%;
   color: white;
   font-size: 3rem;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.isResult a{
+  color: white;
+}
+.isResultBefore{
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  background-color: grey;
+  color: white;
+  font-size: 3rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .vibe {
     display: inline-block;

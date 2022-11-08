@@ -172,7 +172,7 @@ export default {
 </script>
 
 <template>
-  <div class="cont">
+  <div class="result_cont">
     <div class="config_error" v-show="isConfig">
     <p style="color:red">リセットされました</p>
     <p style="color:red">Lost Your Result..</p>
@@ -263,9 +263,11 @@ export default {
 </template>
 
 <style scoped>
-.cont{
+.result_cont{
   position: relative;
   z-index: 2;
+  width: 100%;
+  height: 100%;
 }
 .config_error{
   position: absolute;
