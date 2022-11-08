@@ -498,12 +498,12 @@ export default {
     <p>{{getready}}</p>
   </div>
   <div class="isSeikai" v-show="isSeikai">
-    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
     </svg>
   </div>
   <div class="isSeikai" v-show="isFuseikai">
-    <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
       <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
       <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
     </svg>
@@ -542,11 +542,14 @@ export default {
       <img :src="quizAnserOb2.flag" alt="flag" :class="{flag_hide:isFlagHide}">
       <!-- {{quizAnserOb2.nameJ}} -->
     </div>
-  <div class="choice_wrap" v-show="isReverseQuiz">
+  <div :class="{choice_wrap:setArr[3]==3}" v-show="isReverseQuiz" style="height:35%">
     <!-- <ul class="choice"> -->
-      <div v-for="(q,index) in quizArr" :key="index" class="choice_vfor">
+      <div v-for="(q,index) in quizArr" :key="index" :class="{choice_vfor:setArr[3]==3}">
         
-        <div class="select_btn" @click="rockAnser(q.id)" :id="`a${(q.id)}`">
+        <div class="select_btn" @click="rockAnser(q.id)" :id="`a${(q.id)}`" 
+        :style="{fontSize:(setArr[3]==3 ? '15px' : ''), 
+        height:(setArr[3]==3 ? '50px' : ''),
+        margin:(setArr[3]==3 ? '8px auto 0 auto' : '') }">
               <!-- ボタンにvibeクラスを付与。 -->
               <button :class="{ vibe: isVibe[q.id] }">
                 {{q.nameJ}}
@@ -556,11 +559,14 @@ export default {
       </div>
     <!-- </ul> -->
   </div>
-  <div class="choice_wrap" v-show="!isReverseQuiz">
+  <div :class="{choice_wrap:setArr[3]==3}" v-show="!isReverseQuiz" style="height:35%">
     <!-- <ul class="choice"> -->
-      <div v-for="(q,index) in quizArr2" :key="index" class="choice_vfor">
+      <div v-for="(q,index) in quizArr2" :key="index" :class="{choice_vfor:setArr[3]==3}">
         
-        <div class="select_btn" @click="rockAnser(q.id)" :id="`a${(q.id)}`">
+        <div class="select_btn" @click="rockAnser(q.id)" :id="`a${(q.id)}`"
+        :style="{fontSize:(setArr[3]==3 ? '15px' : ''), 
+        height:(setArr[3]==3 ? '50px' : ''),
+        margin:(setArr[3]==3 ? '8px auto 0 auto' : '') }">
               <!-- ボタンにvibeクラスを付与。 -->
               
               <button :class="{ vibe: isVibe[q.id] }">
@@ -610,6 +616,11 @@ export default {
 }
 .flag_wrap{
   height: 55%;
+  text-align: center;
+}
+.flag_wrap img{
+  /* max-width: 100%; */
+  max-height: 100%;
 }
 .user_error{
   position: absolute;
@@ -717,7 +728,7 @@ export default {
 /* 親は .main */
 /* height:  timebar_wrap 10%, flag_wrap 55%, choice_wrap 35% */
 .choice_wrap{
-  height: 35%;
+  /* height: 35%; */
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -726,8 +737,9 @@ export default {
   width: 50%;
 }
 .select_btn{
-  margin: 4px auto;
-  font-size: 20px;
+  /* margin: 4px auto; */
+  margin: 10px auto;
+  font-size: 18px;
   font-weight: bold;
   border-radius: 10px;
   padding: 10px 15px;
