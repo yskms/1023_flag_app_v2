@@ -74,13 +74,14 @@
   },
  
   selectLong() {
-    const textElem = document.getElementsByClassName("soto")
+    const textElem = document.getElementById("soto")
     textElem.innerText = this.longText;
     this.resize();
   },
  
-  resize() {
-    const textElem = document.getElementsByClassName("soto")
+  resize(t) {
+    console.log(t)
+    const textElem = document.getElementById(t)
     /* 文字数が少なくなったときのため、フォントサイズを戻せるようにします。
     他にstyleの属性があればfont-sizeに関するところを除いてstyleに上書きしましょう。
     今回はないのでstyle属性ごと削除します。*/
@@ -98,31 +99,30 @@
       // textElem.setAttribute("style", `font-size: ${size}px`); // こちらも可能
     }
   },
- 
-  //ブラウザを開いたとき
-  // selectShort();
- 
-  //ウインドウサイズを変えたとき
-  // window.addEventListener('resize', () => {
-  //   resize();
-  // }),
-
-
     }
   }
 </script>
 
 <template>
 <div>
-  a
   <AuthComp/>
   <button @click="test2()">aaa</button>
   <body>
     bb
-    <div class="button" @click="selectShort()">短文</div>
-    <div class="button" @click="selectLong()">長文</div>
-    <div class="soto">{{longText}}</div>
-    <div class="soto">{{longText}}</div>
+    <div class="button" @click="resize('a100')">短文</div>
+    <!-- <div class="button" @click="selectLong()">長文</div> -->
+    <!-- <div class="soto">{{longText}}</div> -->
+    <div id="a100">
+      <div>
+        {{longText}}
+      </div>
+      <div>
+        {{longText}}
+      </div>
+      <div>
+        {{longText}}
+      </div>
+    </div>
   </body>
 </div>
 </template>
@@ -135,7 +135,7 @@
     font-size: 24px;
     background-color: #ff8900;
   }
-.soto {
+#a100 {
     width: 90%;
     height: 216px;
     font-size: 30px;

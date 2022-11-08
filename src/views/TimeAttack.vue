@@ -103,6 +103,7 @@ export default {
         this.timebar = this.timebar - 1
         }, 100)
       console.log(this.timerId)
+      this.autoResize(this.quizArr)
       // setTimeout(()=>{
       //   clearInterval(timerId)
       //   this.$store.commit('setPush',this.score)
@@ -272,6 +273,9 @@ export default {
             this.isNoMiss = true
             this.isReverseQuiz ? this.nextQuiz1() : this.nextQuiz2()
             this.isReverseQuiz = !this.isReverseQuiz
+            setTimeout(()=>{this.isReverseQuiz ? this.autoResize(this.quizArr) : this.autoResize(this.quizArr2)
+            },500)
+            
           },500)
         }else{
           this.isFuseikai = true  //ばつを表示して、消す
@@ -293,6 +297,8 @@ export default {
             this.isNoMiss = true
             this.isReverseQuiz ? this.nextQuiz1() : this.nextQuiz2()
             this.isReverseQuiz = !this.isReverseQuiz
+            setTimeout(()=>{this.isReverseQuiz ? this.autoResize(this.quizArr) : this.autoResize(this.quizArr2)
+            },500)
           },500)
         }else{
           this.isFuseikai = true  //ばつを表示して、消す
@@ -305,6 +311,37 @@ export default {
         }
       }
       },
+
+
+
+      autoResize(arr){
+        for(let i=0;i<arr.length;i++){
+
+            console.log(arr)
+            console.log(arr[i].id)
+            console.log(`a${arr[i].id}`)
+            const textElem = document.getElementById(`a${arr[i].id}`)
+            /* 文字数が少なくなったときのため、フォントサイズを戻せるようにします。
+            他にstyleの属性があればfont-sizeに関するところを除いてstyleに上書きしましょう。
+            今回はないのでstyle属性ごと削除します。*/
+            // this.textElem.removeAttribute('style');
+            console.log(textElem)
+            console.log(textElem.getBoundingClientRect().width , textElem.scrollWidth);
+            for (
+              let size = 20;
+              textElem.getBoundingClientRect().width < textElem.scrollWidth && size > 10;
+              size -= 1
+              /* 文字がはみ出すサイズが存在していたので、1ずつ減らすのを3ずつ減らすという少し速いペースでフォントサイズを小さくしてみました。
+              こちらには正解不正解はなく、場合によって調整して遊んでみてください。*/
+              ) {
+              textElem.style.fontSize = size + "px";
+              // textElem.setAttribute("style", `font-size: ${size}px`); // こちらも可能
+            }
+        }
+      },
+
+
+
     backToHome(){
       this.$router.push('/')
     },
@@ -526,13 +563,8 @@ export default {
     <!-- <ul class="choice"> -->
       <div v-for="(q,index) in quizArr" :key="index" class="choice_vfor">
         
-        <div class="select_btn" @click="rockAnser(q.id)">
+        <div class="select_btn" @click="rockAnser(q.id)" :id="`a${(q.id)}`">
               <!-- ボタンにvibeクラスを付与。 -->
-              <!-- <v-btn
-               
-                color="success"
-                dark
-              > -->
               <button :class="{ vibe: isVibe[q.id] }">
                 {{q.nameJ}}
               </button>
@@ -545,7 +577,7 @@ export default {
     <!-- <ul class="choice"> -->
       <div v-for="(q,index) in quizArr2" :key="index" class="choice_vfor">
         
-        <div class="select_btn" @click="rockAnser(q.id)">
+        <div class="select_btn" @click="rockAnser(q.id)" :id="`a${(q.id)}`">
               <!-- ボタンにvibeクラスを付与。 -->
               
               <button :class="{ vibe: isVibe[q.id] }">
@@ -703,8 +735,15 @@ export default {
   padding: 10px 15px;
   background-color: green;
   color: white;
-  width: 80%;
+  width: 40%;
   text-align: center;
   white-space: nowrap;
+  height: 50px;
+}
+#a72 {
+    width: 80%;
+    /* height: 216px; */
+    font-size: 20px;
+    padding:8px;
 }
 </style>
