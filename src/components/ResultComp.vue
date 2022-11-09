@@ -187,13 +187,18 @@ export default {
     </div><!-- config_error -->
     
     <div class="result_main">
-      <div class="upwrap">
-        <p>新記録ーとか</p>
-        <div>{{score + '問'}}</div>
-      </div><!-- upwrap -->
+      <div class="img_area">
+        <img src="@/assets/hakase_hatsumei.png" alt="">
+      </div><!-- img_area -->
 
-      <div class="rank_msg">
-        <div v-show="rankIn > -1"><!-- ３位以内の場合 -->
+      <div class="score_area">
+        <div>
+          <p>{{score + ' 問'}}</p>
+        </div>
+      </div>
+
+      <div class="msg_area">
+        <div class="msg_wrap" v-show="rankIn > -1"><!-- ３位以内の場合 -->
           <!-- 画面が描画された瞬間は、何も表示しない -->
           <p v-if="this.uid=='uid'"></p>
           <!-- ログインしていないなら、 -->
@@ -201,9 +206,18 @@ export default {
           <!-- ログインしているなら、 -->
           <p v-else>{{rankInPlus}} 位です！！</p>
         </div>
-      </div><!-- rank_msg -->
+        <div class="msg_wrap" v-show="rankIn == -1"><!-- ３位以内じゃない場合 -->
+          <!-- 画面が描画された瞬間は、何も表示しない -->
+          <p v-if="this.uid=='uid'"></p>
+          <!-- ログインしていないなら、 -->
+          <p v-else-if="this.uid==''">ランクインまでもう少し！<br>ログインしたらいい事あるかも？</p>
+          <!-- ログインしているなら、 -->
+          <p v-else>ランクインまでもう少し！<br>もう一度挑戦してみよう！</p>
+        </div>
+      </div><!-- msg_area -->
 
-      <div class="rank_list">
+<!-- これResultCompの前に出そうかな？ -->
+      <!-- <div class="rank_list">
           <v-card
           class="mx-auto"
           max-width="300"
@@ -228,18 +242,15 @@ export default {
             </v-list-item-group>
           </v-list>
           </v-card>
-      </div>
+      </div> -->
 
-      <div class="bottom">
+      <div class="bottom_area">
         <!-- 画面が描画された瞬間は、ランキングボタン -->
           <div v-if="this.uid!==''">
             <div class="my-2" @click="goToRank()">
-              <v-btn
-                color="success"
-                dark
-              >
+              <button class="select_btn">
                 {{lang==0 ? "ランキングを見る" : "Ranking"}}
-              </v-btn>
+              </button>
             </div>
           </div>
           <!-- ログインしていないなら、ログインボタンにする -->
@@ -248,12 +259,9 @@ export default {
           </div>
           <!-- ホームに戻るボタンは固定 -->
           <div class="my-2" @click="backToHome">
-              <v-btn
-                color="success"
-                dark
-              >
+              <button class="select_btn">
                 ホームに戻る
-              </v-btn>
+              </button>
             </div>
       </div>
 
@@ -268,6 +276,8 @@ export default {
   z-index: 2;
   width: 100%;
   height: 100%;
+  display: flex;
+  justify-content: center;
 }
 .config_error{
   position: absolute;
@@ -282,5 +292,63 @@ export default {
   color: white;
   /* font-size: 5rem; */
   z-index: 2;
+}
+.result_main{
+  background-color: rgb(27, 67, 102);
+  height: 80%;
+  width: 100%;
+  margin: auto 0;
+}
+.img_area{
+  height: 30%;
+}
+.img_area img{
+  height: 100%;
+  /* このrelative必要か？？？ */
+  position: relative;
+  top: 20px;
+}
+.score_area{
+  height: 25%;
+}
+.score_area div{
+  height: 80%;
+  width: 45%;
+  background-color: white;
+  border-radius: 5px;
+  margin: 0 auto;
+  display: flex;
+}
+.score_area p{
+  margin: auto ;
+  color: black;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+.msg_area{
+  height: 15%;
+}
+.msg_wrap{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bottom_area{
+  height: 30%;
+}
+.select_btn{
+  /* margin: 4px auto; */
+  margin-bottom: 20px auto;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 65%;
+  text-align: center;
+  white-space: nowrap;
+  height: 50px;
 }
 </style>
