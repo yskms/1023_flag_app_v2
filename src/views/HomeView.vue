@@ -57,7 +57,7 @@
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           // Object.assign(this.currentUserObj,docSnap.data())
-          if(docSnap.data().name==undefined){//ユーザー名なかったら登録させる
+          if(docSnap.data().name==undefined || docSnap.data().name==""){//ユーザー名なかったら登録させる
             this.isUserName = true
           }else{
           this.userName = docSnap.data().name
@@ -128,7 +128,10 @@
       },
       goToUser(){
         this.$router.push('user')
-      }
+      },
+      goToUseredit(){
+        this.$router.push('useredit')
+      },
     },
     computed:{
     flagLists(){
@@ -142,12 +145,17 @@
 </script>
 
 <template>
-  <div class="cont">
-    <div class="main">
+  <div class="home_cont">
       <div class="user_error" v-if=" isUserName && this.uid!=='' ">
-        ニックネームを登録しなよ！
+        <p>ニックネームを登録してください</p>
+        <div class="select_btn_user_error" @click="goToUseredit()">
+              <button>
+                ユーザー情報の編集
+              </button>
+        </div>
       </div>
-
+    <div class="home_main">
+    
       <div class="title">
         <div class="head">
           <!--  -->
@@ -161,7 +169,7 @@
             </div>
             <!-- ログインしているなら、歯車userボタンを表示 -->
             <div class="haguruma" v-else>
-              <svg @click="goToUser()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+              <svg @click="goToUser()" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
                 <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
               </svg>
             </div>
@@ -328,18 +336,47 @@
 </template>
 
 <style scoped>
-.cont{
+.home_cont{
   /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
   width: 100%;
   /* height: 80vh; */
   height: 100%;
-  background-color: aquamarine;
+  background-color: #dad1b5;
   /* margin: auto 0; */
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
-.main{
+.user_error{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  /* font-size: 30rem; */
+  z-index: 10;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  background-color: rgba(128, 128, 128,0.8);
+}
+.select_btn_user_error{
+  margin: 7px 0;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 64%;
+  text-align: center;
+}
+.home_main{
   height: 80%;
   /* width: 820px; */
   /* max-width: 410px; */
@@ -348,12 +385,10 @@
   /* margin: 20% auto 20% auto; */
   /* margin: auto 0; */
 }
-.user_error{
-  position: absolute;
-  top: 45%;
-}
 .haguruma{
-  margin: 0;
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }
 .title{
   height: 50%;

@@ -484,14 +484,11 @@ export default {
 <template>
 <div class="cont">
   <div class="config_error" v-show="isConfig">
-    <p style="color:red">ゲーム設定をしてください</p>
-    <div class="my-2" @click="backToHome">
-              <v-btn
-                color="success"
-                dark
-              >
+    <p>ゲームがリセットされました</p>
+    <div class="select_btn" @click="backToHome">
+              <button>
                 ホームに戻る
-              </v-btn>
+              </button>
             </div>
   </div>
 
@@ -503,12 +500,12 @@ export default {
     <p>{{getready}}</p>
   </div>
   <div class="isSeikai" v-show="isSeikai">
-    <svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill="orangered" class="bi bi-circle" viewBox="0 0 16 16">
       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
     </svg>
   </div>
   <div class="isSeikai" v-show="isFuseikai">
-    <svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="440" height="440" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
       <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
       <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
     </svg>
@@ -545,12 +542,13 @@ export default {
 
     <div class="flag_wrap" v-show="isReverseQuiz">
       <!--  rel="preload" -->
-      <img :src="quizAnserOb.flag" alt="flag" :class="{flag_hide:isFlagHide}">
+      <!--  :class="{flag_hide:isFlagHide}"-->
+      <img :src="quizAnserOb.flag" alt="flag" >
       <!-- {{quizAnserOb.nameJ}} -->
     </div>
     <div class="flag_wrap" v-show="!isReverseQuiz">
       <!--  rel="preload" -->
-      <img :src="quizAnserOb2.flag" alt="flag" :class="{flag_hide:isFlagHide}">
+      <img :src="quizAnserOb2.flag" alt="flag">
       <!-- {{quizAnserOb2.nameJ}} -->
     </div>
   <div :class="{choice_wrap:setArr[3]==3}" v-show="isReverseQuiz" style="height:35%">
@@ -600,7 +598,7 @@ export default {
   /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
   width: 100%;
   height: 100%;
-  background-color: aquamarine;
+  background-color: #dad1b5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -666,11 +664,9 @@ export default {
   margin: auto;
 }
 .isSeikai{
-  /* justify-content: center; */
-  /* text-align: center; */
   display: table;
-  font-size: 5rem;
-  /* width: 100vw; */
+  width: 100vw;
+  text-align: center;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -687,24 +683,23 @@ export default {
   background-color: rgba(0, 128, 128, 0.5);
   text-align: center;
   /* vertical-align: middle; */
-  padding-top: 50%;
+  /* padding-top: 50%; */
   color: white;
   /* font-size: 5rem; */
   z-index: 2;
 }
 .config_error{
   position: absolute;
-  top: 0;
-  left:0;
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0, 128, 128, 0.5);
-  text-align: center;
-  /* vertical-align: middle; */
-  padding-top: 50%;
-  color: white;
-  /* font-size: 5rem; */
+  background-color: grey;
+  color: red;
+  font-size: 1.6rem;
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .isResult{
   position: absolute;

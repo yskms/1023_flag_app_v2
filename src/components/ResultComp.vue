@@ -186,7 +186,7 @@ export default {
             </div>
     </div><!-- config_error -->
     
-    <div class="main">
+    <div class="result_main">
       <div class="upwrap">
         <p>新記録ーとか</p>
         <div>{{score + '問'}}</div>
