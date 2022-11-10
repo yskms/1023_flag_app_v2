@@ -18,6 +18,7 @@ export default {
     rankIn:-1,//1,2,3位なら数字が入ります
     uid:'uid',  //ログインならガチUID,してないならブランクにする
     currentUserScore:{},
+    isRankIn:false,
   }),
 
   created(){
@@ -126,18 +127,8 @@ export default {
       //   // }}
 
       // },
-      refreshRank(){//rankArrに自分の成績を追加する
-        for(let i=0;i<3;i++){
-          if(this.rankArr[i].score < this.score || this.rankArr[i].score == this.score){
-          console.log(i)
-          this.rankArr.splice(i,0,this.currentUserScore)
-          this.rankIn=i
-          break
-        }}
-        console.log(this.rankArr)
-      },
       setCurrentUserScore(){//自分の成績とユーザー情報をくっつける
-        this.currentUserScore = this.currentUserObj
+        Object.assign(this.currentUserScore, this.currentUserObj)
         this.currentUserScore.lang = this.setArr[0]
         this.currentUserScore.game = this.setArr[1]
         this.currentUserScore.land = this.setArr[2]
@@ -145,8 +136,22 @@ export default {
         this.currentUserScore.score = this.score
         // this.currentUserScore.date = this.setArr[0]
         this.currentUserScore.uid = this.storeUid
+        if(this.storeUid==''){
+          console.log('you')
+          this.currentUserScore.name = 'You !!'}
         console.log(this.currentUserScore)
         this.$store.commit('setCurrentUserScore',this.currentUserScore)
+      },
+      refreshRank(){//rankArrに自分の成績を追加する
+        for(let i=0;i<3;i++){
+          if(this.rankArr[i].score < this.score || this.rankArr[i].score == this.score){
+          console.log(i)
+          this.rankArr.splice(i,0,this.currentUserScore)
+          this.rankIn=i
+          this.isRankIn=true
+          break
+        }}
+        console.log(this.rankArr)
       },
     //   async fetchData(){  //mountedで使う。ログインしてたらuidでデータ
     //     const docRef = doc(db, "users", this.uid);
@@ -173,7 +178,10 @@ export default {
 
 <template>
   <div class="result_cont">
-    <div class="config_error" v-show="isConfig">
+    <!-- 全画面表示のもの------------------------------------------------------- -->
+
+    <!-- TimeAttack.vueの方が発動するからここには不要でした -->
+    <!-- <div class="config_error" v-show="isConfig">
     <p style="color:red">リセットされました</p>
     <p style="color:red">Lost Your Result..</p>
     <div class="my-2" @click="backToHome">
@@ -184,7 +192,41 @@ export default {
                 ホームに戻る
               </v-btn>
             </div>
-    </div><!-- config_error -->
+    </div> -->
+    <!-- config_error -->
+    
+    <div class="rankIn confetti" v-show="isRankIn" @click="isRankIn=false"><!-- ３位以内の場合 -->
+<span></span><span></span><span></span>  <span></span><span></span><span></span>  <span></span><span></span><span></span>  <span></span><span></span>
+      <div class="rankIn_main">
+        <div class="rankIn_main_msg">
+          {{rankInPlus}} 位です！！
+        </div>
+        <ul class="rankIn_wrap">
+          <li v-for="(r,index) in rankArr" :key="index" :class="{rankIn_color:(index==rankIn)}">
+            <div class="user_icon">
+              <div>
+              <!-- <img src="#" alt=""> -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+              </svg>
+              </div>
+            </div>
+            <div class="name_medal">
+              <div>{{r.name}}</div>
+              <div>oo</div>
+            </div>
+            <div>{{r.score + ' 問'}}</div>
+          </li>
+        </ul>
+        <div class="rankIn_btn" @click="isRankIn=false">
+              <button>
+                次へ
+              </button>
+            </div>
+      </div>
+    </div>
+    <!-------------------------------------------------------------- -->
     
     <div class="result_main">
       <div class="img_area">
@@ -202,7 +244,7 @@ export default {
           <!-- 画面が描画された瞬間は、何も表示しない -->
           <p v-if="this.uid=='uid'"></p>
           <!-- ログインしていないなら、 -->
-          <p v-else-if="this.uid==''">{{rankInPlus}} 位です！ログインして記録を残そう！</p>
+          <p v-else-if="this.uid==''">{{rankInPlus}} 位です！<br>ログインして記録を残そう！</p>
           <!-- ログインしているなら、 -->
           <p v-else>{{rankInPlus}} 位です！！</p>
         </div>
@@ -216,33 +258,7 @@ export default {
         </div>
       </div><!-- msg_area -->
 
-<!-- これResultCompの前に出そうかな？ -->
-      <!-- <div class="rank_list">
-          <v-card
-          class="mx-auto"
-          max-width="300"
-          tile
-          >
-          <v-list disabled>
-            <v-subheader>LANKING</v-subheader>
-            <v-list-item-group
-              color="primary"
-            >
-              <v-list-item
-                v-for="(r,index) in rankArr" :key="index" :class="{red:(index==rankIn)}"
-              >
-                <v-list-item-icon>
-                  <v-icon v-text="r.test"></v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title v-text="r.score"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
 
-            </v-list-item-group>
-          </v-list>
-          </v-card>
-      </div> -->
 
       <div class="bottom_area">
         <!-- 画面が描画された瞬間は、ランキングボタン -->
@@ -279,20 +295,88 @@ export default {
   display: flex;
   justify-content: center;
 }
-.config_error{
+/*-- 全画面表示のもの-------------------------------------------------------*/
+.rankIn{
   position: absolute;
-  top: 0;
-  left:0;
   height: 100vh;
   width: 100vw;
-  background-color: rgba(0, 128, 128, 0.5);
-  text-align: center;
-  /* vertical-align: middle; */
-  padding-top: 50%;
-  color: white;
-  /* font-size: 5rem; */
-  z-index: 2;
+  background-color: rgba(128, 128, 128, 0.8);
+  /* color: red; */
+  /* font-size: 1.6rem; */
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
+.rankIn_main{
+  height: 50%;
+  width: 70%;
+  background-color: whitesmoke;
+  color: rgb(100,100,100);
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  border-radius: 5px;
+}
+.rankIn_main_msg{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10%;
+  font-weight: bold;
+}
+.rankIn_wrap{
+  height: 80%;
+  background-color: whitesmoke;
+  padding: 0;
+}
+.rankIn_wrap li{
+  /* height: 80%; */
+  display: flex;
+  padding: 5px 15px;
+  margin: 10px;
+  /* background-color: black; */
+  color: rgb(100,100,100);
+  border: 1px solid black;
+  border-radius: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+.rankIn_color{
+  /* border: 3px solid red; */
+  background-color: #ffc107;
+  animation: flash 0.6s;
+}
+@keyframes flash{
+  0% {background-color: whitesmoke;}
+  20% {background-color: #ffc107;}
+  40% {background-color: whitesmoke;}
+  60% {background-color: #ffc107;}
+  80% {background-color: whitesmoke;}
+  100% {background-color: #ffc107;}
+}
+.user_icon svg{
+  vertical-align: middle;
+}
+.name_medal{
+  display: flex;
+}
+.rankIn_btn{
+  margin: 10px auto;
+  margin-bottom: 20px auto;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 65%;
+  text-align: center;
+  white-space: nowrap;
+  height: 10%;
+}
+/* ---------------------------------------------------------------------- */
 .result_main{
   background-color: rgb(27, 67, 102);
   height: 80%;
@@ -350,5 +434,205 @@ export default {
   text-align: center;
   white-space: nowrap;
   height: 50px;
+}
+
+/* ------------------------------------------------------------ */
+/*紙吹雪のスタイル*/
+.confetti {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.confetti span {
+  position: absolute;
+  top: -100%;/*アニメーション以外の紙吹雪を非表示*/
+  left: 0;
+}
+
+/*アニメーションの記述*/
+.confetti span:nth-child(2n + 1) {
+  animation: confetti1 5s 0s linear infinite;
+}
+
+.confetti span:nth-child(2n + 2) {
+  animation: confetti2 5s 0s linear infinite;
+}
+
+/*紙吹雪を回転させる記述*/
+@keyframes confetti1 {
+  0% {
+    top: -10%;
+    transform: translateX(0) rotateX(0) rotateY(0);
+  }
+
+  100% {
+    top: 100%;
+    transform: translateX(20px) rotateX(180deg) rotateY(360deg);
+}
+}
+
+@keyframes confetti2 {
+  0% {
+    top: -10%;
+    transform: translateX(0) rotateX(0) rotateY(0);
+  }
+
+  100% {
+    top: 100%;
+    transform: translateX(-20vw) rotateX(180deg) rotateY(360deg);
+  }
+}
+
+/*紙吹雪の配置*/
+.confetti span:nth-child(1) {
+  left: 0%;
+}
+
+.confetti span:nth-child(2) {
+  left: 10%;
+}
+
+.confetti span:nth-child(3) {
+  left: 20%;
+}
+
+.confetti span:nth-child(4) {
+  left: 30%;
+}
+
+.confetti span:nth-child(5) {
+  left: 40%;
+}
+
+.confetti span:nth-child(6) {
+  left: 50%;
+}
+
+.confetti span:nth-child(7) {
+  left: 60%;
+}
+
+.confetti span:nth-child(8) {
+  left: 70%;
+}
+
+.confetti span:nth-child(9) {
+  left: 80%;
+}
+
+.confetti span:nth-child(10) {
+  left: 90%;
+}
+
+.confetti span:nth-child(11) {
+  left: 100%;
+}
+
+/*紙吹雪の大きさ*/
+.confetti span:nth-child(3n + 1) {
+  width: 3vw;
+  height: 3vw;
+}
+
+.confetti span:nth-child(3n + 2) {
+  width: 2vw;
+  height: 2vw;
+}
+
+.confetti span:nth-child(3n + 3) {
+  width: 1.5vw;
+  height: 1.5w;
+}
+
+/*紙吹雪の色*/
+.confetti span:nth-child(2n + 1) {
+  background: red;
+}
+
+.confetti span:nth-child(2n + 2) {
+  background: orange;
+}
+
+.confetti span:nth-child(2n + 3) {
+  background: purple;
+}
+
+.confetti span:nth-child(2n + 4) {
+  background: pink;
+}
+
+.confetti span:nth-child(2n + 5) {
+  background: blue;
+}
+
+.confetti span:nth-child(2n + 6) {
+  background: green;
+}
+
+.confetti span:nth-child(2n + 7) {
+  background: yellow;
+}
+
+/*アニメーションの秒数*/
+.confetti span:nth-child(2n + 1) {
+  animation-duration: 5s;
+}
+
+.confetti span:nth-child(2n + 2) {
+  animation-duration: 6s;
+}
+
+.confetti span:nth-child(2n + 3) {
+  animation-duration: 10s;
+}
+
+.confetti span:nth-child(2n + 4) {
+  animation-duration: 4s;
+}
+
+/*紙吹雪が降り始めるまでの時間*/
+.confetti span:nth-child(2n + 1) {
+  animation-delay: 0s;
+}
+
+.confetti span:nth-child(2n + 2) {
+  animation-delay: 4s;
+}
+
+.confetti span:nth-child(2n + 3) {
+  animation-delay: 6s;
+}
+
+.confetti span:nth-child(2n + 4) {
+  animation-delay: 2s;
+}
+
+.confetti span:nth-child(2n + 5) {
+  animation-delay: 6s;
+}
+
+.confetti span:nth-child(2n + 6) {
+  animation-delay: 10s;
+}
+
+.confetti span:nth-child(2n + 7) {
+  animation-delay: 2s;
+}
+
+.confetti span:nth-child(2n + 8) {
+  animation-delay: 4s;
+}
+
+.confetti span:nth-child(2n + 9) {
+  animation-delay: 11s;
+}
+
+.confetti span:nth-child(2n + 10) {
+  animation-delay: 1s;
+}
+
+.confetti span:nth-child(2n + 11) {
+  animation-delay: 5s;
 }
 </style>
