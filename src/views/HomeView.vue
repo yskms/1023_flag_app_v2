@@ -179,7 +179,10 @@
           <div class="kokuban_wrap">
               <h1 class="dr">国旗ハカセ</h1>
               <!-- <img class="kokuban" src="../assets/blackboard.png" alt="title"> -->
-              <img class="hakase" src="../assets/hakase_top.png" alt="hakase">
+              <div class="hakase_wrap">
+                <img class="hakase" src="../assets/hakase_top.png" alt="hakase">
+                <!-- <span class="hakase_migi">mig</span> -->
+              </div>
           </div>
           <div class="kokki_wrap">
             <img class="kokki" :src="flagLists[3].flag" alt="flag">
@@ -419,13 +422,21 @@
   font-size: 300%;
   white-space: nowrap;
 }
+.hakase_wrap{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  padding-top: 38%;
+}
 .hakase{
   /* height: 380px; */
   height: 190px;
-  position: absolute;
+  /* position: absolute;
   top: 60%;
   left: 50%;
   right: 50%;
+  display: block; */
 }
 .kokki{
   /* height: 120px; */
