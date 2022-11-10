@@ -351,6 +351,7 @@
   justify-content: center;
   position: relative;
 }
+/*-- 全画面表示のもの-------------------------------------------------------*/
 .user_error{
   position: absolute;
   display: flex;
@@ -379,6 +380,7 @@
   width: 64%;
   text-align: center;
 }
+/*-- -------------------------------------------------------*/
 .home_main{
   height: 80%;
   /* width: 820px; */
@@ -390,8 +392,8 @@
 }
 .haguruma{
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 15px;
+  left: 10px;
 }
 .title{
   height: 50%;
