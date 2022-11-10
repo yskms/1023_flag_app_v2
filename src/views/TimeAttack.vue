@@ -398,7 +398,10 @@ export default {
       console.log(noMissCountArrNow)
         for(let l=0;l<this.noMissIdArr.length;l++){
 
-          if(noMissCountArrNow.some(e=>{e.id==this.noMissIdArr[l]})){
+          if(noMissCountArrNow.some(e=>{
+            console.log(e.id)
+            console.log(this.noMissIdArr[l])
+            e.id==this.noMissIdArr[l]})){
             console.log('あるなら探してプラ１しよ')
           
             for(let m=0;m<noMissCountArrNow.length;m++){
@@ -474,7 +477,7 @@ export default {
 
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
-          this.currentUserObj = docSnap.data()
+          Object.assign(this.currentUserObj, docSnap.data())
           console.log(this.currentUserObj)
         } else {
           // doc.data() will be undefined in this case
