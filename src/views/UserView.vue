@@ -43,9 +43,17 @@
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           Object.assign(this.currentUserObj,docSnap.data())
+          this.makeFavList()
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
+        }
+      },
+      makeFavList(){
+        let key
+        for (key in this.currentUserObj.noMissCountObj){
+          console.log('key:'+ key)
+          console.log('data:'+ this.currentUserObj.noMissCountObj[key])
         }
       },
       backToHome(){
@@ -70,9 +78,9 @@
     flagLists(){
       return this.$store.state.flagLists
     },
-    currentUserObjName(){
-      return this.currentUserObj.name
-    }
+    // currentUserObjName(){
+    //   return this.currentUserObj.name
+    // }
 
     // isAuth(){
     //   return this.$store.state.isAuth
@@ -147,7 +155,13 @@
               </div>
           </div>
         </div>
-        <div class="recent">
+        <div class="fav">
+          <p>得意な国</p>
+          <!-- <div class="fav_wrap" v-for="c in currentUserObj">
+            a
+          </div> -->
+        </div>
+        <div class="user_history">
           <p>最近の記録</p>
           <ul>
             <li>12</li>
@@ -199,6 +213,7 @@ p{
 .user_head{
   text-align: center;
   position: relative;
+  height: 5%;
 }
 .pen{
   position: absolute;
@@ -215,12 +230,12 @@ p{
 .icon_wrap{
   background-color: aliceblue;
   text-align: center;
-  width: 20%;
+  width: 25%;
 }
 .nick_wrap{
   background-color: aliceblue;
   margin-left: 5px;
-  width: 80%;
+  width: 75%;
 }
 .nick_wrap h3{
   border: #908a77 solid 1px;
@@ -237,6 +252,8 @@ p{
   height: 93%;
   background-color: whitesmoke;
   padding: 10px;
+  border: #908a77 solid 1px;
+  border-radius: 10px;
 }
 .medal_time{
   height: 30%;
@@ -258,5 +275,21 @@ p{
   border-radius: 10px;
   padding: 10px;
   /* margin-bottom: 10px; */
+}
+/* -------------------------- */
+.fav{
+  height: 25%;
+  background-color: blueviolet;
+  padding: 5px;
+}
+.fav_wrap{
+  height: 80%;
+  background-color: whitesmoke;
+}
+/* -------------------------- */
+.user_history{
+  height: 30%;
+  background-color: aquamarine;
+  padding: 5px;
 }
 </style>

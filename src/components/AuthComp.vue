@@ -151,19 +151,31 @@
         }
       }
 
-      //noMissIdArr:[],//1発正解したidを追加していく
+      //noMissIdArr:[12,134,51,1,],//1発正解したidを追加していく
+      //noMissCountArr:[{id:21,count:3},{id:3,count:1}]みたいな配列
       //1発正解をカウント
-      let noMissCountObjNow = {}
-      Object.assign(noMissCountObjNow,this.currentUserObj.noMissCountObj)// { 国ID : 正解数 }
-      for(let i=0;i<this.noMissIdArr.length;i++){
-        if(noMissCountObjNow[this.noMissIdArr[i]]){
-          console.log('aru')
-          noMissCountObjNow[this.noMissIdArr[i]] = noMissCountObjNow[this.noMissIdArr[i]]+1
-        }else{
-          noMissCountObjNow[this.noMissIdArr[i]] = 1
+      console.log('オープンnomiss')
+      let noMissCountArrNow = this.currentUserObj.noMissCountArr.concat()
+      console.log(noMissCountArrNow)
+        for(let l=0;l<this.noMissIdArr.length;l++){
+
+          if(noMissCountArrNow.some(e=>{e.id==this.noMissIdArr[l]})){
+            console.log('あるなら探してプラ１しよ')
+          
+            for(let m=0;m<noMissCountArrNow.length;m++){
+              if(noMissCountArrNow[m].id==this.noMissIdArr[l]){
+                console.log(noMissCountArrNow[m].count)
+                noMissCountArrNow[m].count = noMissCountArrNow[m].count +1
+                console.log(noMissCountArrNow[m].count)
+                break
+              }
+            }
+          }else{
+            console.log('ないならpush')
+            noMissCountArrNow.push({id:this.noMissIdArr[l],count:1})
+          }
         }
-      }
-      console.log(noMissCountObjNow)
+        console.log(noMissCountArrNow)
 
 
       //firestoreをアップデートするとこ
@@ -171,7 +183,7 @@
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
         openDiffArr: openDiffArrNow,
-        noMissCountObj: noMissCountObjNow, },
+        noMissCountArr: noMissCountArrNow, },
       { merge: true }
       );
       console.log('update playCount')

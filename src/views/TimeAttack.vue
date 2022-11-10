@@ -110,10 +110,10 @@ export default {
 
     //['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],],
     correctArrCreate(){  //地域で絞ったflagListsを作るメソッド
-      if(this.setArr[2]==0){
+      if(this.setArr[2]==6){//6は全世界
         this.limitedFlagListArr = this.flagLists.concat()
       }else{
-        for(let i = 1; i<this.continentArr.length; i++){
+        for(let i = 0; i<6; i++){
           if(this.setArr[2] == i){
             this.flagLists.forEach(e => {
               if(e.continent == this.continentArr[i]){
@@ -360,6 +360,7 @@ export default {
       //特定のプレイカウントで、地域を解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
       //openContinentは数値一つ（0-4?）
+      console.log('オープンこんち')
       let openContinentNow = this.currentUserObj.openContinent
       const requireCountArr =[0,0,0,5,10,15,30]//解放に必要なプレイ回数
       for(let k=3;k<7;k++){
@@ -370,6 +371,7 @@ export default {
       }
       //特定スコア以上で、難しさを解放
       //['アジア','ヨーロッパ','南アメリカ','アフリカ','北アメリカ','オセアニア','全世界'] 7地域。
+      console.log('オープンdiff')
       let openDiffArrNow = this.currentUserObj.openDiffArr.concat()  //[1,1,1,1,1,1,1]がデフォ
       for(let j=1;j<3;j++){
         if(this.score>9 && this.setArr[3]==j){//score10以上、1:普通,2:ムズイなら
@@ -383,19 +385,56 @@ export default {
       }
 
 
-      //noMissIdArr:[],//1発正解したidを追加していく
+      //noMissIdArr:[12,134,51,1,],//1発正解したidを追加していく
+      //noMissCountArr:[{id:21,count:3},{id:3,count:1}]みたいな配列
       //1発正解をカウント
-      let noMissCountObjNow = {}
-      Object.assign(noMissCountObjNow,this.currentUserObj.noMissCountObj)// { 国ID : 正解数 }
-      for(let i=0;i<this.noMissIdArr.length;i++){
-        if(noMissCountObjNow[this.noMissIdArr[i]]){
-          console.log('aru')
-          noMissCountObjNow[this.noMissIdArr[i]] = noMissCountObjNow[this.noMissIdArr[i]]+1
-        }else{
-          noMissCountObjNow[this.noMissIdArr[i]] = 1
+      console.log('オープンnomiss')
+      console.log(this.noMissIdArr)
+      console.log(this.noMissIdArr.length)
+      console.log(this.currentUserObj.noMissCountArr)
+      console.log(JSON.parse(JSON.stringify(this.currentUserObj.noMissCountArr[0])))
+      console.log(this.currentUserObj.noMissCountArr[0].id)
+      let noMissCountArrNow = this.currentUserObj.noMissCountArr.concat()
+      console.log(noMissCountArrNow)
+        for(let l=0;l<this.noMissIdArr.length;l++){
+
+          if(noMissCountArrNow.some(e=>{e.id==this.noMissIdArr[l]})){
+            console.log('あるなら探してプラ１しよ')
+          
+            for(let m=0;m<noMissCountArrNow.length;m++){
+              if(noMissCountArrNow[m].id==this.noMissIdArr[l]){
+                console.log(noMissCountArrNow[m].count)
+                noMissCountArrNow[m].count = noMissCountArrNow[m].count +1
+                console.log(noMissCountArrNow[m].count)
+                break
+              }
+            }
+          }else{
+            console.log('ないならpush')
+            noMissCountArrNow.push({id:this.noMissIdArr[l],count:1})
+          }
         }
-      }
-      console.log(noMissCountObjNow)
+        console.log(noMissCountArrNow)
+
+
+      //     if(e.id==this.noMissIdArr[i]){
+      //       console.log('aru')
+      //       console.log(e.count)
+      //       noMissCountArrNow.push({id:i, count:e.count +1})
+      //       console.log(noMissCountArrNow)
+      //     }else{
+      //       noMissCountArrNow.push({id:i, count:1})
+      //     }
+      // })
+      
+      //   if(noMissCountObjNow[this.noMissIdArr[i]]){
+      //     console.log('aru')
+      //     noMissCountObjNow[this.noMissIdArr[i]] = noMissCountObjNow[this.noMissIdArr[i]]+1
+      //   }else{
+      //     noMissCountObjNow[this.noMissIdArr[i]] = 1
+      //   }
+      // }
+      // console.log(noMissCountObjNow)
 
 
       //firestoreをアップデートするとこ
@@ -403,7 +442,7 @@ export default {
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
         openDiffArr: openDiffArrNow,
-        noMissCountObj: noMissCountObjNow, },
+        noMissCountArr: noMissCountArrNow, },
       { merge: true }
       );
       console.log('update playCount')
@@ -436,6 +475,7 @@ export default {
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           this.currentUserObj = docSnap.data()
+          console.log(this.currentUserObj)
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
