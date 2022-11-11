@@ -395,29 +395,17 @@ export default {
       console.log(JSON.parse(JSON.stringify(this.currentUserObj.noMissCountArr[0])))
       console.log(this.currentUserObj.noMissCountArr[0].id)
       let noMissCountArrNow = this.currentUserObj.noMissCountArr.concat()
+      // let noMissCountArrNow = []
       console.log(noMissCountArrNow)
-        for(let l=0;l<this.noMissIdArr.length;l++){
+      //ここまではok
+        // for(let l=0;l<this.noMissIdArr.length;l++){
 
-          if(noMissCountArrNow.some(e=>{
-            console.log(e.id)
-            console.log(this.noMissIdArr[l])
-            e.id==this.noMissIdArr[l]})){
-            console.log('あるなら探してプラ１しよ')
+          // let noMissCountArrNow = this.currentUserObj.noMissCountArr.filter(e=>{
+          //   if(e.id==!this.noMissIdArr[0] || e.id==!this.noMissIdArr[1] )
+          // })
           
-            for(let m=0;m<noMissCountArrNow.length;m++){
-              if(noMissCountArrNow[m].id==this.noMissIdArr[l]){
-                console.log(noMissCountArrNow[m].count)
-                noMissCountArrNow[m].count = noMissCountArrNow[m].count +1
-                console.log(noMissCountArrNow[m].count)
-                break
-              }
-            }
-          }else{
-            console.log('ないならpush')
-            noMissCountArrNow.push({id:this.noMissIdArr[l],count:1})
-          }
-        }
-        console.log(noMissCountArrNow)
+        
+        // console.log(noMissCountArrNow)
 
 
       //     if(e.id==this.noMissIdArr[i]){
@@ -441,11 +429,13 @@ export default {
 
 
       //firestoreをアップデートするとこ
+      //users内の既存のuidに対して、上書き保存します
       await setDoc(doc(db, "users", this.uid), 
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
         openDiffArr: openDiffArrNow,
-        noMissCountArr: noMissCountArrNow, },
+        // noMissCountArr: noMissCountArrNow, 
+        },
       { merge: true }
       );
       console.log('update playCount')
