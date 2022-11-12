@@ -398,8 +398,8 @@ export default {
       // let noMissCountArrNow = []
       console.log(noMissCountArrNow)
       //ここまではok
-        // for(let l=0;l<this.noMissIdArr.length;l++){
-
+        for(let l=0;l<this.noMissIdArr.length;l++){
+          console.log(noMissCountArrNow.some(e=>{e.id==l}))
           // let noMissCountArrNow = this.currentUserObj.noMissCountArr.filter(e=>{
           //   if(e.id==!this.noMissIdArr[0] || e.id==!this.noMissIdArr[1] )
           // })
