@@ -92,6 +92,7 @@
         playCount:1,
         openContinent:0,//地域解放数
         openDiffArr:[1,1,1,1,1,1,1],//難しさ解放はレジスター以降からでOKとします
+        noMissCountArr:[],
       });
     },
     async setFireRanks(){ //firestoreのdatasにデータ登録する
@@ -118,7 +119,7 @@
 
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
-          this.currentUserObj = docSnap.data()
+          Object.assign(this.currentUserObj, docSnap.data())
           this.updateFireUsers()
         } else {
           // doc.data() will be undefined in this case
@@ -157,23 +158,37 @@
       console.log('オープンnomiss')
       let noMissCountArrNow = this.currentUserObj.noMissCountArr.concat()
       console.log(noMissCountArrNow)
-        for(let l=0;l<this.noMissIdArr.length;l++){
 
-          if(noMissCountArrNow.some(e=>{e.id==this.noMissIdArr[l]})){
-            console.log('あるなら探してプラ１しよ')
-          
-            for(let m=0;m<noMissCountArrNow.length;m++){
-              if(noMissCountArrNow[m].id==this.noMissIdArr[l]){
-                console.log(noMissCountArrNow[m].count)
-                noMissCountArrNow[m].count = noMissCountArrNow[m].count +1
-                console.log(noMissCountArrNow[m].count)
-                break
-              }
+
+        for(let l=0;l<this.noMissIdArr.length;l++){
+          console.log(this.noMissIdArr[l])
+          console.log(noMissCountArrNow)
+          let cantFind = 0
+          for(let m=0;m<noMissCountArrNow.length;m++){
+            if(this.noMissIdArr[l]==noMissCountArrNow[m].id){
+              console.log('見つけた')
+              console.log(noMissCountArrNow[m])
+              noMissCountArrNow[m].count ++
+              console.log(noMissCountArrNow[m])
+              break
+            }else{
+              cantFind++
             }
-          }else{
-            console.log('ないならpush')
-            noMissCountArrNow.push({id:this.noMissIdArr[l],count:1})
           }
+          if(noMissCountArrNow.length == cantFind){
+            console.log('なかったから追加')
+            noMissCountArrNow.push({
+                id:this.noMissIdArr[l],
+                count:1,
+            })
+          }
+
+          // console.log(noMissCountArrNow.some((e)=>{e.id==this.noMissIdArr[l]}))
+          // console.log(noMissCountArrNow.every((e)=>{e.id==!this.noMissIdArr[l]}))
+
+          // let noMissCountArrNow = this.currentUserObj.noMissCountArr.filter(e=>{
+          //   if(e.id==!this.noMissIdArr[0] || e.id==!this.noMissIdArr[1] )
+          // })
         }
         console.log(noMissCountArrNow)
 
