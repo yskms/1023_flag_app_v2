@@ -17,7 +17,8 @@
         uid:'uid',  //ログインならガチUID,してないならブランクにする
         // isEdit:false,//ニックネームとか編集画面
         currentUserObj:{name:""},
-        noMissCountArrSort:[],
+        // noMissCountArrSort:[],
+        favListArr:[],
       }
     },
     mounted(){
@@ -51,18 +52,35 @@
         }
       },
       makeFavList(){
-        // let key
-        // for (key in this.currentUserObj.noMissCountArr){
-        //   console.log('key:'+ key)
-        //   console.log('data:'+ this.currentUserObj.noMissCountArr[key])
-        // }
-        this.noMissCountArrSort = this.currentUserObj.noMissCountArr.concat()
-        this.noMissCountArrSort.sort(function(a,b){
+        const noMissCountArrCopy = this.currentUserObj.noMissCountArr.concat()
+        console.log(JSON.parse(JSON.stringify(noMissCountArrCopy)))
+        //2回以上ノーミス正解してるのをフィルタリング
+        let noMissCountArrSort = JSON.parse(JSON.stringify(noMissCountArrCopy)).filter(e=>{
+          return e.count>1
+        })
+        //降順に並び替える
+        noMissCountArrSort.sort(function(a,b){
           if(a.count > b.count)return -1
           if(b.count > a.count)return 1
           return 0
         })
-        console.log(this.noMissCountArrSort)
+        console.log(JSON.parse(JSON.stringify(noMissCountArrSort)))
+        //とりあえず5こ抽出してみた
+        this.favListArr=JSON.parse(JSON.stringify(noMissCountArrSort)).splice(0,5)
+        console.log(this.favListArr)
+        console.log(JSON.parse(JSON.stringify(this.favListArr)))
+
+        //flagのURLを追記
+        for(let i=0;i<this.favListArr.length;i++){
+          for(let j=0;j<this.flagLists.length;j++){
+            if(this.favListArr[i].id==this.flagLists[j].id){
+              this.favListArr[i].flag=this.flagLists[j].flag
+              break
+            }
+          }
+        }
+        console.log(this.favListArr)
+        console.log(JSON.parse(JSON.stringify(this.favListArr)))
       },
       backToHome(){
         this.$router.push('/')
@@ -166,7 +184,11 @@
         <div class="fav">
           <p>得意な国</p>
           <div class="fav_wrap">
-            a
+            <!-- <img :src="flagLists[noMissCountArrSort[0].id].flag" alt="flag"> -->
+            <!-- <img :src="flagLists[noMissCountArrSort[1].id].flag" alt="flag"> -->
+            <!-- <span>{{flagLists[noMissCountArrSort[0].id].flag}}</span> -->
+            <span v-for="(f,index) in favListArr" :key="index">
+              <img :src="f.flag" alt=""></span>
           </div>
         </div>
         <div class="user_history">
@@ -293,6 +315,12 @@ p{
 .fav_wrap{
   height: 80%;
   background-color: whitesmoke;
+  border-radius: 10px;
+  border: #908a77 solid 1px;
+}
+.fav_wrap img{
+  height: 30px;
+  margin: 5px;
 }
 /* -------------------------- */
 .user_history{

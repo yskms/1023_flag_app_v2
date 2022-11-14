@@ -248,13 +248,13 @@
 
         <transition :name="isSlide?'slideA':'slideB'" mode="out-in">
         <div class="select_game" v-if="selectS==1" key="1" :class="selectGameMove">
-            <div class="select_back" >
+            <!-- <div class="select_back" >
                 <button>
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                     <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                   </svg>
                 </button>
-              </div>
+              </div> -->
           <div class="select_btn_wrap">
             <div class="select_btn" @click="select_game(0)">
               <!-- <v-btn
@@ -416,16 +416,21 @@
   /* margin: 20% auto 20% auto; */
   /* margin: auto 0; */
 }
-.haguruma{
-  position: absolute;
-  top: 15px;
-  left: 10px;
-}
 .title{
   height: 50%;
   width: 100%;
   display: flex;
   align-items: flex-end;
+}
+/* .head{
+  height: 20%;
+} */
+.haguruma{
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  width: 100%;
+  z-index: 2;
 }
 .logo_wrap{
   /* margin: auto 0 0 0; */
@@ -470,7 +475,7 @@
     transform:translate3d(0,0,0);
     z-index: 0;
     position: relative;
-    bottom: -320px;
+    bottom: -304px;
     /* background-color: aqua; */
 }
 .kokki{
@@ -515,31 +520,31 @@
 .langOn{
   opacity: 0.5;
 }
-.centerToLeft{
-  animation: centerToLeftAnim 0.7s;
+/* .centerToLeft{
+  animation: centerToLeftAnim 0.7s; */
   /* position: absolute;
   top: 0;
   left: 0; */
-}
+/* } */
 @keyframes centerToLeftAnim {
   0% {transform: translateX(0) ;}
-  50% {transform: translateX(-500px) ;}
-  100% {transform: translateX(-500px) ;}
+  /* 20% {transform: translateX(-350px) ;} */
+  100% {transform: translateX(-350px) ;}
 }
 @keyframes rightToCenterAnim {
-  0% {transform: translateX(500px) ;}
-  50% {transform: translateX(0) ;}
+  0% {transform: translateX(350px) ;}
+  /* 20% {transform: translateX(0) ;} */
   100% {transform: translateX(0) ;}
 }
 @keyframes leftToCenterAnim {
-  0% {transform: translateX(-500px) ;}
-  50% {transform: translateX(0) ;}
+  0% {transform: translateX(-350px) ;}
+  /* 20% {transform: translateX(0) ;} */
   100% {transform: translateX(0) ;}
 }
 @keyframes centerToRightAnim {
   0% {transform: translateX(0) ;}
-  50% {transform: translateX(500px) ;}
-  100% {transform: translateX(500px) ;}
+  /* 20% {transform: translateX(350px) ;} */
+  100% {transform: translateX(350px) ;}
 }
 /* はじめ ----------------*/
 .slideA-enter {
