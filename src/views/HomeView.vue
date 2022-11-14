@@ -33,9 +33,12 @@
           ['やさしい','Easy'],['標準','Normal'],['難しい','Hard'],['激ムズ','Very Hard'],],
         // currentUserObj:{},
         // openDiffArr:[1,1,1,1,1,1,1,],
+        homeFlagLists:[],
       }
     },
     mounted(){
+      this.homeFlagLists = this.flagLists.splice(Math.floor(Math.random()*233),5)
+
       onAuthStateChanged(auth, (user) => {
         if (user) {             //ログインしてたら
           console.log(user.uid)
@@ -137,6 +140,9 @@
     flagLists(){
       return this.$store.state.flagLists
     },
+    // homeFlagLists(){
+    //   return this.flagLists.splice(Math.floor(Math.random()*233),5)
+    // },
     // isAuth(){
     //   return this.$store.state.isAuth
     // },
@@ -176,6 +182,13 @@
             <!--  -->
         </div>
         <div class="logo_wrap">
+          <div class="kokki_wrap">
+            <img class="kokki" :src="homeFlagLists[0].flag" alt="flag">
+            <img class="kokki" :src="homeFlagLists[1].flag" alt="flag" style="animation-delay: 0.6s">
+            <img class="kokki" :src="homeFlagLists[2].flag" alt="flag" style="animation-delay: 1.2s">
+            <img class="kokki" :src="homeFlagLists[3].flag" alt="flag" style="animation-delay: 1.8s">
+            <img class="kokki" :src="homeFlagLists[4].flag" alt="flag" style="animation-delay: 2.4s">
+          </div>
           <div class="kokuban_wrap">
               <h1 class="dr">国旗ハカセ</h1>
               <!-- <img class="kokuban" src="../assets/blackboard.png" alt="title"> -->
@@ -184,31 +197,24 @@
                 <!-- <span class="hakase_migi">mig</span> -->
               </div>
           </div>
-          <div class="kokki_wrap">
-            <img class="kokki" :src="flagLists[3].flag" alt="flag">
-            <img class="kokki" :src="flagLists[4].flag" alt="flag">
-            <img class="kokki" :src="flagLists[5].flag" alt="flag">
-            <img class="kokki" :src="flagLists[6].flag" alt="flag">
-            <img class="kokki" :src="flagLists[7].flag" alt="flag">
-          </div>
         </div>
       </div>
 
       
       <div class="select_wrap">
           <div class="lang_wrap">
-            <div class="lang" @click="langJ">
+            <div class="lang" @click="langJ" :style="{color:(this.lang==0 ? 'white':'grey')}">
                 <!-- <v-btn
                   
                   color="warning"
                   dark
                 > -->
                 <button>
-                  日本語
+                  にほんご
                 </button>
                 <!-- </v-btn> -->
               </div>
-            <div class="lang" @click="langE">
+            <div class="lang" @click="langE" :style="{color:(this.lang==1 ? 'white':'grey')}">
                 <!-- <v-btn
                   
                   color="warning"
@@ -221,7 +227,7 @@
               </div>
           </div>
 
-        <div class="select_game" v-show="selectG">
+        <div class="select_game" v-if="selectG">
             <div class="select_back" >
                 <button>
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
@@ -272,7 +278,7 @@
           </div>
         </div>
 
-        <div class="select_game" v-show="selectL">
+        <div class="select_game" v-else-if="selectL">
           <div class="select_btn_wrap" >
                 <div class="select_back" >
                 <button @click="select_game(0)">
@@ -301,7 +307,7 @@
           </div>
         </div>
 
-        <div class="select_game" v-show="selectD">
+        <div class="select_game" v-else-if="selectD">
           <div class="select_btn_wrap" >
                 <div class="select_back" >
                 <button @click="select_land(0)">
@@ -403,7 +409,7 @@
 }
 .logo_wrap{
   /* margin: auto 0 0 0; */
-  height: 80%;
+  height: 100%;
   width: 100%;
   position: relative;
 }
@@ -411,7 +417,7 @@
   background-image: url("../assets/blackboard.png");
   background-size: contain;
   background-position: center center;
-  height: 80%;
+  height: 75%;
   display: flex;
   position: relative;
 }
@@ -440,15 +446,32 @@
   right: 50%;
   display: block; */
 }
+.kokki_wrap{
+    transform:translate3d(0,0,0);
+    z-index: 0;
+    position: relative;
+    bottom: -320px;
+    /* background-color: aqua; */
+}
 .kokki{
   /* height: 120px; */
   /* height: 60px; */
   width: 20%;
+  /* display: inline-block; */
+  /* z-index: -2; */
+  animation: jumpAnimation 5s infinite;
+}
+
+@keyframes jumpAnimation {
+  50% {transform: translateY(0) ;}
+  53% {transform: translateY(-10px) ;}
+  55% {transform: translateY(0) ;}
 }
 
 
 .select_wrap{
   height: 50%;
+  z-index: 4;
 }
 .lang_wrap{
   display: flex;
@@ -469,9 +492,15 @@
   width: 30%;
   text-align: center;
 }
-.lang button{
-  /* margin: auto 0; */
+.langOn{
+  opacity: 0.5;
 }
+
+/* @keyframes selectAnim {
+  50% {transform: translateY(0) ;}
+  53% {transform: translateY(-10px) ;}
+  55% {transform: translateY(0) ;}
+} */
 .select_game{
   height: 75%;
   position: relative;
