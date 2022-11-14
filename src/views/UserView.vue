@@ -17,6 +17,7 @@
         uid:'uid',  //ログインならガチUID,してないならブランクにする
         // isEdit:false,//ニックネームとか編集画面
         currentUserObj:{name:""},
+        noMissCountArrSort:[],
       }
     },
     mounted(){
@@ -50,11 +51,18 @@
         }
       },
       makeFavList(){
-        let key
-        for (key in this.currentUserObj.noMissCountObj){
-          console.log('key:'+ key)
-          console.log('data:'+ this.currentUserObj.noMissCountObj[key])
-        }
+        // let key
+        // for (key in this.currentUserObj.noMissCountArr){
+        //   console.log('key:'+ key)
+        //   console.log('data:'+ this.currentUserObj.noMissCountArr[key])
+        // }
+        this.noMissCountArrSort = this.currentUserObj.noMissCountArr.concat()
+        this.noMissCountArrSort.sort(function(a,b){
+          if(a.count > b.count)return -1
+          if(b.count > a.count)return 1
+          return 0
+        })
+        console.log(this.noMissCountArrSort)
       },
       backToHome(){
         this.$router.push('/')
@@ -157,9 +165,9 @@
         </div>
         <div class="fav">
           <p>得意な国</p>
-          <!-- <div class="fav_wrap" v-for="c in currentUserObj">
+          <div class="fav_wrap">
             a
-          </div> -->
+          </div>
         </div>
         <div class="user_history">
           <p>最近の記録</p>

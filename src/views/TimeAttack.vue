@@ -393,19 +393,43 @@ export default {
       console.log(this.noMissIdArr.length)
       console.log(this.currentUserObj.noMissCountArr)
       console.log(JSON.parse(JSON.stringify(this.currentUserObj.noMissCountArr[0])))
-      console.log(this.currentUserObj.noMissCountArr[0].id)
+      // console.log(this.currentUserObj.noMissCountArr[0].id)
       let noMissCountArrNow = this.currentUserObj.noMissCountArr.concat()
       // let noMissCountArrNow = []
       console.log(noMissCountArrNow)
       //ここまではok
-        // for(let l=0;l<this.noMissIdArr.length;l++){
+        for(let l=0;l<this.noMissIdArr.length;l++){
+          console.log(this.noMissIdArr[l])
+          console.log(noMissCountArrNow)
+          let cantFind = 0
+          for(let m=0;m<noMissCountArrNow.length;m++){
+            if(this.noMissIdArr[l]==noMissCountArrNow[m].id){
+              console.log('見つけた')
+              console.log(noMissCountArrNow[m])
+              noMissCountArrNow[m].count ++
+              console.log(noMissCountArrNow[m])
+              break
+            }else{
+              cantFind++
+            }
+          }
+          if(noMissCountArrNow.length == cantFind){
+            console.log('なかったから追加')
+            noMissCountArrNow.push({
+                id:this.noMissIdArr[l],
+                count:1,
+            })
+          }
+
+          // console.log(noMissCountArrNow.some((e)=>{e.id==this.noMissIdArr[l]}))
+          // console.log(noMissCountArrNow.every((e)=>{e.id==!this.noMissIdArr[l]}))
 
           // let noMissCountArrNow = this.currentUserObj.noMissCountArr.filter(e=>{
           //   if(e.id==!this.noMissIdArr[0] || e.id==!this.noMissIdArr[1] )
           // })
-          
+        }
         
-        // console.log(noMissCountArrNow)
+        console.log(noMissCountArrNow)
 
 
       //     if(e.id==this.noMissIdArr[i]){
@@ -434,7 +458,7 @@ export default {
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
         openDiffArr: openDiffArrNow,
-        // noMissCountArr: noMissCountArrNow, 
+        noMissCountArr: noMissCountArrNow, 
         },
       { merge: true }
       );

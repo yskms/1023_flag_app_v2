@@ -278,15 +278,15 @@
             </div>
             <!--  -->
             <!-- 画面が描画された瞬間は、何も表示しない -->
-            <div class="select_btn_auth" v-if="this.uid=='uid'">
+            <div  v-show="this.uid=='uid'">
               <div></div>
             </div>
             <!-- ログインしていないなら、ログインボタンを表示 -->
-            <div class="select_btn_auth" v-else-if="this.uid==''">
+            <div class="select_btn_auth" v-show="this.uid==''">
               <AuthComp/>
             </div>
             <!-- ログインしているなら、ログアウトボタンを表示 -->
-            <div class="select_btn_auth" v-else @click="logout()">
+            <div class="select_btn_auth" v-show="this.uid!==''" @click="logout()">
               <v-btn
                 color="success"
                 dark
