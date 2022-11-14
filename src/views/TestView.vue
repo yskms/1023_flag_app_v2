@@ -13,6 +13,7 @@
         shortText : "お寿司食べたい🍣",
         longText : "私が好きなお寿司のネタとして、サーモン、本マグロ、はまちが挙げられます。いずれにしても脂がのっていてとても気に入っています。そういえばお寿司屋さんといえば弊社から歩いても行けるところに、私がよく行くお店があるのですが、1000円以下から食べられる「回らないお寿司」でとてもおいしいです。私一人でも、同僚とのランチでも行きます。",
         textElem : document.getElementById("soto"),
+        anim1:false
       }
     },
     methods:{
@@ -67,6 +68,7 @@
         }
         console.log(this.diffArr)
       },
+      test3(){this.anim1=!this.anim1},
 
   selectShort() {
     this.textElem.innerText = this.shortText;
@@ -106,9 +108,11 @@
 <template>
 <div>
   <AuthComp/>
-  <button @click="test2()">aaa</button>
+  <button @click="test3()">aaa</button>
   <body>
-    bb
+    <!-- <div :style="{animation:(this.anim1 ? 'centerToLeftAnim 1s':'')}"> -->
+    <div :class="{anim_class:this.anim1}">
+      text</div>
     <div class="button" @click="resize('a100')">短文</div>
     <!-- <div class="button" @click="selectLong()">長文</div> -->
     <!-- <div class="soto">{{longText}}</div> -->
@@ -141,5 +145,19 @@
     font-size: 30px;
     border: 3px solid #ff8900;
     padding:8px;
+}
+.anim_class{
+  animation: centerToLeftAnim 1s ;
+  background-color: bisque;
+}
+@keyframes centerToLeftAnim {
+  0% {transform: translateX(0) ;}
+  /* 50% {transform: translateX(-10px) ;} */
+  100% {transform: translateX(-500px) ;}
+}
+@keyframes centerToRightAnim {
+  0% {transform: translateX(0) ;}
+  /* 50% {transform: translateX(-10px) ;} */
+  100% {transform: translateX(500px) ;}
 }
 </style>

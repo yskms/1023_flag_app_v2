@@ -17,9 +17,12 @@
         // land:0,
         // diff:0,
         setArr:[0,0,0,0,],//ゲーム設定です。stateに送ります
-        selectG:true,   //game
-        selectL:false,  //land
-        selectD:false,  //diffculty
+        selectG:true,   //game 1
+        selectL:false,  //land 2
+        selectD:false,  //diffculty 3
+        selectS:1,
+        isSlide:true,
+
         uid:'uid',  //ログインならガチUID,してないならブランクにする
         userName:'',
         isUserName:false,
@@ -34,11 +37,15 @@
         // currentUserObj:{},
         // openDiffArr:[1,1,1,1,1,1,1,],
         homeFlagLists:[],
+        selectGameMove:'',
+        selectLandMove:'',
+        selectDiffMove:'',
       }
     },
-    mounted(){
+    created(){
       this.homeFlagLists = this.flagLists.splice(Math.floor(Math.random()*233),5)
-
+    },
+    mounted(){
       onAuthStateChanged(auth, (user) => {
         if (user) {             //ログインしてたら
           console.log(user.uid)
@@ -101,21 +108,33 @@
         });
       },
       select_game(n){ //ゲームモード選択
+        this.isSlide = true
         this.setArr[1] = n
-        this.selectG = !this.selectG
-        this.selectL = !this.selectL
+        this.selectS = 2
+        // this.selectGameMove = 'centerToLeft'
+        // this.selectLandMove = 'centerToLeft'
+        // this.selectG = !this.selectG
+        // this.selectL = !this.selectL
       },
       select_land(n){ //land選択
+        this.isSlide = true
         this.setArr[2] = n
-        this.selectL = !this.selectL
-        this.selectD = !this.selectD
+        this.selectS = 3
+        // this.selectDiffMove = 'centerToLeft'
+        // this.selectL = !this.selectL
+        // this.selectD = !this.selectD
       },
       select_diff(n){ //difficulty選択、stateへ登録、ゲーム画面へ遷移
         this.setArr[3] = n
+        this.isSlide = true
         // this.selectD = !this.selectD
         // console.log(this.setArr)
         this.$store.commit('setSetArr',this.setArr)
         this.$router.push('time')
+      },
+      select_back(){
+        this.isSlide = false
+        this.selectS--
       },
       langJ(){  //言語選択0が日本語、1が英語
         this.lang = 0
@@ -227,7 +246,8 @@
               </div>
           </div>
 
-        <div class="select_game" v-if="selectG">
+        <transition :name="isSlide?'slideA':'slideB'" mode="out-in">
+        <div class="select_game" v-if="selectS==1" key="1" :class="selectGameMove">
             <div class="select_back" >
                 <button>
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
@@ -278,10 +298,10 @@
           </div>
         </div>
 
-        <div class="select_game" v-else-if="selectL">
+        <div class="select_game" v-else-if="selectS==2" key="2" :class="selectLandMove">
           <div class="select_btn_wrap" >
                 <div class="select_back" >
-                <button @click="select_game(0)">
+                <button @click="select_back()">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                     <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                   </svg>
@@ -307,10 +327,10 @@
           </div>
         </div>
 
-        <div class="select_game" v-else-if="selectD">
+        <div class="select_game" v-else-if="selectS==3" key="3" :class="selectDiffMove">
           <div class="select_btn_wrap" >
                 <div class="select_back" >
-                <button @click="select_land(0)">
+                <button @click="select_back()">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                     <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                   </svg>
@@ -337,7 +357,7 @@
 
 
 
-        </div>
+        </div></transition>
 
       </div>
     </div>
@@ -495,15 +515,78 @@
 .langOn{
   opacity: 0.5;
 }
-
-/* @keyframes selectAnim {
-  50% {transform: translateY(0) ;}
-  53% {transform: translateY(-10px) ;}
-  55% {transform: translateY(0) ;}
-} */
+.centerToLeft{
+  animation: centerToLeftAnim 0.7s;
+  /* position: absolute;
+  top: 0;
+  left: 0; */
+}
+@keyframes centerToLeftAnim {
+  0% {transform: translateX(0) ;}
+  50% {transform: translateX(-500px) ;}
+  100% {transform: translateX(-500px) ;}
+}
+@keyframes rightToCenterAnim {
+  0% {transform: translateX(500px) ;}
+  50% {transform: translateX(0) ;}
+  100% {transform: translateX(0) ;}
+}
+@keyframes leftToCenterAnim {
+  0% {transform: translateX(-500px) ;}
+  50% {transform: translateX(0) ;}
+  100% {transform: translateX(0) ;}
+}
+@keyframes centerToRightAnim {
+  0% {transform: translateX(0) ;}
+  50% {transform: translateX(500px) ;}
+  100% {transform: translateX(500px) ;}
+}
+/* はじめ ----------------*/
+.slideA-enter {
+  opacity: 0;
+}
+.slideA-enter-active {
+  transition: opacity 0.5s;
+}
+.slideA-enter-to {
+  opacity: 1;
+  animation: rightToCenterAnim 0.5s;
+}
+.slideA-leave {
+  opacity: 1;
+}
+.slideA-leave-active {
+  transition: opacity 0.5s;
+}
+.slideA-leave-to {
+  opacity: 0;
+  animation: centerToLeftAnim 0.5s;
+}
+/* はじめ ----------------*/
+.slideB-enter {
+  opacity: 0;
+}
+.slideB-enter-active {
+  transition: opacity 0.5s;
+}
+.slideB-enter-to {
+  opacity: 1;
+  animation: leftToCenterAnim 0.5s;
+}
+.slideB-leave {
+  opacity: 1;
+}
+.slideB-leave-active {
+  transition: opacity 0.5s;
+}
+.slideB-leave-to {
+  opacity: 0;
+  animation: centerToRightAnim 0.5s;
+}
 .select_game{
   height: 75%;
   position: relative;
+  overflow: hidden;
 }
 .select_btn_wrap{
   display: flex;
