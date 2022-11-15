@@ -17,11 +17,13 @@ export default {
       quizAnserOb2:{},//読み込み遅い問題に対応するため、先読みしておいて、2つを交互に表示しています
       quizArr2:[],
       copyArr2:[],
+
       timebar:100, //0になったらゲーム終了
       timerId:null,//timebarのclearInterbal用
       getready:3,//ゲーム開始前のカウントダウン用
       isSeikai:false,//まるを表示する用
       isFuseikai:false,//ばつを表示する用
+
       score:0,//正解数
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
       isVibeTime:false,//タイムバー用のブルブル管理
@@ -389,11 +391,9 @@ export default {
           }
         }
       }
-
-
+      //1発正解をカウント
       //noMissIdArr:[12,134,51,1,],//1発正解したidを追加していく
       //noMissCountArr:[{id:21,count:3},{id:3,count:1}]みたいな配列
-      //1発正解をカウント
       console.log('オープンnomiss')
       console.log(this.noMissIdArr)
       console.log(this.noMissIdArr.length)
@@ -426,37 +426,25 @@ export default {
                 count:1,
             })
           }
-
-          // console.log(noMissCountArrNow.some((e)=>{e.id==this.noMissIdArr[l]}))
-          // console.log(noMissCountArrNow.every((e)=>{e.id==!this.noMissIdArr[l]}))
-
-          // let noMissCountArrNow = this.currentUserObj.noMissCountArr.filter(e=>{
-          //   if(e.id==!this.noMissIdArr[0] || e.id==!this.noMissIdArr[1] )
-          // })
         }
-        
         console.log(noMissCountArrNow)
 
 
-      //     if(e.id==this.noMissIdArr[i]){
-      //       console.log('aru')
-      //       console.log(e.count)
-      //       noMissCountArrNow.push({id:i, count:e.count +1})
-      //       console.log(noMissCountArrNow)
-      //     }else{
-      //       noMissCountArrNow.push({id:i, count:1})
-      //     }
-      // })
-      
-      //   if(noMissCountObjNow[this.noMissIdArr[i]]){
-      //     console.log('aru')
-      //     noMissCountObjNow[this.noMissIdArr[i]] = noMissCountObjNow[this.noMissIdArr[i]]+1
-      //   }else{
-      //     noMissCountObjNow[this.noMissIdArr[i]] = 1
-      //   }
-      // }
-      // console.log(noMissCountObjNow)
-
+      //historyArrを読み込んで追記する。上限きてたら最初のやつを消す
+      let historyArrNow = this.currentUserObj.historyArr.concat()
+      historyArrNow.push({
+          lang:this.setArr[0],
+          game:this.setArr[1],
+          land:this.setArr[2],
+          diff:this.setArr[3],
+          score:this.score,
+          date: Timestamp.fromDate(new Date()),
+      })
+      console.log(historyArrNow)
+      if(historyArrNow.length>10){//上限きてたら先頭を1つ消す
+        historyArrNow.shift()
+      }
+      console.log(historyArrNow)
 
       //firestoreをアップデートするとこ
       //users内の既存のuidに対して、上書き保存します
@@ -464,13 +452,15 @@ export default {
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
         openDiffArr: openDiffArrNow,
-        noMissCountArr: noMissCountArrNow, 
+        noMissCountArr: noMissCountArrNow,
+        historyArr: historyArrNow,
         },
       { merge: true }
       );
       console.log('update playCount')
       this.isResultComp = true 
     },
+
     async fetchRank(){  //score降順で3つデータ取る
         const datasRef = collection(db, "ranks")
         //デフォルトでは、クエリは、ドキュメント ID の昇順でクエリを満たすすべてのドキュメントを取得します。

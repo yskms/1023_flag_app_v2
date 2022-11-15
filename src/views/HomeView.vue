@@ -286,12 +286,13 @@
               <AuthComp/>
             </div>
             <!-- ログインしているなら、ログアウトボタンを表示 -->
-            <div class="select_btn_auth" v-show="this.uid!==''" @click="logout()">
+            <div class="select_btn_auth" v-show="this.uid!==''">
               <v-btn
                 color="success"
-                dark
+                dark 
+                @click="logout()"
               >
-                {{lang==0 ? "ログアウト!!!!!!!!" : "Logout"}}
+                {{lang==0 ? "ログアウト" : "Logout"}}
               </v-btn>
             </div>
             <!--  -->
@@ -377,7 +378,7 @@
   justify-content: center;
   position: relative;
 }
-/*-- 全画面表示のもの-------------------------------------------------------*/
+/*-- 全画面表示のもの-------------------------------------------------------------------------*/
 .user_error{
   position: absolute;
   display: flex;
@@ -406,6 +407,7 @@
   width: 64%;
   text-align: center;
 }
+/*-- 全画面表示のもの ここまで-------------------------------------------------------------------------*/
 /*-- -------------------------------------------------------*/
 .home_main{
   height: 80%;
@@ -432,6 +434,7 @@
   width: 100%;
   z-index: 2;
 }
+/*-- -------------------------------------------------------*/
 .logo_wrap{
   /* margin: auto 0 0 0; */
   height: 100%;
@@ -593,6 +596,8 @@
   position: relative;
   overflow: hidden;
 }
+/*-- -------------------------------------------------------*/
+/*-- -------------------------------------------------------*/
 .select_btn_wrap{
   display: flex;
   /* position: relative; */
@@ -632,7 +637,7 @@
   font-weight: bold;
   border-radius: 10px;
   padding: 10px 15px;
-  background-color: green;
+  /* background-color: green; */
   color: white;
   width: 80%;
   text-align: center;

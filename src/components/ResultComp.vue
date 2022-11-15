@@ -252,7 +252,7 @@ export default {
           <!-- ログインしていないなら、 -->
           <p v-else-if="this.uid==''">{{rankInPlus}} 位です！<br>ログインして記録を残そう！</p>
           <!-- ログインしているなら、 -->
-          <p v-else>{{rankInPlus}} 位です！！</p>
+          <p v-else>{{rankInPlus}} 位です！！<br>おめでとう！ランクインしたよ！！</p>
         </div>
         <!-- ランクインじゃない場合 -->
         <!-- 高得点 -->
@@ -264,8 +264,8 @@ export default {
         <!-- 標準得点 -->
         <div class="msg_wrap" v-else-if="this.score>0">
           <p v-if="this.uid=='uid'"></p>
-          <p v-else-if="this.uid==''">ランクインまであと少し！<br>ログインしたらいい事あるかも？</p>
-          <p v-else>ランクインまであと少し！<br>もう一度挑戦してみよう！</p>
+          <p v-else-if="this.uid==''">まだまだできるはず！<br>ログインしたらいい事あるかも？</p>
+          <p v-else>まだまだできるはず！<br>もう一度挑戦してみよう！</p>
         </div>
         <!-- 悪い得点 -->
         <div class="msg_wrap" v-else-if="this.score==0">

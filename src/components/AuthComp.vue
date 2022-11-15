@@ -88,7 +88,7 @@
         iconURL: this.iconURL,
         date: Timestamp.fromDate(new Date()),
         medal:[],
-        history:[],
+        historyArr:[],
         playCount:1,
         openContinent:0,//地域解放数
         openDiffArr:[1,1,1,1,1,1,1],//難しさ解放はレジスター以降からでOKとします
@@ -182,15 +182,25 @@
                 count:1,
             })
           }
-
-          // console.log(noMissCountArrNow.some((e)=>{e.id==this.noMissIdArr[l]}))
-          // console.log(noMissCountArrNow.every((e)=>{e.id==!this.noMissIdArr[l]}))
-
-          // let noMissCountArrNow = this.currentUserObj.noMissCountArr.filter(e=>{
-          //   if(e.id==!this.noMissIdArr[0] || e.id==!this.noMissIdArr[1] )
-          // })
         }
         console.log(noMissCountArrNow)
+
+
+      //historyArrを読み込んで追記する。上限きてたら最初のやつを消す
+      let historyArrNow = this.currentUserObj.historyArr.concat()
+      historyArrNow.push({
+          lang:this.currentUserScore.lang,
+          game:this.currentUserScore.game,
+          land:this.currentUserScore.land,
+          diff:this.currentUserScore.diff,
+          score:this.currentUserScore.score,
+          date: Timestamp.fromDate(new Date()),
+      })
+      console.log(historyArrNow)
+      if(historyArrNow.length>10){//上限きてたら先頭を1つ消す
+        historyArrNow.shift()
+      }
+      console.log(historyArrNow)
 
 
       //firestoreをアップデートするとこ
@@ -198,7 +208,9 @@
       { playCount: this.currentUserObj.playCount + 1,
         openContinent: openContinentNow,
         openDiffArr: openDiffArrNow,
-        noMissCountArr: noMissCountArrNow, },
+        noMissCountArr: noMissCountArrNow,
+        historyArr: historyArrNow,
+        },
       { merge: true }
       );
       console.log('update playCount')
@@ -281,20 +293,15 @@
       v-model="dialog"
       max-width="600px"
     >
+    <!-- 全画面表示のやつ---------------------------------------------------------------- -->
     <div class="loginSuccess" v-show="isSuccess">
-    <p>ログイン成功</p>
-    <!-- <div class="my-2">
-                  <v-btn
-                    color="success"
-                    dark
-                    @click="isSuccess=!isSuccess"
-                  >
-                    ホームへ戻る
-                  </v-btn>
-                </div> -->
-  </div><!-- loginSuccess -->
+      <p>ログイン成功</p>
+    </div><!-- loginSuccess -->
+    <!-- 全画面表示のやつ ここまで---------------------------------------------------------------- -->
+
     <!-- persistentってどういう機能なんやろか -->
       <template v-slot:activator="{ on, attrs }">
+        <v-col cols="12">
         <v-btn
           color="primary"
           dark
@@ -302,17 +309,18 @@
           v-on="on"
           persistent
         >
-      ログインして記録を残そう！
-        </v-btn>
+        ログインしよう！
+        </v-btn></v-col>
+        <!-- <button class="select_btn">loguinsiyo</button> -->
       </template>
 
-      <!-- register -->
+      <!-- register ------------------------------------------------------------------>
       <v-card v-show="toggleForm">
-        <v-row justify="center">
+        <!-- <v-row> -->
         <v-card-title>
           <span class="text-h5">アカウント登録</span>
         </v-card-title>
-        </v-row>
+        <!-- </v-row> -->
 
         <v-card-text>
           <v-container>
@@ -326,7 +334,6 @@
                   <v-btn
                     color="success"
                     dark
-                    @click="logout()"
                   >
                     Google
                   </v-btn>
@@ -335,7 +342,6 @@
                   <v-btn
                     color="success"
                     dark
-                    @click="logout()"
                   >
                     Apple
                   </v-btn>
@@ -428,13 +434,16 @@
         </v-card-text>
       </v-card>
 
-      <!-- login -->
+      <!-- login ------------------------------------------------------------------>
       <v-card v-show="!toggleForm">
+        <!-- カードのタイトル --------------------->
         <v-card-title>
           <span class="text-h5">ログイン</span>
         </v-card-title>
 
+        <!-- カードの中身 ------------------------->
         <v-card-text>
+          <!-- コンテナ：Googleとアップルのリンク -->
           <v-container>
             <v-row>
               <v-col
@@ -446,7 +455,6 @@
                   <v-btn
                     color="success"
                     dark
-                    @click="logout()"
                   >
                     Google
                   </v-btn>
@@ -468,10 +476,10 @@
             <p v-show="errorCodeNo===2">パスワードが間違っています</p>
             <p v-show="errorCodeNo===3">ログインエラー</p>
           </div>
-
+          
+          <!-- コンテナ：メールとパスワードの欄 -->
           <v-container>
             <v-row>
-              
               <v-col cols="12">
                 <v-text-field
                   label="Email*"
@@ -491,8 +499,10 @@
               </v-col>
             </v-row>
           </v-container>
+
           <small>*indicates required field</small>
 
+          <!-- コンテナ：ログインボタンとregister切り替えの欄 -->
           <v-container>
             <v-row>
               <v-col
@@ -550,5 +560,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.select_btn{
+  margin: 7px auto;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 80%;
+  text-align: center;
 }
 </style>
