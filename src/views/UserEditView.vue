@@ -167,10 +167,10 @@
 </script>
 
 <template>
-  <div class="cont">
-    <div class="main">
+  <div class="edit_cont">
+    <div class="edit_main">
 
-      <!-- del_edit -->
+      <!-- del_edit ------------------------------------------------------>
       <div class="del_edit" v-show="isDelEdit">
         <div class="head">
         <p>←</p>
@@ -199,9 +199,9 @@
             削除せずに戻る
           </v-btn>
       </div>
-      </div><!-- del_edit -->
+      </div><!-- del_edit ---------------------------------------------->
       
-      <!-- pass_edit -->
+      <!-- pass_edit --------------------------------------------------->
       <div class="pass_edit" v-show="isPassEdit">
         <div class="head">
         <p>←</p>
@@ -233,13 +233,14 @@
             変更せずに戻る
           </v-btn>
       </div>
-      </div><!-- pass_edit -->
+      </div><!-- pass_edit ---------------------------------------------->
       
-      <div class="head">
+      <div class="edit_head">
         <p>←</p>
         <h2>ユーザー情報の変更</h2>
       </div>
-      <div class="user_info">
+
+      <div class="edit_info">
         <div class="icon">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
@@ -254,25 +255,28 @@
           <p><input type="text" placeholder="nickname"></p>
         </div>
       </div>
-      <div class="pass" v-show="email!==''">
+
+      <div class="edit_pass" v-show="email!==''">
         <p @click="isPassEdit=!isPassEdit">パスワードを変更する</p>
       </div>
 
-      <div class="my-2">
-          <v-btn
-            color="success"
-            dark
-          >
-            変更する
-          </v-btn>
-      </div>
-      <div class="my-2">
-          <v-btn @click="backToUser()"
-            color="success"
-            dark
-          >
-            変更せずに戻る
-          </v-btn>
+      <div class="edit_btn">
+          <div class="my-2">
+              <v-btn
+                color="success"
+                dark
+              >
+                変更する
+              </v-btn>
+          </div>
+          <div class="my-2">
+              <v-btn @click="backToUser()"
+                color="success"
+                dark
+              >
+                変更せずに戻る
+              </v-btn>
+          </div>
       </div>
 
       <div class="del">
@@ -283,3 +287,44 @@
   </div><!-- cont -->
 </template>
 
+<style scoped>
+.edit_cont{
+  /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
+  width: 100%;
+  height: 100%;
+  background-color: #dad1b5;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+}
+/* ------------------------------------- */
+.edit_main{
+  height: 80%;
+  background-color: #F5ECCD;
+  width: 85%;
+  margin: 10% auto 10% auto;
+  padding: 10px;
+}
+/* ------------------- */
+.edit_head{
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+.edit_head p{
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* ------------------- */
+.edit_info{
+  height: 35%;
+}
+/* ------------------- */
+.edit_pass{
+  height: 10%;
+}
+/* ------------------- */
+/* ------------------- */
+</style>

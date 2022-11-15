@@ -3,6 +3,7 @@
   import { getAuth, onAuthStateChanged, signOut, } from "firebase/auth"
   import { getFirestore, doc, getDoc } from "firebase/firestore"
 
+  import dayjs from 'dayjs'
 
   const auth = getAuth(firebaseApp)
   const db = getFirestore(firebaseApp)
@@ -19,6 +20,7 @@
         currentUserObj:{name:""},
         // noMissCountArrSort:[],
         favListArr:[],
+        historyArr:[],
       }
     },
     mounted(){
@@ -36,6 +38,9 @@
           this.$router.push('/')
         }
       });
+
+      const date = dayjs().format()
+      console.log(date)
     },
     methods:{
       async fetchUsers(){  //mountedで使う。ログインしてたらuidでusersデータ取得
@@ -46,6 +51,7 @@
           console.log("Document data:", docSnap.data());
           Object.assign(this.currentUserObj,docSnap.data())
           this.makeFavList()
+          this.makeHistoryList()
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
@@ -82,6 +88,25 @@
         console.log(this.favListArr)
         console.log(JSON.parse(JSON.stringify(this.favListArr)))
       },
+
+      makeHistoryList(){
+        this.historyArr = this.currentUserObj.historyArr.concat()
+        // console.log(JSON.parse(JSON.stringify(this.historyArrNow)))
+        console.log(this.historyArr[0].date)
+        console.log(this.historyArr[0].date.toDate())
+        console.log(this.historyArr[0].date.seconds*1000)
+        console.log(dayjs(this.historyArr[0].date.seconds*1000))
+        console.log(dayjs(this.historyArr[0].date.seconds*1000).format())
+        console.log(dayjs(this.historyArr[0].date.seconds*1000).format("YYYY/MM/DD"))
+        this.historyArr[0].formatDate=dayjs(this.historyArr[0].date.seconds*1000).format("YYYY/MM/DD")
+
+        for(let i=0;i<this.historyArr.length;i++){
+          this.historyArr[i].formatDate=dayjs(this.historyArr[i].date.seconds*1000).format("YYYY/MM/DD HH:mm")
+        }
+        console.log(this.historyArr)
+      },
+
+
       backToHome(){
         this.$router.push('/')
       },
@@ -193,10 +218,11 @@
         </div>
         <div class="user_history">
           <p>最近の記録</p>
-          <ul>
-            <li>12</li>
-            <li>8</li>
-          </ul>
+          <div class="user_history_wrap">
+            <div class="user_history_list" v-for="(h,index) in historyArr" :key="index">
+              {{h.formatDate}} : {{h.score}}問
+            </div>
+          </div>
         </div>
     </div><!-- main -->
   </div><!-- cont -->
@@ -205,6 +231,9 @@
 <style scoped>
 p{
   margin: 0;
+}
+html{
+  background-color: #aca58f;
 }
 .user_cont{
   /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
@@ -235,15 +264,19 @@ p{
 }
 /* --------------------------------------------- */
 .user_main{
-  height: 80%;
+  height: 88%;
   background-color: #F5ECCD;
-  width: 80%;
-  margin: 20% auto 0 auto;
+  width: 85%;
+  margin: 5% auto 5% auto;
+  scroll-snap-type: y mandatory;
+  overflow: auto;
+  padding: 10px;
 }
 .user_head{
   text-align: center;
   position: relative;
   height: 5%;
+  margin-top: 10%;
 }
 .pen{
   position: absolute;
@@ -327,5 +360,32 @@ p{
   height: 30%;
   background-color: aquamarine;
   padding: 5px;
+}
+.user_history_wrap{
+  /* height: 80%; */
+  background-color: whitesmoke;
+  border-radius: 10px;
+  border: #908a77 solid 1px;
+
+  display: flex;
+  /* position: relative; */
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  /* height: 100%; */
+  height: 220px;
+  /* width: 80%; */
+  margin: 0 auto;
+  scroll-snap-type: y mandatory;
+  /* border: 1px solid; */
+  overflow: auto;
+}
+.user_history_list{
+  height: 30%;
+  border: #908a77 solid 1px;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  width: 90%;
 }
 </style>
