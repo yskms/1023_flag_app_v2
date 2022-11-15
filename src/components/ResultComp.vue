@@ -178,7 +178,7 @@ export default {
 
 <template>
   <div class="result_cont">
-    <!-- 全画面表示のもの------------------------------------------------------- -->
+    <!-- 全画面表示のもの----------------------------------------------------------------------- -->
 
     <!-- TimeAttack.vueの方が発動するからここには不要でした -->
     <!-- <div class="config_error" v-show="isConfig">
@@ -195,8 +195,11 @@ export default {
     </div> -->
     <!-- config_error -->
     
-    <div class="rankIn confetti" v-show="isRankIn" @click="isRankIn=false"><!-- ３位以内の場合 -->
-<span></span><span></span><span></span>  <span></span><span></span><span></span>  <span></span><span></span><span></span>  <span></span><span></span>
+    <!-- ３位以内の場合に表示するやつ ----------------->
+    <div class="rankIn confetti" v-show="isRankIn" @click="isRankIn=false">
+      <!-- confettiクラスとspanタグは紙吹雪用です -->
+      <span></span><span></span><span></span>  <span></span><span></span><span></span>  <span></span><span></span><span></span>  <span></span><span></span>
+      
       <div class="rankIn_main">
         <div class="rankIn_main_msg">
           {{rankInPlus}} 位です！！
@@ -226,11 +229,13 @@ export default {
             </div>
       </div>
     </div>
-    <!-------------------------------------------------------------- -->
+    <!-- 全画面表示 ここまで----------------------------------------------------------------------- -->
     
     <div class="result_main">
       <div class="img_area">
-        <img src="@/assets/hakase_hatsumei.png" alt="">
+        <img v-if="this.score>9" src="@/assets/hakase_hatsumei.png" alt="好得点">
+        <img v-else-if="this.score>0" src="@/assets/mogura.png" alt="標準得点">
+        <img v-else-if="this.score==0" src="@/assets/hakase_shippai.png" alt="悪い得点">
       </div><!-- img_area -->
 
       <div class="score_area">
@@ -240,7 +245,8 @@ export default {
       </div>
 
       <div class="msg_area">
-        <div class="msg_wrap" v-show="rankIn > -1"><!-- ３位以内の場合 -->
+        <!-- ３位以内ランクインの場合 -->
+        <div class="msg_wrap" v-if="rankIn > -1">
           <!-- 画面が描画された瞬間は、何も表示しない -->
           <p v-if="this.uid=='uid'"></p>
           <!-- ログインしていないなら、 -->
@@ -248,13 +254,24 @@ export default {
           <!-- ログインしているなら、 -->
           <p v-else>{{rankInPlus}} 位です！！</p>
         </div>
-        <div class="msg_wrap" v-show="rankIn == -1"><!-- ３位以内じゃない場合 -->
-          <!-- 画面が描画された瞬間は、何も表示しない -->
+        <!-- ランクインじゃない場合 -->
+        <!-- 高得点 -->
+        <div class="msg_wrap" v-else-if="this.score>9">
           <p v-if="this.uid=='uid'"></p>
-          <!-- ログインしていないなら、 -->
-          <p v-else-if="this.uid==''">ランクインまでもう少し！<br>ログインしたらいい事あるかも？</p>
-          <!-- ログインしているなら、 -->
-          <p v-else>ランクインまでもう少し！<br>もう一度挑戦してみよう！</p>
+          <p v-else-if="this.uid==''">高得点です！！<br>ランクインまであと少し！<br>ログインしたらいい事あるかも？</p>
+          <p v-else>高得点です！！<br>ランクインまであと少し！<br>この調子でがんばろう！</p>
+        </div>
+        <!-- 標準得点 -->
+        <div class="msg_wrap" v-else-if="this.score>0">
+          <p v-if="this.uid=='uid'"></p>
+          <p v-else-if="this.uid==''">ランクインまであと少し！<br>ログインしたらいい事あるかも？</p>
+          <p v-else>ランクインまであと少し！<br>もう一度挑戦してみよう！</p>
+        </div>
+        <!-- 悪い得点 -->
+        <div class="msg_wrap" v-else-if="this.score==0">
+          <p v-if="this.uid=='uid'"></p>
+          <p v-else-if="this.uid==''">ざんねん、、もういちどやってみよう！<br>ログインしたらいい事あるかも？</p>
+          <p v-else>がんばって！<br>もういちどやってみよう！</p>
         </div>
       </div><!-- msg_area -->
 
@@ -263,7 +280,7 @@ export default {
       <div class="bottom_area">
         <!-- 画面が描画された瞬間は、ランキングボタン -->
           <div v-if="this.uid!==''">
-            <div class="my-2" @click="goToRank()">
+            <div @click="goToRank()">
               <button class="select_btn">
                 {{lang==0 ? "ランキングを見る" : "Ranking"}}
               </button>
@@ -274,7 +291,7 @@ export default {
             <AuthComp :score="score" :noMissIdArr="noMissIdArr" />
           </div>
           <!-- ホームに戻るボタンは固定 -->
-          <div class="my-2" @click="backToHome">
+          <div @click="backToHome">
               <button class="select_btn">
                 ホームに戻る
               </button>
@@ -385,12 +402,15 @@ export default {
 }
 .img_area{
   height: 30%;
+  display: flex;
+    justify-content: center;
+    align-items: end;
 }
 .img_area img{
-  height: 100%;
-  /* このrelative必要か？？？ */
+  /* height: 100%; */
   position: relative;
-  top: 20px;
+  bottom: -20px;
+  object-fit: scale-down;
 }
 .score_area{
   height: 25%;
@@ -422,8 +442,8 @@ export default {
   height: 30%;
 }
 .select_btn{
-  /* margin: 4px auto; */
-  margin-bottom: 20px auto;
+  margin: 4px auto;
+  /* margin-bottom: 20px auto; */
   font-size: 18px;
   font-weight: bold;
   border-radius: 10px;

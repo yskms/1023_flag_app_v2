@@ -291,7 +291,7 @@
                 color="success"
                 dark
               >
-                {{lang==0 ? "ログアウト" : "Logout"}}
+                {{lang==0 ? "ログアウト!!!!!!!!" : "Logout"}}
               </v-btn>
             </div>
             <!--  -->

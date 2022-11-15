@@ -272,7 +272,7 @@
 </script>
 
 <template>
-<div class="container">
+<div class="auth_cont">
   
 
   <v-row justify="center">
@@ -530,7 +530,7 @@
 </template>
 
 <style scoped>
-.cont{
+.auth_cont{
   /* position: relative; */
 }
 .loginSuccess{
