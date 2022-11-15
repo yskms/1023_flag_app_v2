@@ -11,19 +11,20 @@ export default {
   components: { ResultComp },
   data(){
     return{
-      quizAnserOb:{},
-      quizAnserOb2:{},
-      quizArr:[],
+      quizAnserOb:{},//正解を入れます
+      quizArr:[],    //クイズの選択肢
       copyArr:[],
+      quizAnserOb2:{},//読み込み遅い問題に対応するため、先読みしておいて、2つを交互に表示しています
       quizArr2:[],
       copyArr2:[],
-      timebar:100,
-      timerId:null,
+      timebar:100, //0になったらゲーム終了
+      timerId:null,//timebarのclearInterbal用
       getready:3,//ゲーム開始前のカウントダウン用
       isSeikai:false,//まるを表示する用
       isFuseikai:false,//ばつを表示する用
       score:0,//正解数
       isVibe: [], //気持ち的には233個falseで並べておきたいやつ。どのIDでも発火できるぞこれ
+      isVibeTime:false,//タイムバー用のブルブル管理
       isConfig:false,//setArrの中身があるかないかを管理
       isResult:false,//ゲーム終了後、何問正解と表示するための管理用
       isResultBefore:false,//isResultの前処理。"終了"を表示
@@ -100,12 +101,11 @@ export default {
     }
   },
   methods:{
-    gameStart(){  //時間で画面遷移しているが、Timebarがゼロになったら、というのも必要
+    gameStart(){  //Timebarがゼロになったら、watchで画面遷移させます
       this.timerId = setInterval(()=>{
         this.timebar = this.timebar - 1
         }, 100)
       console.log(this.timerId)
-      // this.autoResize(this.quizArr)
     },
 
     //['アジア','Asia'],['ヨーロッパ','Europe'],['南アメリカ','South America'],['アフリカ','Africa'],['北アメリカ','North America'],['オセアニア','Oceania'],['全世界','All'],],
@@ -182,7 +182,7 @@ export default {
             }
           }
         }
-    //配列作ってfor文にした
+    //配列作ってfor文にしたのが上のやつ
         // if(this.setArr[3] == 1){//難しい：なら
         //   for(let i=0, len=this.copyArr.length ; i<3; i++,len--){//合体後のcopyArrから3つ抜き取る
         //     const rand = Math.floor(Math.random()*len)
@@ -271,10 +271,13 @@ export default {
         }else{
           this.isFuseikai = true  //ばつを表示して、消す
           this.isVibe[id] = true
+          this.isVibeTime = true
           this.isNoMiss = false
+          this.timebar =this.timebar -10
           setTimeout(()=>{
             this.isFuseikai = false
             this.isVibe[id] = false
+            this.isVibeTime = false
           },500)
         }
       }else{
@@ -294,10 +297,13 @@ export default {
         }else{
           this.isFuseikai = true  //ばつを表示して、消す
           this.isVibe[id] = true
+          this.isVibeTime = true
           this.isNoMiss = false
+          this.timebar =this.timebar -10
           setTimeout(()=>{
             this.isFuseikai = false
             this.isVibe[id] = false
+            this.isVibeTime = false
           },500)
         }
       }
@@ -540,6 +546,8 @@ export default {
 
 <template>
 <div class="cont">
+  <!-- 全画面表示 ------------------------------------------------------------------------->
+  <!-- リセット --------------------------------------->
   <div class="config_error" v-show="isConfig">
     <p>ゲームがリセットされました</p>
     <div class="select_btn" @click="backToHome">
@@ -549,18 +557,23 @@ export default {
             </div>
   </div>
 
+  <!-- リザルトコンポーネント ---------------------------->
   <div class="result_comp" v-if="isResultComp">
     <ResultComp :rankArr2="rankArr" :currentUserObj="currentUserObj" :score="score" :noMissIdArr="noMissIdArr"/>
   </div>
 
+  <!-- ゲーム開始前カウントダウン -->
   <div class="getready" v-show="getready>0">
     <p>{{getready}}</p>
   </div>
+
+  <!-- まる表示 -->
   <div class="isSeikai" v-show="isSeikai">
     <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill="orangered" class="bi bi-circle" viewBox="0 0 16 16">
       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
     </svg>
   </div>
+  <!-- ばつ表示 -->
   <div class="isSeikai" v-show="isFuseikai">
     <svg xmlns="http://www.w3.org/2000/svg" width="440" height="440" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
       <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
@@ -568,12 +581,14 @@ export default {
     </svg>
   </div>
 
+  <!-- ゲーム終了の表示（少し処理時間を稼ぐため） -->
   <div class="isResultBefore" v-show="isResultBefore">
     <div class="my-2">
               終了
             </div>
   </div>
 
+  <!-- ゲーム終了の表示その２（ここでOKボタンを押すことでfirebase登録を走らせるようにした） -->
   <div class="isResult" v-show="isResult">
     <a>{{score + "問正解"}}</a>
     <div class="my-2" @click="showResultComp()">
@@ -585,17 +600,19 @@ export default {
               </v-btn>
             </div>
   </div>
+  <!-- 全画面表示 ここまで------------------------------------------------------------------------->
 
   <div class="main">
     <div class="timebar_wrap">
-    <v-progress-linear
-        color="teal"
-        buffer-value="0"
-        :value="timebar"
-        stream
-      ></v-progress-linear>
-    <p>{{score + "問正解"}}</p>
-      </div>
+        <v-progress-linear
+            color="teal"
+            buffer-value="0"
+            :value="timebar"
+            stream
+            :class="{vibe:isVibeTime}"
+          ></v-progress-linear>
+        <p>{{score + "問正解"}}</p>
+    </div>
 
     <div class="flag_wrap" v-show="isReverseQuiz">
       <!--  rel="preload" -->

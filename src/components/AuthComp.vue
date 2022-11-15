@@ -82,7 +82,7 @@
       await setDoc(doc(db, "users", this.uid), {
         uid: this.uid,
         name: this.name,
-        email: this.email,
+        // email: this.email,メールはここに保持しなくてもいいかな
         age: this.age,
         iconNo: this.iconNo,
         iconURL: this.iconURL,
