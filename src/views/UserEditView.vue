@@ -1,7 +1,7 @@
 <script>
   import firebaseApp from "../plugins/firebaseConfig"
   import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, deleteUser, } from "firebase/auth"
-  import { getFirestore, doc, getDoc, getDocs, collection, query, where, deleteDoc, } from "firebase/firestore"
+  import { getFirestore, doc, getDoc, getDocs, setDoc, collection, query, where, deleteDoc, } from "firebase/firestore"
 
 
   const auth = getAuth(firebaseApp)
@@ -21,6 +21,7 @@
         password:'Password',
         newPassword:'Password',
         delDatasArr:[],//ランキング用のデータベースに残っている記録のIDをdelDatasArrにプッシュ
+        name:'',
       }
     },
     mounted(){
@@ -47,6 +48,7 @@
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           this.email = docSnap.data().email
+          this.name = docSnap.data().name
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
@@ -54,6 +56,8 @@
       },
       backToUser(){
         this.$router.push('/user')
+        this.isPassEdit = false
+        this.isDelEdit = false
       },
       logout(){
         signOut(auth).then(() => {
@@ -66,6 +70,21 @@
           // An error happened.
         });
       },
+
+      changeIconName(){},
+      async updateFireUsers(){
+        //firestoreをアップデートするメソッド。
+        //users内の既存のuidに対して、上書き保存します
+        await setDoc(doc(db, "users", this.uid), 
+        { name: this.name,
+          },
+        { merge: true }
+        );
+        console.log('update icon and name')
+      },
+
+
+
       changePass(){ //再度サインインさせてから、変更メソッドを走らせます
         signInWithEmailAndPassword(auth, this.email, this.password)
           .then((userCredential) => {
@@ -168,118 +187,108 @@
 
 <template>
   <div class="edit_cont">
-    <div class="edit_main">
-
-      <!-- del_edit ------------------------------------------------------>
-      <div class="del_edit" v-show="isDelEdit">
-        <div class="head">
-        <p>←</p>
-        <h2>ユーザー情報の削除</h2>
-      </div>
-      <div class="user_info">
-        <div class="nick">
-          <p>全ての記録が削除されます！</p>
-          <p>パスワード</p>
-          <p><input type="text" v-model="password"></p>
+<!-- 全画面表示のもの----------------------------------------------------- -->
+      <!-- pass_edit --------------------------------------------------->
+      <div class="pass_edit" v-if="isPassEdit">
+        <div class="edit_head">
+          <svg @click="isPassEdit=!isPassEdit" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+          </svg>
+          <h2>パスワード変更</h2>
         </div>
+        <div class="pass_input_main">
+          <div class="pass_input_wrap">
+            <p>現在のパスワード</p>
+            <p><input type="text" v-model="password"></p>
+            <hr>
+            <p><br>新しいパスワード</p>
+            <p><input type="text" v-model="newPassword"></p>
+            <p>新しいパスワード（確認用）</p>
+            <p><input type="text" placeholder="●●●"></p>
+          </div>
+        </div>
+      <div class="edit_btn_wrap">
+          <div class="edit_btn">
+              <button @click="changePass">
+                変更する
+              </button>
+          </div>
+          <div class="edit_btn">
+              <button @click="isPassEdit=!isPassEdit">
+                変更せずに戻る
+              </button>
+          </div>
       </div>
-      <div class="my-2">
-          <v-btn @click="delUser()"
-            color="success"
-            dark
-          >
-            削除する
-          </v-btn>
-      </div>
-      <div class="my-2">
-          <v-btn @click="isDelEdit=!isDelEdit"
-            color="success"
-            dark
-          >
-            削除せずに戻る
-          </v-btn>
-      </div>
+
+      </div><!-- pass_edit ---------------------------------------------->
+      <!-- del_edit ------------------------------------------------------>
+      <div class="del_edit" v-else-if="isDelEdit">
+        <div class="edit_head">
+            <svg @click="isPassEdit=!isPassEdit" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            <h2>ユーザー情報の削除</h2>
+        </div>
+        <div class="del_edit_main">
+          <div class="del_edit_li">
+            <h4>全ての記録が削除されます！</h4>
+            <p>パスワード</p>
+            <p><input type="text" v-model="password"></p>
+          </div>
+        </div>
+        <div class="edit_btn_wrap">
+          <div class="edit_btn_del">
+              <button @click="delUser()">
+                削除する
+              </button>
+          </div>
+          <div class="edit_btn_del">
+              <button @click="isDelEdit=!isDelEdit">
+                削除せずに戻る
+              </button>
+          </div>
+        </div>
       </div><!-- del_edit ---------------------------------------------->
       
-      <!-- pass_edit --------------------------------------------------->
-      <div class="pass_edit" v-show="isPassEdit">
-        <div class="head">
-        <p>←</p>
-        <h2>パスワード変更</h2>
-      </div>
-      <div class="user_info">
-        <div class="nick">
-          <p>現在のパスワード</p>
-          <p><input type="text" v-model="password"></p>
-          <p>新しいパスワード</p>
-          <p><input type="text" v-model="newPassword"></p>
-          <p>新しいパスワード（確認用）</p>
-          <p><input type="text" placeholder="●●●"></p>
-        </div>
-      </div>
-      <div class="my-2">
-          <v-btn @click="changePass"
-            color="success"
-            dark
-          >
-            変更する
-          </v-btn>
-      </div>
-      <div class="my-2">
-          <v-btn @click="isPassEdit=!isPassEdit"
-            color="success"
-            dark
-          >
-            変更せずに戻る
-          </v-btn>
-      </div>
-      </div><!-- pass_edit ---------------------------------------------->
+<!-- 全画面表示のもの ここまで----------------------------------------------------- -->
       
+    <div class="edit_main" v-else>
       <div class="edit_head">
-        <p>←</p>
+        <svg @click="backToUser()" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
         <h2>ユーザー情報の変更</h2>
       </div>
 
       <div class="edit_info">
         <div class="icon">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-              <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
-            </svg>  
-          </div>
-          <p>画像</p>
+          <p>アイコン</p>
+          <img src="@/assets/mogura.png"  alt="">
         </div>
         <div class="nick">
           <p>ニックネーム</p>
-          <p><input type="text" placeholder="nickname"></p>
+          <p><input type="text" v-model="name"></p>
         </div>
+      </div>
+
+      <div class="edit_btn_wrap">
+          <div class="edit_btn">
+              <button>
+                変更する
+              </button>
+          </div>
+          <div class="edit_btn">
+              <button @click="backToUser()">
+                変更せずに戻る
+              </button>
+          </div>
       </div>
 
       <div class="edit_pass" v-show="email!==''">
         <p @click="isPassEdit=!isPassEdit">パスワードを変更する</p>
       </div>
 
-      <div class="edit_btn">
-          <div class="my-2">
-              <v-btn
-                color="success"
-                dark
-              >
-                変更する
-              </v-btn>
-          </div>
-          <div class="my-2">
-              <v-btn @click="backToUser()"
-                color="success"
-                dark
-              >
-                変更せずに戻る
-              </v-btn>
-          </div>
-      </div>
-
-      <div class="del">
+      <div class="edit_del">
         <p @click="isDelEdit=!isDelEdit">ユーザー情報を削除する</p>
       </div>
 
@@ -295,8 +304,68 @@
   background-color: #dad1b5;
   display: flex;
   align-items: center;
-  /* justify-content: center; */
+  justify-content: center;
 }
+/* 全画面表示のもの------------------------------------------------------- */
+/* ------------------------------------- */
+.pass_edit{
+  height: 80%;
+  background-color: #F5ECCD;
+  width: 85%;
+  margin: 10% auto 10% auto;
+  padding: 10px;
+  /* text-align: center; */
+}
+.pass_input_main{
+  width: 70%;
+  margin: 0 auto;
+}
+.pass_input_main input{
+  background-color: aliceblue;
+  height: 2.5rem;
+  width: 100%;
+  border: #dad1b5 solid;
+  border-radius: 10px;
+}
+/* ------------------------------------- */
+.del_edit{
+  height: 80%;
+  background-color: #F5ECCD;
+  width: 85%;
+  margin: 10% auto 10% auto;
+  padding: 10px;
+  /* text-align: center; */
+}
+.del_edit_main{
+  width: 70%;
+  margin: 0 auto;
+  height: 50%;
+}
+.del_edit_main h4{
+  color: red;
+  margin: 6rem 0;
+  text-align: center;
+}
+.del_edit_main input{
+  background-color: aliceblue;
+  height: 2.5rem;
+  width: 100%;
+  border: #dad1b5 solid;
+  border-radius: 10px;
+}
+.edit_btn_del{
+  margin: 15px auto;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: red;
+  color: white;
+  width: 60%;
+  text-align: center;
+}
+
+/* 全画面表示 ここまで------------------------------------------------------- */
 /* ------------------------------------- */
 .edit_main{
   height: 80%;
@@ -310,21 +379,72 @@
   height: 10%;
   display: flex;
   justify-content: center;
+  align-items: center;
   position: relative;
 }
-.edit_head p{
+.edit_head svg{
   position: absolute;
-  top: 0;
+  top: 20px;
   left: 0;
 }
 /* ------------------- */
 .edit_info{
   height: 35%;
+  /* border: #dad1b5 solid; */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.edit_info p{
+  margin: 0;
+}
+.edit_info img{
+  height: 70px;
+  width: 70px;
+  background-color: aliceblue;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+.nick{
+  width: 100%;
+}
+.nick input{
+  background-color: aliceblue;
+  height: 2.5rem;
+  width: 65%;
+  border: #dad1b5 solid;
+  border-radius: 10px;
+}
+/* ------------------- */
+.edit_btn_wrap{
+  height: 35%;
+  /* border: #dad1b5 solid; */
+}
+.edit_btn{
+  margin: 15px auto;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 60%;
+  text-align: center;
 }
 /* ------------------- */
 .edit_pass{
   height: 10%;
+  /* border: #dad1b5 solid; */
+  text-align: center;
+  font-size: 0.8em;
 }
 /* ------------------- */
-/* ------------------- */
+.edit_del{
+  height: 10%;
+  /* border: #dad1b5 solid; */
+  text-align: center;
+  font-size: 0.8em;
+}
 </style>
