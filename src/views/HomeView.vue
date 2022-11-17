@@ -478,7 +478,9 @@
     transform:translate3d(0,0,0);
     z-index: 0;
     position: relative;
-    bottom: -320px;
+    bottom: -90%;
+    width: 95%;
+    margin: 0 auto;
     /* background-color: aqua; */
 }
 .kokki{

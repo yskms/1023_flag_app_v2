@@ -164,12 +164,9 @@
 
       <div class="user_info">
         <div class="icon_wrap">
-          <p>アイコン</p>
+          <!-- <p>アイコン</p> -->
           <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-              <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
-            </svg>  
+            <img src="@/assets/mogura.png"  alt="icon">
           </div>
         </div>
         <div class="nick_wrap">
@@ -224,6 +221,7 @@
             </div>
           </div>
         </div>
+        <div class="bottom_space"></div>
     </div><!-- main -->
   </div><!-- cont -->
 </template>
@@ -231,9 +229,6 @@
 <style scoped>
 p{
   margin: 0;
-}
-html{
-  background-color: #aca58f;
 }
 .user_cont{
   /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
@@ -245,7 +240,7 @@ html{
 /* footer--------------------------------------------- */
 .footer{
   height: 10%;
-  background-color: #908a77;
+  background-color: rgba(144, 138, 119,0.8);
   position: fixed;
   bottom: 0;
   left: 0;
@@ -287,28 +282,35 @@ html{
 .user_info{
   padding: 5px;
   height: 10%;
-  background-color: #908a77;
+  /* background-color: #908a77; */
   display: flex;
 }
 .icon_wrap{
-  background-color: aliceblue;
+  /* background-color: aliceblue; */
   text-align: center;
   width: 25%;
 }
+.icon_wrap img{
+  width: 100%;
+  height: 100%;
+  object-fit: scale-down;
+}
 .nick_wrap{
-  background-color: aliceblue;
+  /* background-color: aliceblue; */
   margin-left: 5px;
   width: 75%;
 }
 .nick_wrap h3{
   border: #908a77 solid 1px;
+  border-radius: 10px;
   padding: 2px;
   margin-left: 5px;
+  background-color: whitesmoke;
 }
 /* -------------------------- */
 .user_medal{
   height: 55%;
-  background-color: darkkhaki;
+  /* background-color: darkkhaki; */
   padding: 5px;
 }
 .user_medal_wrap{
@@ -342,7 +344,7 @@ html{
 /* -------------------------- */
 .fav{
   height: 25%;
-  background-color: blueviolet;
+  /* background-color: blueviolet; */
   padding: 5px;
 }
 .fav_wrap{
@@ -358,8 +360,9 @@ html{
 /* -------------------------- */
 .user_history{
   height: 30%;
-  background-color: aquamarine;
+  /* background-color: aquamarine; */
   padding: 5px;
+  margin-bottom: 25px;
 }
 .user_history_wrap{
   /* height: 80%; */
@@ -387,5 +390,11 @@ html{
   padding: 10px;
   margin: 10px;
   width: 90%;
+}
+/* -------------------------- */
+.bottom_space{
+  height: 0%;
+  /* background-color: aquamarine; */
+  padding: 5px;
 }
 </style>
