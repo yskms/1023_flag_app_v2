@@ -3,6 +3,8 @@
   import { getAuth, onAuthStateChanged, signOut, } from "firebase/auth"
   import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs, } from "firebase/firestore"
 
+  import dayjs from 'dayjs'
+
   const auth = getAuth(firebaseApp)
   const db = getFirestore(firebaseApp)
 
@@ -39,7 +41,7 @@
       async fetchRank(){
         const datasRef = collection(db, "ranks")
         //デフォルトでは、クエリは、ドキュメント ID の昇順でクエリを満たすすべてのドキュメントを取得します。
-        const que = query(datasRef, orderBy("score","desc"), limit(6))
+        const que = query(datasRef, orderBy("score","desc"), limit(10))
         // const q = await getDocs(que, s =>{
         //   s.forEach(element => {
         //     this.rankArr.push(element.docs.data())
@@ -87,7 +89,16 @@
           Object.assign(this.rankArr[i], userObj)
         }
         console.log(this.rankArr)
+
+        this.addFormatDate()
       },
+      addFormatDate(){
+        for(let i=0;i<this.rankArr.length;i++){
+          this.rankArr[i].formatDate=dayjs(this.rankArr[i].date.seconds*1000).format("YYYY/MM/DD")
+        }
+        console.log(this.rankArr)
+      },
+
       logout(){
         signOut(auth).then(() => {
           console.log("logout now")
@@ -115,46 +126,52 @@
 </script>
 
 <template>
-  <div class="cont">
-
+  <div class="rank_cont">
+<!-- 全画面表示のもの------------------------------------------ -->
     <div class="config_error" v-show="this.uid==''">
-    <p style="color:red">ログアウトされました</p>
-    <p style="color:red">Logouted now</p>
-    <div class="my-2" @click="backToHome">
-              <v-btn
-                color="success"
-                dark
-              >
-                ホームに戻る
-              </v-btn>
-            </div>
+        <p style="color:red">ログアウトされました</p>
+        <p style="color:red">Logouted now</p>
+        <div class="my-2" @click="backToHome">
+                  <v-btn
+                    color="success"
+                    dark
+                  >
+                    ホームに戻る
+                  </v-btn>
+                </div>
     </div><!-- config_error -->
+<!-- 全画面表示 ここまで------------------------------------------ -->
 
-    <div class="main">
-      <div class="title">
+    <div class="rank_main">
+      <div class="rank_title">
+        <div class="trophy_wrap">
+          <img src="@/assets/trophy.png"  alt="icon">
+        </div>
         <h2>ランキング</h2>
       </div><!-- title -->
-      <div class="rank">
-        <ul>
-          <li v-for="(r,index) in rankArr" :key="index">{{r}}</li>
-        </ul>
+      <div class="rank_list">
+          <div class="rank_list_li" v-for="(r,index) in rankArr" :key="index">
+            <div>{{r.formatDate}} : </div><div>{{r.name}}</div><div>{{r.score}}問</div>
+          </div>
       </div><!-- rank -->
-      <div class="my-2" @click="backToHome">
-              <v-btn
-                color="success"
-                dark
-              >
+      <div class="select_btn">
+              <button @click="backToHome">
                 ホームに戻る
-              </v-btn>
+              </button>
             </div>
     </div><!-- main -->
   </div><!-- cont -->
 </template>
 
 <style scoped>
-.cont{
+.rank_cont{
+  /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
+  width: 100%;
+  height: 100vh;
+  background-color: #dad1b5;
   position: relative;
 }
+/* 全画面表示--------------------------------------------- */
 .config_error{
   position: absolute;
   top: 0;
@@ -168,5 +185,69 @@
   color: white;
   /* font-size: 5rem; */
   z-index: 2;
+}
+/* 全画面表示ここまで--------------------------------------------- */
+.rank_main{
+  height: 88%;
+  background-color: #F5ECCD;
+  width: 85%;
+  margin: 5% auto 5% auto;
+  padding: 10px;
+}
+/* ---------------------------------- */
+.rank_title{
+  height: 10%;
+  /* background-color: aliceblue; */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.trophy_wrap{
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* background-color: blue; */
+  text-align: center;
+}
+.rank_title img{
+  object-fit: scale-down;
+  height: 100%;
+  width: 20%;
+}
+.rank_title h2{
+  z-index: 1;
+}
+/* ---------------------------------- */
+.rank_list{
+  height: 80%;
+  overflow: hidden;
+  /* background-color: whitesmoke; */
+}
+.rank_list_li{
+  height: 8%;
+  border: #908a77 solid 1px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px auto;
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  
+}
+/* ---------------------------------- */
+.select_btn{
+  margin: 7px auto;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background-color: green;
+  color: white;
+  width: 80%;
+  text-align: center;
 }
 </style>
