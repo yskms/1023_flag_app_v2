@@ -574,13 +574,13 @@ export default {
   <!-- ゲーム終了の表示（少し処理時間を稼ぐため） -->
   <div class="isResultBefore" v-show="isResultBefore">
     <div class="my-2">
-              終了
+              {{lang==0 ? "終了" : "Time Up"}}
             </div>
   </div>
 
   <!-- ゲーム終了の表示その２（ここでOKボタンを押すことでfirebase登録を走らせるようにした） -->
   <div class="isResult" v-show="isResult">
-    <a>{{score + "問正解"}}</a>
+    <a>{{lang==0 ? score + "問正解" : score + " correct"}}</a>
     <div class="my-2" @click="showResultComp()">
               <v-btn
                 color="success"
@@ -601,7 +601,7 @@ export default {
             stream
             :class="{vibe:isVibeTime}"
           ></v-progress-linear>
-        <p>{{score + "問正解"}}</p>
+        <p>{{lang==0 ? score + "問正解" : score + " correct"}}</p>
     </div>
 
     <div class="flag_wrap" v-show="isReverseQuiz">
@@ -625,10 +625,9 @@ export default {
         margin:(setArr[3]==3 ? '8px auto 0 auto' : '') }">
               <!-- ボタンにvibeクラスを付与。 -->
               <button :class="{ vibe: isVibe[q.id] }">
-                {{q.nameJ}}
+                {{lang==0 ? q.nameJ : q.name }}
               </button>
         </div>
-
       </div>
     <!-- </ul> -->
   </div>
@@ -641,9 +640,8 @@ export default {
         height:(setArr[3]==3 ? '50px' : ''),
         margin:(setArr[3]==3 ? '8px auto 0 auto' : '') }">
               <!-- ボタンにvibeクラスを付与。 -->
-              
               <button :class="{ vibe: isVibe[q.id] }">
-                {{q.nameJ}}
+                {{lang==0 ? q.nameJ : q.name }}
               </button>
         </div>
 

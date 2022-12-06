@@ -202,7 +202,7 @@ export default {
       
       <div class="rankIn_main">
         <div class="rankIn_main_msg">
-          {{rankInPlus}} 位です！！
+          {{lang==0 ? rankInPlus + "位です！！" : rankInPlus + "th place"}}
         </div>
         <ul class="rankIn_wrap">
           <li v-for="(r,index) in rankArr" :key="index" :class="{rankIn_color:(index==rankIn)}">
@@ -219,12 +219,12 @@ export default {
               <div>{{r.name}}</div>
               <div>oo</div>
             </div>
-            <div>{{r.score + ' 問'}}</div>
+            <div>{{lang==0 ? r.score + " 問" : r.score + "pt."}}</div>
           </li>
         </ul>
         <div class="rankIn_btn" @click="isRankIn=false">
               <button>
-                次へ
+                {{lang==0 ? "次へ" : "Next"}}
               </button>
             </div>
       </div>
@@ -240,7 +240,7 @@ export default {
 
       <div class="score_area">
         <div>
-          <p>{{score + ' 問'}}</p>
+          <p>{{lang==0 ? score + "問" : score + " pt."}}</p>
         </div>
       </div>
 
@@ -270,7 +270,10 @@ export default {
         <!-- 悪い得点 -->
         <div class="msg_wrap" v-else-if="this.score==0">
           <p v-if="this.uid=='uid'"></p>
-          <p v-else-if="this.uid==''">ざんねん、、もういちどやってみよう！<br>ログインしたらいい事あるかも？</p>
+          <div v-else-if="this.uid==''">
+            <p>{{lang==0 ? "ざんねん、、もういちどやってみよう！" : "Let's Try Again!"}}</p>
+            <p>{{lang==0 ? "ログインしたらいい事あるかも？" : "if you Login, something special may come"}}</p>
+          </div>
           <p v-else>がんばって！<br>もういちどやってみよう！</p>
         </div>
       </div><!-- msg_area -->
@@ -293,7 +296,7 @@ export default {
           <!-- ホームに戻るボタンは固定 -->
           <div @click="backToHome">
               <button class="select_btn">
-                ホームに戻る
+                {{lang==0 ? "ホームに戻る" : "Back to Home"}}
               </button>
             </div>
       </div>
