@@ -367,6 +367,8 @@
 
 <style scoped>
 .home_cont{
+  max-width: 375px;
+  margin: 0 auto;
   /* なんかこの上にv-applicationクラスがおるからwidthは％にしてます */
   width: 100%;
   /* height: 80vh; */
@@ -510,6 +512,7 @@
   margin-top: 20px;
 }
 .lang{
+  z-index: 5;
   /* height: 55px; */
   height: 30px;
   margin: auto 0;
