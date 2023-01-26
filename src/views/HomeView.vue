@@ -154,6 +154,9 @@
       goToUseredit(){
         this.$router.push('useredit')
       },
+      goToRank(){
+        this.$router.push('rank')
+      },
     },
     computed:{
     flagLists(){
@@ -194,9 +197,12 @@
             </div>
             <!-- ログインしているなら、歯車userボタンを表示 -->
             <div class="haguruma" v-else>
-              <svg @click="goToUser()" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
-                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-              </svg>
+              <div class="haguruma1" @click="goToUser()">
+                <img src="@/assets/house.png"  alt="icon">
+              </div>
+              <div class="haguruma2" @click="goToRank">
+                <img src="@/assets/trophy.png"  alt="icon">
+              </div>
             </div>
             <!--  -->
         </div>
@@ -223,59 +229,32 @@
       <div class="select_wrap">
           <div class="lang_wrap">
             <div class="lang" @click="langJ" :style="{color:(this.lang==0 ? 'white':'grey')}">
-                <!-- <v-btn
-                  
-                  color="warning"
-                  dark
-                > -->
                 <button>
                   にほんご
                 </button>
-                <!-- </v-btn> -->
               </div>
             <div class="lang" @click="langE" :style="{color:(this.lang==1 ? 'white':'grey')}">
-                <!-- <v-btn
-                  
-                  color="warning"
-                  dark
-                > -->
                 <button>
                   English
                 </button>
-                <!-- </v-btn> -->
               </div>
           </div>
 
         <transition :name="isSlide?'slideA':'slideB'" mode="out-in">
         <div class="select_game" v-if="selectS==1" key="1" :class="selectGameMove">
-            <!-- <div class="select_back" >
-                <button>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-                  </svg>
-                </button>
-              </div> -->
           <div class="select_btn_wrap">
             <div class="select_btn" @click="select_game(0)">
-              <!-- <v-btn
-                color="success"
-                dark
-              > -->
               <button>
                 {{lang==0 ? "タイムアタック" : "Time Challenge"}}
               </button>
-              <!-- </v-btn> -->
             </div>
-            <div class="select_btn" @click="select_game(1)">
-              <!-- <v-btn
-                color="success"
-                dark
-              > -->
+            <!-- いったんノーミスチャレンジは非表示--------------------------------- -->
+            <!-- <div class="select_btn" @click="select_game(1)">
               <button>
                 {{lang==0 ? "ノーミスチャレンジ" : "No Miss Challenge"}}
               </button>
-              <!-- </v-btn> -->
-            </div>
+            </div> -->
+            <!-- いったんノーミスチャレンジは非表示--------------------------------- -->
             <!--  -->
             <!-- 画面が描画された瞬間は、何も表示しない -->
             <div  v-show="this.uid=='uid'">
@@ -426,15 +405,22 @@
   display: flex;
   align-items: flex-end;
 }
-/* .head{
+.head{
   height: 20%;
-} */
+}
 .haguruma{
   position: absolute;
   top: 15px;
   left: 10px;
-  width: 100%;
   z-index: 2;
+  width: 96%;
+  display: flex;
+  justify-content: space-between;
+}
+.haguruma img{
+  width: 3em;
+  height: 3em;
+  object-fit: scale-down;
 }
 /*-- -------------------------------------------------------*/
 .logo_wrap{

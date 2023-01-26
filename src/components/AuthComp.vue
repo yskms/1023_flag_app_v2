@@ -14,13 +14,15 @@
 
   data: () => ({
     name:'ニックネーム',
-    email: 'ex@gmail.com',
+    // email: 'ex@gmail.com',
+    email:'',
     age:'',
     iconNo:0,
     iconURL:'',
     test:'testdata',
     show1: false,
-    password: 'Password',
+    // password: 'Password',
+    password:'',
     rules: {
       required: value => !!value || 'Required.',
       min: v => v.length >= 8 || 'Min 8 characters',
@@ -295,7 +297,7 @@
     >
     <!-- 全画面表示のやつ---------------------------------------------------------------- -->
     <div class="loginSuccess" v-show="isSuccess">
-      <p>ログイン成功</p>
+      <p>{{lang==0 ? "ログイン成功" : "Login Successful"}}</p>
     </div><!-- loginSuccess -->
     <!-- 全画面表示のやつ ここまで---------------------------------------------------------------- -->
 
@@ -303,13 +305,13 @@
       <template v-slot:activator="{ on, attrs }">
         <v-col cols="12">
         <v-btn
-          color="primary"
+          color="success"
           dark
           v-bind="attrs"
           v-on="on"
           persistent
         >
-        ログインしよう！
+        {{lang==0 ? "ログインしよう！" : "Let's Login"}}
         </v-btn></v-col>
         <!-- <button class="select_btn">loguinsiyo</button> -->
       </template>
@@ -318,7 +320,7 @@
       <v-card v-show="toggleForm">
         <!-- <v-row> -->
         <v-card-title>
-          <span class="text-h5">アカウント登録</span>
+          <span class="text-h5">{{lang==0 ? "アカウント登録" : "Create Account"}}</span>
         </v-card-title>
         <!-- </v-row> -->
 
@@ -330,7 +332,7 @@
                 sm="6"
                 md="4"
               >
-                <div class="my-2">
+                <!-- <div class="my-2">
                   <v-btn
                     color="success"
                     dark
@@ -345,7 +347,7 @@
                   >
                     Apple
                   </v-btn>
-                </div>
+                </div> -->
               </v-col>
             </v-row>
           </v-container>
@@ -361,7 +363,7 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="name"
-                  label="ニックネーム*"
+                  label="Nickname*"
                   required
                   :rules="[rules.required]"
                 ></v-text-field>
@@ -424,7 +426,8 @@
             text
             @click="toggleForm=!toggleForm"
           >
-            すでにアカウントをお持ちの方
+            
+            {{lang==0 ? "すでにアカウントをお持ちの方" : "Already have an account?"}}
           </v-btn>
                 </div>
               </v-col>
@@ -438,7 +441,7 @@
       <v-card v-show="!toggleForm">
         <!-- カードのタイトル --------------------->
         <v-card-title>
-          <span class="text-h5">ログイン</span>
+          <span class="text-h5">{{lang==0 ? "ログイン" : "Login"}}</span>
         </v-card-title>
 
         <!-- カードの中身 ------------------------->
@@ -451,7 +454,7 @@
                 sm="6"
                 md="4"
               >
-                <div class="my-2">
+                <!-- <div class="my-2">
                   <v-btn
                     color="success"
                     dark
@@ -466,7 +469,7 @@
                   >
                     Apple
                   </v-btn>
-                </div>
+                </div> -->
               </v-col>
             </v-row>
           </v-container>
@@ -525,7 +528,7 @@
             text
             @click="toggleForm = !toggleForm"
           >
-            ユーザー登録はこちら
+            {{lang==0 ? "ユーザー登録はこちら" : "Register here"}}
           </v-btn>
                 </div>
               </v-col>
@@ -555,7 +558,7 @@
   /* padding-top: 50%; */
   color: white;
   /* font-size: 5rem; */
-  z-index: 20;
+  z-index: 200;
   display: flex;
   flex-direction: column;
   align-items: center;
